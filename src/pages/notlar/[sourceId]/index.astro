@@ -1,22 +1,25 @@
 ---
-import { FileText, FolderOpen } from 'lucide-react';
 import Breadcrumbs from '../../../components/content/Breadcrumbs.astro';
+import CollectionsSidebar from '../../../components/content/CollectionsSidebar.astro';
 import Window from '../../../components/desktop/Window.astro';
+import FolderIcon from '../../../components/icons/FolderIcon.astro';
 import DesktopLayout from '../../../layouts/DesktopLayout.astro';
 import { getNoteSources, type NoteItem, type NoteSourceInfo } from '../../../lib/content/collections.ts';
 import { paths } from '../../../lib/content/urls.ts';
+import { folderColor } from '../../../lib/site/folder-colors.ts';
 
 export async function getStaticPaths() {
   const sources = await getNoteSources();
-  return sources.map((source) => ({ params: { sourceId: source.id }, props: { source, sources } }));
+  return sources.map((source, index) => ({ params: { sourceId: source.id }, props: { source, sources, index } }));
 }
 
 interface Props {
   source: NoteSourceInfo;
   sources: NoteSourceInfo[];
+  index: number;
 }
 
-const { source, sources } = Astro.props;
+const { source, sources, index } = Astro.props;
 
 // Notlar kaynak klasörlerine göre gruplanır (sıra: kaynak repodaki doğal sıra).
 const groups = new Map<string, NoteItem[]>();
@@ -27,52 +30,51 @@ const description = source.description ?? `${source.label}: ${source.notes.lengt
 ---
 
 <DesktopLayout title={source.label} description={description} section="notes">
-  <Window id="main" variant="main" title="Öğrenme Notları" icon="notes" closeHref="/" sidebarLabel="Not koleksiyonları">
-    <nav slot="sidebar" class="sidebar-nav" aria-label="Not koleksiyonları">
-      <h2>Koleksiyonlar</h2>
-      <ul>
-        {
-          sources.map((item) => (
-            <li>
-              <a href={paths.noteSource(item.id)} aria-current={item.id === source.id ? 'page' : undefined}>
-                <FolderOpen aria-hidden="true" />
-                {item.label}
-                <span class="count">{item.notes.length}</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
+  <Window id="main" variant="main" title={source.label} icon="notes" section="notes" closeHref="/" backHref={paths.notes} backLabel="Notlar">
+    <CollectionsSidebar slot="sidebar" sources={sources} current={source.id} />
 
     <Breadcrumbs items={[{ label: 'Öğrenme Notları', href: paths.notes }, { label: source.label }]} />
-    <header class="page-header page-header--wide">
-      <h1 class="page-title">{source.label}</h1>
-      <p class="page-lead">{description}</p>
+    <header class="page-head" style="display: flex; align-items: center; gap: 18px;">
+      <FolderIcon color={folderColor(index)} icon="notes" size="large" />
+      <div>
+        <h1 class="page-title">{source.label}</h1>
+        <p class="page-lead" style="margin-top: 6px;">{description}</p>
+      </div>
     </header>
 
     {
       [...groups].map(([folder, notes]) => (
-        <section class="folder-group" aria-label={folder || source.label}>
+        <section class="list-view" aria-label={folder || source.label}>
           {folder && (
-            <h2 class="folder-group__title">
-              <FolderOpen aria-hidden="true" />
-              {folder}
+            <h2 class="list-view__group">
+              <FolderIcon color={folderColor(index)} />
+              <span class="list-view__path">
+                {folder.split('/').map((segment, position, all) =>
+                  position < all.length - 1 ? (
+                    <>
+                      <span class="list-view__parent">{segment}</span>
+                      <span class="list-view__sep" aria-hidden="true">›</span>
+                    </>
+                  ) : (
+                    <span class="list-view__leaf">{segment}</span>
+                  ),
+                )}
+              </span>
             </h2>
           )}
-          <ul class="entry-list">
+          <ul class="list-rows">
             {notes.map((note) => (
-              <li class="entry">
-                <span class="entry__icon" aria-hidden="true">
-                  <FileText />
-                </span>
-                <h3 class="entry__title">
-                  <a href={note.url}>{note.title}</a>
-                </h3>
-                {note.description && <p class="entry__summary">{note.description}</p>}
-                <ul class="entry__meta">
-                  <li>{note.readingMinutes} dk okuma</li>
-                </ul>
+              <li class="list-row">
+                <div class="list-row__name">
+                  <span class="doc-icon" aria-hidden="true" />
+                  <div style="min-width: 0;">
+                    <h3 class="list-row__title">
+                      <a href={note.url}>{note.title}</a>
+                    </h3>
+                    {note.description && <p class="list-row__summary">{note.description}</p>}
+                  </div>
+                </div>
+                <span class="list-row__time">{note.readingMinutes} dk</span>
               </li>
             ))}
           </ul>

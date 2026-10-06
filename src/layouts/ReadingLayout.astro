@@ -15,11 +15,12 @@ type Props = SeoProps & {
   section: SectionId;
   windowTitle: string;
   icon: IconName;
+  backHref: string;
+  backLabel: string;
   headings?: MarkdownHeading[];
 };
 
-const { section, windowTitle, icon, headings = [], ...seo } = Astro.props;
-const showToc = hasToc(headings);
+const { section, windowTitle, icon, backHref, backLabel, headings = [], ...seo } = Astro.props;
 ---
 
 <DesktopLayout {...seo} section={section}>
@@ -28,11 +29,13 @@ const showToc = hasToc(headings);
     variant="main"
     title={windowTitle}
     icon={icon}
+    section={section}
     closeHref="/"
     readingTools
-    sidebarLabel={showToc ? 'İçindekiler' : undefined}
+    backHref={backHref}
+    backLabel={backLabel}
   >
-    {showToc && <Toc slot="sidebar" headings={headings} variant="sidebar" />}
+    {hasToc(headings) && <Toc slot="sidebar" headings={headings} variant="sidebar" />}
     <slot />
   </Window>
 </DesktopLayout>

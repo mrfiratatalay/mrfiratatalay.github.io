@@ -126,6 +126,16 @@ interface AssetManifestEntry {
 const IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.svg']);
 const naturalCompare = new Intl.Collator('tr', { numeric: true, sensitivity: 'base' }).compare;
 
+/** Repo sırası: önce üst klasör, klasör içinde önce README/index, sonra diğer dosyalar (doğal sıra). */
+function compareNotePaths(a: string, b: string): number {
+  const dirA = path.posix.dirname(a);
+  const dirB = path.posix.dirname(b);
+  if (dirA !== dirB) return naturalCompare(dirA, dirB);
+  const indexA = /^(readme|index)\.(md|markdown)$/i.test(path.posix.basename(a)) ? 0 : 1;
+  const indexB = /^(readme|index)\.(md|markdown)$/i.test(path.posix.basename(b)) ? 0 : 1;
+  return indexA - indexB || naturalCompare(path.posix.basename(a), path.posix.basename(b));
+}
+
 export function shortHash(value: string, length = 6): string {
   return createHash('sha1').update(value).digest('hex').slice(0, length);
 }
@@ -386,7 +396,7 @@ class ImportRun {
           caseSensitiveMatch: false,
           expandDirectories: false,
         })
-      ).sort(naturalCompare);
+      ).sort(compareNotePaths);
 
       const bySlug = new Map<string, string>();
       let markdownCount = 0;

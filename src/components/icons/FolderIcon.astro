@@ -1,0 +1,18 @@
+---
+/** macOS tarzı klasör (özgün çizim). Dekoratiftir. */
+import type { IconName } from '../../lib/site/sections.ts';
+import SectionIcon from './SectionIcon.tsx';
+
+interface Props {
+  icon?: IconName;
+  color?: 'blue' | 'yellow' | 'green' | 'purple' | 'pink' | 'orange';
+  size?: 'normal' | 'large';
+}
+
+const { icon, color = 'blue', size = 'normal' } = Astro.props;
+---
+
+<span class:list={['folder', `folder--${color}`, { 'folder--large': size === 'large' }]} aria-hidden="true">
+  <span class="folder__back"></span>
+  <span class="folder__front">{icon && <SectionIcon name={icon} strokeWidth={2.2} />}</span>
+</span>

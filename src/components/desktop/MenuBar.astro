@@ -1,7 +1,8 @@
 ---
 import { initials, profile } from '../../lib/content/site-data.ts';
 import { SECTIONS, type SectionId } from '../../lib/site/sections.ts';
-import MenuBarExtras from './MenuBarExtras.tsx';
+import AppIcon from '../icons/AppIcon.tsx';
+import MenuBarStatus from './MenuBarStatus.tsx';
 
 interface Props {
   current: SectionId;
@@ -12,28 +13,27 @@ const { current, pathname } = Astro.props;
 ---
 
 <header class="menubar">
-  <div class="menubar__left">
-    <a class="menubar__brand" href="/" data-section-link aria-label={`${profile.name} — masaüstüne dön`}>
-      <span class="menubar__logo" aria-hidden="true">{initials(profile.name)}</span>
+  <nav class="menubar__left" aria-label="Ana menü">
+    <a class="menubar__item menubar__brand" href="/" data-section-link aria-label={`${profile.name} — masaüstüne dön`}>
+      <AppIcon name="monogram" text={initials(profile.name)} className="menubar__logo" />
       <span>{profile.name}</span>
     </a>
-    <nav class="menubar__nav" aria-label="Ana menü">
-      <ul>
-        {
-          SECTIONS.map((section) => (
-            <li>
-              <a
-                href={section.href}
-                data-section-link
-                aria-current={pathname === section.href ? 'page' : current === section.id ? 'true' : undefined}
-              >
-                {section.shortLabel}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-  </div>
-  <MenuBarExtras client:load />
+    <ul class="menubar__menus">
+      {
+        SECTIONS.map((section) => (
+          <li>
+            <a
+              class="menubar__item"
+              href={section.href}
+              data-section-link
+              aria-current={pathname === section.href ? 'page' : current === section.id ? 'true' : undefined}
+            >
+              {section.shortLabel}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <MenuBarStatus client:load />
 </header>

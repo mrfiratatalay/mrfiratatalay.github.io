@@ -1,27 +1,37 @@
 ---
-import { Mail, MapPin } from 'lucide-react';
+import { ChevronRight, Mail, MapPin } from 'lucide-react';
 import Window from '../../components/desktop/Window.astro';
+import AppIcon from '../../components/icons/AppIcon.tsx';
 import LinkIcon from '../../components/icons/LinkIcon.tsx';
 import DesktopLayout from '../../layouts/DesktopLayout.astro';
 import { profile } from '../../lib/content/site-data.ts';
 ---
 
 <DesktopLayout title="İletişim" description={`${profile.name} ile iletişim: e-posta ve sosyal bağlantılar.`} section="contact">
-  <Window id="main" variant="main" title="İletişim" icon="contact" closeHref="/">
+  <Window id="main" variant="main" title="İletişim" icon="contact" section="contact" closeHref="/" backHref="/" backLabel="Masaüstü">
     <div class="article">
-      <header class="page-header">
-        <h1 class="page-title">İletişim</h1>
+      <header class="page-head">
+        <p class="page-head__eyebrow"><AppIcon name="contact" /> İletişim</p>
+        <h1 class="page-title">Merhaba de</h1>
         <p class="page-lead">İş, freelance veya işbirliği için bana e-postayla ulaşabilir ya da aşağıdaki hesaplardan yazabilirsin.</p>
       </header>
 
       {
         profile.email ? (
-          <div class="action-row">
-            <a class="button button--primary" href={`mailto:${profile.email}`}>
-              <Mail aria-hidden="true" />
-              {profile.email}
-            </a>
-          </div>
+          <ul class="group">
+            <li>
+              <a class="group__row" href={`mailto:${profile.email}`}>
+                <span class="app-icon app-icon--contact" aria-hidden="true">
+                  <Mail />
+                </span>
+                <span class="group__text">
+                  <span class="group__title">E-posta gönder</span>
+                  <span class="group__subtitle">{profile.email}</span>
+                </span>
+                <ChevronRight className="group__chevron" aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
         ) : (
           <p class="empty-state">E-posta adresi henüz eklenmedi.</p>
         )
@@ -33,18 +43,19 @@ import { profile } from '../../lib/content/site-data.ts';
             <h2 class="section-title" id="hesaplar">
               Hesaplar
             </h2>
-            <ul class="entry-list">
+            <ul class="group">
               {profile.links.map((link) => (
-                <li class="entry">
-                  <span class="entry__icon" aria-hidden="true">
-                    <LinkIcon kind={link.kind} />
-                  </span>
-                  <h3 class="entry__title">
-                    <a href={link.url} rel="me noopener">
-                      {link.label}
-                    </a>
-                  </h3>
-                  <p class="entry__summary">{link.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</p>
+                <li>
+                  <a class="group__row" href={link.url} rel="me noopener">
+                    <span class={`app-icon app-icon--link-${link.kind}`} aria-hidden="true">
+                      <LinkIcon kind={link.kind} />
+                    </span>
+                    <span class="group__text">
+                      <span class="group__title">{link.label}</span>
+                      <span class="group__subtitle">{link.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</span>
+                    </span>
+                    <ChevronRight className="group__chevron" aria-hidden="true" />
+                  </a>
                 </li>
               ))}
             </ul>
@@ -54,8 +65,8 @@ import { profile } from '../../lib/content/site-data.ts';
 
       {
         profile.location && (
-          <p class="muted" style="display: flex; align-items: center; gap: 6px; margin-top: 24px;">
-            <MapPin aria-hidden="true" size={16} />
+          <p class="profile-card__location" style="margin-top: 26px;">
+            <MapPin aria-hidden="true" />
             {profile.location}
           </p>
         )

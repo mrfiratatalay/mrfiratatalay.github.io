@@ -1,76 +1,91 @@
 /*
- * Tasarım değişkenleri. Renkler light-dark() ile tek yerde tanımlanır:
- * ilk değer açık tema, ikinci değer koyu tema içindir.
- * Ana renk (lacivert/mavi ailesi) --accent ile değiştirilebilir.
+ * Tasarım değişkenleri — "Liquid Glass" esinli.
+ * Renkler light-dark() ile tek yerde tanımlanır: ilk değer açık, ikinci değer koyu tema.
  */
 :root {
   color-scheme: light dark;
 
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable Display', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-rounded: ui-rounded, 'SF Pro Rounded', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 
-  /* Renkler */
-  --accent: light-dark(#1d4ed8, #6ea8ff);
-  --accent-strong: light-dark(#1e3a8a, #a5c8ff);
-  --accent-soft: light-dark(rgb(29 78 216 / 0.1), rgb(110 168 255 / 0.16));
-  --on-accent: light-dark(#ffffff, #07122b);
-  --text: light-dark(#0f172a, #e6eaf2);
-  --text-muted: light-dark(#475569, #aab3c5);
-  --text-subtle: light-dark(#5b6678, #8f99ad);
-  --surface: light-dark(#ffffff, #161a22);
-  --surface-raised: light-dark(#f8fafc, #1c212b);
-  --surface-sunken: light-dark(#f2f5f9, #11151c);
-  --surface-hover: light-dark(#eef2f8, #232935);
-  --border: light-dark(rgb(15 23 42 / 0.12), rgb(255 255 255 / 0.1));
-  --border-strong: light-dark(rgb(15 23 42 / 0.22), rgb(255 255 255 / 0.2));
-  --titlebar: light-dark(#f4f5f8, #1f242e);
-  --titlebar-inactive: light-dark(#fafbfc, #1a1e26);
-  --glass: light-dark(rgb(255 255 255 / 0.56), rgb(22 26 35 / 0.58));
-  --glass-strong: light-dark(rgb(255 255 255 / 0.8), rgb(22 26 35 / 0.84));
-  --glass-border: light-dark(rgb(255 255 255 / 0.65), rgb(255 255 255 / 0.12));
-  --glass-highlight: light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.08));
-  --code-bg: light-dark(#f6f8fa, #0d1117);
-  --mark-bg: light-dark(#fde68a, #6b4a06);
-  --danger: light-dark(#b42318, #ffa39e);
-  --success: light-dark(#157f3b, #7ee2a8);
-  --focus: light-dark(#1d4ed8, #8ab8ff);
+  /* Sistem renkleri */
+  --blue: light-dark(#0a6cff, #3d9bff);
+  --indigo: light-dark(#5856d6, #6e6cff);
+  --purple: light-dark(#a24ce0, #c472f5);
+  --pink: light-dark(#f2295b, #ff4f78);
+  --red: light-dark(#ff3b30, #ff5a50);
+  --orange: light-dark(#ff8a00, #ffa033);
+  --yellow: light-dark(#ffcc00, #ffd60a);
+  --green: light-dark(#28b44e, #36d160);
+  --teal: light-dark(#14a6c2, #4fcbe3);
 
-  --traffic-close: #ff5f57;
-  --traffic-minimize: #febc2e;
-  --traffic-zoom: #28c840;
+  --accent: var(--blue);
+  --accent-text: light-dark(#0057d1, #79b8ff);
+  --accent-soft: light-dark(rgb(10 108 255 / 0.12), rgb(61 155 255 / 0.2));
+  --on-accent: #ffffff;
 
-  --wallpaper-base: light-dark(#dfe7fb, #0a1128);
-  --wallpaper:
-    radial-gradient(110% 85% at 8% 0%, light-dark(#b9cdfd, #1e3a8a) 0%, transparent 58%),
-    radial-gradient(85% 75% at 100% 100%, light-dark(#e3d4ff, #4a1d8f) 0%, transparent 62%),
-    radial-gradient(70% 60% at 88% 8%, light-dark(#c6ecfb, #0c5a73) 0%, transparent 55%),
-    linear-gradient(165deg, light-dark(#eef2ff, #0b1533) 0%, light-dark(#d8e3fb, #090f22) 100%);
+  /* Yazı renkleri */
+  --label: light-dark(#1d1d1f, #f5f5f7);
+  --label-2: light-dark(#48484c, #c7c7cc);
+  --label-3: light-dark(#6c6c70, #98989f);
+  --label-on-wallpaper: #ffffff;
 
-  /* Ölçüler (ürün önerisidir; resmî macOS ölçüleri değildir) */
-  --menubar-h: 32px;
-  --dock-icon: 46px;
-  --dock-reserved: 92px;
-  --gutter: 16px;
-  --icons-column: 132px;
-  --radius-window: 16px;
-  --radius-dock: 22px;
-  --radius-lg: 14px;
-  --radius-md: 10px;
-  --radius-sm: 6px;
-  --reading-width: 70ch;
+  /* Yüzeyler */
+  --separator: light-dark(rgb(0 0 0 / 0.09), rgb(255 255 255 / 0.1));
+  --separator-strong: light-dark(rgb(0 0 0 / 0.16), rgb(255 255 255 / 0.18));
+  --fill: light-dark(rgb(118 118 128 / 0.12), rgb(118 118 128 / 0.24));
+  --fill-2: light-dark(rgb(118 118 128 / 0.08), rgb(118 118 128 / 0.16));
+  --fill-3: light-dark(rgb(118 118 128 / 0.05), rgb(118 118 128 / 0.1));
+  --window-bg: light-dark(rgb(255 255 255 / 0.9), rgb(30 30 34 / 0.88));
+  --window-solid: light-dark(#ffffff, #1e1e22);
+  --sidebar-bg: light-dark(rgb(240 240 246 / 0.62), rgb(48 48 56 / 0.52));
+  --card-bg: light-dark(#ffffff, rgb(255 255 255 / 0.05));
+  --card-raised: light-dark(#f7f7fa, rgb(255 255 255 / 0.07));
+  --code-bg: light-dark(#f6f7f9, #16161a);
 
-  --shadow-window: 0 28px 70px rgb(2 6 23 / 0.3), 0 8px 22px rgb(2 6 23 / 0.16), 0 0 0 1px var(--border);
-  --shadow-window-inactive: 0 14px 36px rgb(2 6 23 / 0.18), 0 0 0 1px var(--border);
-  --shadow-card: 0 1px 2px rgb(2 6 23 / 0.06), 0 0 0 1px var(--border);
-  --shadow-pop: 0 18px 50px rgb(2 6 23 / 0.28), 0 0 0 1px var(--border);
-  --blur: 22px;
+  /* Cam (Liquid Glass) */
+  --glass: light-dark(rgb(255 255 255 / 0.26), rgb(28 28 34 / 0.34));
+  --glass-strong: light-dark(rgb(255 255 255 / 0.66), rgb(40 40 48 / 0.66));
+  --glass-capsule: light-dark(rgb(255 255 255 / 0.72), rgb(62 62 70 / 0.56));
+  --glass-widget: light-dark(rgb(255 255 255 / 0.34), rgb(26 26 32 / 0.42));
+  --glass-blur: 26px;
+  --glass-saturate: 1.9;
+  --glass-highlight: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.24));
+  --glass-rim: light-dark(rgb(255 255 255 / 0.55), rgb(255 255 255 / 0.13));
+  --glass-edge: light-dark(rgb(0 0 0 / 0.07), rgb(0 0 0 / 0.5));
+  --glass-shadow: 0 10px 34px -10px rgb(0 0 0 / 0.32);
+
+  --shadow-window: 0 0 0 0.5px light-dark(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.75)), 0 38px 90px -18px rgb(0 0 0 / 0.5),
+    0 14px 34px -12px rgb(0 0 0 / 0.26);
+  --shadow-window-inactive: 0 0 0 0.5px light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.7)),
+    0 22px 56px -22px rgb(0 0 0 / 0.38);
+  --shadow-card: 0 0 0 0.5px light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.08)), 0 2px 6px -2px rgb(0 0 0 / 0.08),
+    0 12px 28px -14px rgb(0 0 0 / 0.18);
+  --shadow-card-hover: 0 0 0 0.5px light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.1)), 0 6px 14px -4px rgb(0 0 0 / 0.12),
+    0 26px 50px -20px rgb(0 0 0 / 0.32);
+
+  /* Ölçüler (ürün önerisi; resmî macOS ölçüleri değildir) */
+  --menubar-h: 34px;
+  --dock-icon: 54px;
+  --dock-reserved: 100px;
+  --gutter: 18px;
+  --icons-column: 124px;
+  --radius-window: 26px;
+  --radius-panel: 18px;
+  --radius-card: 20px;
+  --radius-control: 12px;
+  --toolbar-h: 64px;
+  --reading-width: 68ch;
+  --reading-scale: 1;
 
   /* Hareket */
-  --dur-fast: 120ms;
-  --dur: 200ms;
-  --dur-slow: 320ms;
-  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 140ms;
+  --dur: 240ms;
+  --dur-slow: 420ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 :root[data-theme='light'] {
@@ -92,46 +107,53 @@
 /* Saydamlığı azaltmak isteyenler ve zayıf cihazlar için cam efekti sadeleşir. */
 @media (prefers-reduced-transparency: reduce) {
   :root {
-    --glass: var(--surface-raised);
-    --glass-strong: var(--surface-raised);
-    --blur: 0px;
+    --glass: light-dark(rgb(246 246 250 / 0.96), rgb(36 36 42 / 0.96));
+    --glass-strong: var(--glass);
+    --glass-capsule: var(--glass);
+    --glass-widget: var(--glass);
+    --window-bg: var(--window-solid);
+    --sidebar-bg: light-dark(#eeeef3, #2c2c33);
+    --glass-blur: 0px;
   }
 }
 
 @supports not (backdrop-filter: blur(1px)) {
   :root {
-    --glass: var(--glass-strong);
+    --glass: light-dark(rgb(246 246 250 / 0.94), rgb(36 36 42 / 0.94));
+    --glass-strong: var(--glass);
+    --glass-capsule: var(--glass);
+    --glass-widget: var(--glass);
+    --window-bg: var(--window-solid);
   }
 }
 
 /* light-dark() desteklemeyen eski tarayıcılar açık temayı kullanır. */
 @supports not (color: light-dark(#fff, #000)) {
   :root {
-    --accent: #1d4ed8;
-    --accent-strong: #1e3a8a;
-    --accent-soft: rgb(29 78 216 / 0.1);
-    --on-accent: #ffffff;
-    --text: #0f172a;
-    --text-muted: #475569;
-    --text-subtle: #5b6678;
-    --surface: #ffffff;
-    --surface-raised: #f8fafc;
-    --surface-sunken: #f2f5f9;
-    --surface-hover: #eef2f8;
-    --border: rgb(15 23 42 / 0.12);
-    --border-strong: rgb(15 23 42 / 0.22);
-    --titlebar: #f4f5f8;
-    --titlebar-inactive: #fafbfc;
+    --blue: #0a6cff;
+    --accent: #0a6cff;
+    --accent-text: #0057d1;
+    --accent-soft: rgb(10 108 255 / 0.12);
+    --label: #1d1d1f;
+    --label-2: #48484c;
+    --label-3: #6c6c70;
+    --separator: rgb(0 0 0 / 0.09);
+    --separator-strong: rgb(0 0 0 / 0.16);
+    --fill: rgb(118 118 128 / 0.12);
+    --fill-2: rgb(118 118 128 / 0.08);
+    --fill-3: rgb(118 118 128 / 0.05);
+    --window-bg: #ffffff;
+    --window-solid: #ffffff;
+    --sidebar-bg: #f0f0f6;
+    --card-bg: #ffffff;
+    --card-raised: #f7f7fa;
+    --code-bg: #f6f7f9;
     --glass: rgb(255 255 255 / 0.85);
     --glass-strong: rgb(255 255 255 / 0.9);
-    --glass-border: rgb(255 255 255 / 0.65);
-    --glass-highlight: rgb(255 255 255 / 0.75);
-    --code-bg: #f6f8fa;
-    --mark-bg: #fde68a;
-    --danger: #b42318;
-    --success: #157f3b;
-    --focus: #1d4ed8;
-    --wallpaper-base: #dfe7fb;
-    --wallpaper: linear-gradient(165deg, #eef2ff 0%, #d8e3fb 100%);
+    --glass-capsule: rgb(255 255 255 / 0.9);
+    --glass-widget: rgb(255 255 255 / 0.85);
+    --glass-highlight: rgb(255 255 255 / 0.9);
+    --glass-rim: rgb(255 255 255 / 0.55);
+    --glass-edge: rgb(0 0 0 / 0.07);
   }
 }

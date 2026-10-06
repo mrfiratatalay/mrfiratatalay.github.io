@@ -4,6 +4,10 @@
     color-scheme: light;
   }
 
+  body::before {
+    display: none;
+  }
+
   body {
     background: #fff !important;
     color: #000;
@@ -12,42 +16,52 @@
   .menubar,
   .dock-bar,
   .desktop-icons,
-  .desktop-hint,
-  .window__titlebar,
+  .widgets,
+  .home-apps,
+  .notification,
+  .window__controls,
+  .window__toolbar,
   .window__sidebar,
   .window__resize,
   .toc-inline,
   .code-block__copy,
   .pager,
   .skip-link,
-  .search-dialog {
+  .spotlight {
     display: none !important;
   }
 
   .desktop,
   .workspace,
   .window,
-  .window__frame,
+  .window__main,
   .window__content {
     position: static !important;
     display: block !important;
     width: auto !important;
     height: auto !important;
     max-width: none !important;
+    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
     box-shadow: none !important;
     border-radius: 0 !important;
     background: #fff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    animation: none !important;
+  }
+
+  .window::after {
+    display: none !important;
   }
 
   .window__inner {
     padding: 0 !important;
   }
 
-  .article,
-  .page-header {
+  .article {
     max-width: none;
   }
 
@@ -58,14 +72,15 @@
 
   .prose a[href^='http']::after {
     content: ' (' attr(href) ')';
-    font-size: 0.85em;
     color: #444;
+    font-size: 0.85em;
   }
 
   .code-block,
   .table-scroll,
   .prose img {
     break-inside: avoid;
+    box-shadow: none !important;
   }
 
   .code-block pre {

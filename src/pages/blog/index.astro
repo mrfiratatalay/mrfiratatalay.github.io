@@ -1,11 +1,11 @@
 ---
-import { Newspaper, Rss } from 'lucide-react';
+import { Rss, Tag } from 'lucide-react';
+import PostCard from '../../components/content/PostCard.astro';
 import Window from '../../components/desktop/Window.astro';
+import AppIcon from '../../components/icons/AppIcon.tsx';
 import DesktopLayout from '../../layouts/DesktopLayout.astro';
 import { getPublishedPosts } from '../../lib/content/collections.ts';
-import { formatDate, isoDate } from '../../lib/content/dates.ts';
-import { readingMinutes } from '../../lib/content/rules.ts';
-import { categoryLabel, taxonomy } from '../../lib/content/site-data.ts';
+import { taxonomy } from '../../lib/content/site-data.ts';
 import { paths } from '../../lib/content/urls.ts';
 
 const posts = await getPublishedPosts();
@@ -15,40 +15,45 @@ const categories = taxonomy.categories
 ---
 
 <DesktopLayout title="Blog" description="Makaleler: öğrendiklerim, denediklerim ve yazılım üzerine notlar." section="blog">
-  <Window id="main" variant="main" title="Blog" icon="blog" closeHref="/" sidebarLabel="Kategoriler">
-    <nav slot="sidebar" class="sidebar-nav" aria-label="Kategoriler">
-      <h2>Kategoriler</h2>
-      <ul>
-        <li>
-          <a href={paths.blog} data-category-filter="" aria-current="page">
-            <Newspaper aria-hidden="true" />
-            Tüm yazılar <span class="count">{posts.length}</span>
-          </a>
-        </li>
-        {
-          categories.map((category) => (
-            <li>
-              <a href={`${paths.blog}?kategori=${category.id}`} data-category-filter={category.id}>
-                <Newspaper aria-hidden="true" />
-                {category.label} <span class="count">{category.count}</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <h2>Takip et</h2>
-      <ul>
-        <li>
-          <a href={paths.rss}>
-            <Rss aria-hidden="true" />
-            RSS akışı
-          </a>
-        </li>
-      </ul>
-    </nav>
+  <Window id="main" variant="main" title="Blog" icon="blog" section="blog" closeHref="/" backHref="/" backLabel="Masaüstü">
+    <Fragment slot="sidebar">
+      <nav class="sidebar-section" aria-label="Kategoriler">
+        <p class="sidebar-heading">Kategoriler</p>
+        <ul class="sidebar-list">
+          <li>
+            <a class="sidebar-link" href={paths.blog} data-category-filter="" aria-current="page">
+              <Tag aria-hidden="true" />
+              Tüm yazılar <span class="count">{posts.length}</span>
+            </a>
+          </li>
+          {
+            categories.map((category) => (
+              <li>
+                <a class="sidebar-link" href={`${paths.blog}?kategori=${category.id}`} data-category-filter={category.id}>
+                  <Tag aria-hidden="true" />
+                  {category.label} <span class="count">{category.count}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav class="sidebar-section" aria-label="Takip et">
+        <p class="sidebar-heading">Takip et</p>
+        <ul class="sidebar-list">
+          <li>
+            <a class="sidebar-link" href={paths.rss}>
+              <Rss aria-hidden="true" />
+              RSS akışı
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </Fragment>
 
-    <header class="page-header page-header--wide">
-      <h1 class="page-title">Blog</h1>
+    <header class="page-head">
+      <p class="page-head__eyebrow"><AppIcon name="blog" /> Blog</p>
+      <h1 class="page-title">Yazılar</h1>
       <p class="page-lead">Öğrendiklerimi, denediklerimi ve projelerimden çıkan dersleri burada yazıyorum.</p>
     </header>
 
@@ -75,29 +80,16 @@ const categories = taxonomy.categories
       posts.length === 0 ? (
         <p class="empty-state">Henüz yayınlanmış yazı yok.</p>
       ) : (
-        <ul class="entry-list" data-post-list>
-          {posts.map((post) => (
-            <li class="entry" data-category={post.data.category}>
-              <span class="entry__icon" aria-hidden="true">
-                <Newspaper />
-              </span>
-              <h2 class="entry__title">
-                <a href={paths.blogPost(post.data.urlSlug)}>{post.data.title}</a>
-              </h2>
-              {post.data.description && <p class="entry__summary">{post.data.description}</p>}
-              <ul class="entry__meta">
-                <li>
-                  <time datetime={isoDate(post.data.publishedAt)}>{formatDate(post.data.publishedAt)}</time>
-                </li>
-                <li>{categoryLabel(post.data.category)}</li>
-                <li>{readingMinutes(post.body ?? '')} dk okuma</li>
-              </ul>
+        <ul class="card-grid" data-post-list>
+          {posts.map((post, index) => (
+            <li data-category={post.data.category} class:list={{ 'card-grid__wide': index === 0 }}>
+              <PostCard post={post} featured={index === 0} />
             </li>
           ))}
         </ul>
       )
     }
-    <p class="muted" data-filter-empty hidden>Bu kategoride henüz yazı yok.</p>
+    <p class="empty-state" data-filter-empty hidden>Bu kategoride henüz yazı yok.</p>
   </Window>
 </DesktopLayout>
 

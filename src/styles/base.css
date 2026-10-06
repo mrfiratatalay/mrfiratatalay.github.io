@@ -7,23 +7,66 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  background-color: var(--wallpaper-base);
+  background-color: #3f63d6;
+}
+
+:root[data-theme='dark'] {
+  background-color: #0b0f2e;
 }
 
 body {
+  position: relative;
   margin: 0;
   min-height: 100vh;
   min-height: 100dvh;
   font-family: var(--font-sans);
   font-size: 1rem;
   line-height: 1.5;
-  color: var(--text);
-  background-color: var(--wallpaper-base);
-  background-image: var(--wallpaper);
-  background-attachment: fixed;
+  color: var(--label);
+  background: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+/* Duvar kağıdı: sabit katman (iOS Safari'de de doğru çalışır). */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #3f63d6 url('/wallpapers/gunduz-kucuk.webp') center / cover no-repeat;
+}
+
+@media (min-width: 900px) {
+  body::before {
+    background-image: url('/wallpapers/gunduz.webp');
+  }
+}
+
+:root[data-theme='dark'] body::before {
+  background-color: #0b0f2e;
+  background-image: url('/wallpapers/gece-kucuk.webp');
+}
+
+@media (min-width: 900px) {
+  :root[data-theme='dark'] body::before {
+    background-image: url('/wallpapers/gece.webp');
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) body::before {
+    background-color: #0b0f2e;
+    background-image: url('/wallpapers/gece-kucuk.webp');
+  }
+}
+
+@media (prefers-color-scheme: dark) and (min-width: 900px) {
+  :root:not([data-theme='light']) body::before {
+    background-image: url('/wallpapers/gece.webp');
+  }
 }
 
 img,
@@ -37,22 +80,30 @@ img {
 }
 
 a {
-  color: var(--accent);
+  color: var(--accent-text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
   color: inherit;
 }
 
 button {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2.5px solid var(--accent);
   outline-offset: 2px;
+}
+
+::selection {
+  background: light-dark(rgb(10 108 255 / 0.22), rgb(61 155 255 / 0.4));
 }
 
 [hidden] {
@@ -72,18 +123,26 @@ button {
   border: 0;
 }
 
+html:not(.js) .js-only {
+  display: none !important;
+}
+
+html.js .no-js-only {
+  display: none !important;
+}
+
 .skip-link {
   position: fixed;
-  top: 8px;
-  left: 8px;
+  top: 10px;
+  left: 10px;
   z-index: 1000;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--window-solid);
+  color: var(--label);
   font-weight: 600;
-  box-shadow: var(--shadow-pop);
-  transform: translateY(-160%);
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-180%);
   transition: transform var(--dur) var(--ease-out);
 }
 
@@ -91,41 +150,56 @@ button {
   transform: none;
 }
 
-/* Ortak düğmeler */
+/* Düğmeler: kapsül biçimi */
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   min-height: 40px;
-  padding: 8px 16px;
-  border: 1px solid var(--border-strong);
+  padding: 8px 18px;
+  border: 0;
   border-radius: 999px;
-  background: var(--surface);
-  color: var(--text);
+  background: var(--fill);
+  color: var(--label);
   font-size: 0.9375rem;
   font-weight: 600;
+  letter-spacing: -0.005em;
   text-decoration: none;
-  transition: background-color var(--dur-fast), border-color var(--dur-fast);
+  white-space: nowrap;
+  transition: background-color var(--dur-fast), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast);
 }
 
 .button:hover {
-  background: var(--surface-hover);
+  background: light-dark(rgb(118 118 128 / 0.18), rgb(118 118 128 / 0.32));
+}
+
+.button:active {
+  transform: scale(0.97);
 }
 
 .button--primary {
-  border-color: transparent;
-  background: var(--accent);
+  background: linear-gradient(180deg, light-dark(#2a83ff, #4aa3ff), var(--accent));
   color: var(--on-accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 6px 16px -6px light-dark(rgb(10 108 255 / 0.65), rgb(0 0 0 / 0.6));
 }
 
 .button--primary:hover {
-  background: var(--accent-strong);
+  background: linear-gradient(180deg, light-dark(#3c8dff, #5aaeff), light-dark(#0a62e8, #2f8eff));
+}
+
+.button--glass {
+  background: var(--glass-capsule);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(20px) saturate(1.8);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 0.5px var(--glass-edge), 0 4px 14px -6px rgb(0 0 0 / 0.25);
 }
 
 .button svg {
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
 }
 
 .icon-button {
@@ -135,20 +209,24 @@ button {
   height: 32px;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   background: transparent;
-  color: var(--text-muted);
-  transition: background-color var(--dur-fast), color var(--dur-fast);
+  color: var(--label-2);
+  transition: background-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast);
 }
 
 .icon-button:hover {
-  background: var(--surface-hover);
-  color: var(--text);
+  background: var(--fill);
+  color: var(--label);
+}
+
+.icon-button:active {
+  transform: scale(0.94);
 }
 
 .icon-button svg {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
 }
 
 .icon-button[aria-pressed='true'] {
@@ -156,29 +234,40 @@ button {
   color: var(--accent);
 }
 
-.badge {
+.pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 10px;
+  gap: 5px;
+  padding: 3px 11px;
   border-radius: 999px;
   background: var(--accent-soft);
-  color: var(--accent-strong);
+  color: var(--accent-text);
   font-size: 0.8125rem;
-  font-weight: 600;
-  line-height: 1.6;
+  font-weight: 650;
+  line-height: 1.5;
   text-decoration: none;
   white-space: nowrap;
 }
 
+.pill svg {
+  width: 13px;
+  height: 13px;
+}
+
+.pill--neutral {
+  background: var(--fill);
+  color: var(--label-2);
+}
+
 .chip {
   display: inline-block;
-  padding: 2px 9px;
-  border: 1px solid var(--border);
+  padding: 3px 10px;
   border-radius: 999px;
-  color: var(--text-muted);
+  background: var(--fill-2);
+  color: var(--label-2);
   font-size: 0.8125rem;
-  line-height: 1.6;
+  font-weight: 550;
+  line-height: 1.5;
 }
 
 .chip-list {
@@ -193,16 +282,26 @@ button {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(var(--dock-reserved) + 12px);
-  z-index: 400;
-  max-width: min(92vw, 420px);
-  padding: 10px 16px;
-  border-radius: 12px;
+  top: calc(var(--menubar-h) + 14px);
+  z-index: 600;
+  max-width: min(92vw, 440px);
+  padding: 11px 18px;
+  border-radius: 999px;
   background: var(--glass-strong);
-  -webkit-backdrop-filter: blur(var(--blur));
-  backdrop-filter: blur(var(--blur));
-  box-shadow: var(--shadow-pop);
+  -webkit-backdrop-filter: blur(30px) saturate(1.9);
+  backdrop-filter: blur(30px) saturate(1.9);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 0.5px var(--glass-edge), 0 16px 40px -12px rgb(0 0 0 / 0.4);
+  color: var(--label);
   font-size: 0.875rem;
+  font-weight: 550;
   text-align: center;
   transform: translateX(-50%);
+  animation: toast-in var(--dur) var(--ease-spring);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px) scale(0.96);
+  }
 }

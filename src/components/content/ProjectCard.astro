@@ -12,14 +12,14 @@ const { project } = Astro.props;
 const { data } = project;
 ---
 
-<article class="project-card">
+<article class="card">
   <ProjectVisual title={data.title} slug={data.urlSlug} cover={data.cover} coverAlt={data.coverAlt} />
-  <div class="project-card__body">
-    {data.status && <span class="badge">{PROJECT_STATUSES[data.status]}</span>}
-    <h2 class="project-card__title">
+  <div class="card__body">
+    {data.status && <p class="card__kicker"><span class="pill pill--neutral">{PROJECT_STATUSES[data.status]}</span></p>}
+    <h2 class="card__title">
       <a href={paths.project(data.urlSlug)}>{data.title}</a>
     </h2>
-    {data.summary && <p class="project-card__summary">{data.summary}</p>}
+    {data.summary && <p class="card__text">{data.summary}</p>}
     {
       data.technologies.length > 0 && (
         <ul class="chip-list" aria-label="Kullanılan teknolojiler">

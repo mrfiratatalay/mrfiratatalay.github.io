@@ -1,0 +1,130 @@
+---
+/**
+ * Masaüstü araçları (macOS widget esinli). Saat ve takvim ziyaretçinin yerel
+ * saatini gösterir; JavaScript kapalıyken bu ikisi gizlenir.
+ */
+import type { BlogPost } from '../../lib/content/collections.ts';
+import { formatDate } from '../../lib/content/dates.ts';
+import { paths } from '../../lib/content/urls.ts';
+import AppIcon from '../icons/AppIcon.tsx';
+
+interface Props {
+  posts: BlogPost[];
+  noteCount: number;
+  collectionCount: number;
+  projectCount: number;
+}
+
+const { posts, noteCount, collectionCount, projectCount } = Astro.props;
+const numbers = Array.from({ length: 12 }, (_, index) => {
+  const value = index + 1;
+  const angle = (value * 30 * Math.PI) / 180;
+  return { value, x: 60 + Math.sin(angle) * 45, y: 60 - Math.cos(angle) * 45 };
+});
+---
+
+<aside class="widgets" aria-label="Araçlar">
+  <div class="widget widget--small widget--clock js-only" data-widget-clock>
+    <svg class="clock" viewBox="0 0 120 120" role="img" aria-label="Saat">
+      <circle class="clock__face" cx="60" cy="60" r="58"></circle>
+      {
+        numbers.map((number) => (
+          <text class="clock__number" x={number.x} y={number.y}>
+            {number.value}
+          </text>
+        ))
+      }
+      <text class="clock__city" x="60" y="80" data-clock-city>YRL</text>
+      <line class="clock__hand clock__hand--hour" x1="60" y1="60" x2="60" y2="33"></line>
+      <line class="clock__hand clock__hand--minute" x1="60" y1="60" x2="60" y2="18"></line>
+      <circle class="clock__pin" cx="60" cy="60" r="3.4"></circle>
+    </svg>
+  </div>
+
+  <div class="widget widget--small widget--calendar js-only" data-widget-calendar>
+    <p class="calendar__weekday" data-calendar-weekday></p>
+    <p class="calendar__day" data-calendar-day></p>
+    <p class="calendar__month" data-calendar-month></p>
+  </div>
+
+  {
+    posts.length > 0 && (
+      <section class="widget widget--wide widget--latest" aria-labelledby="arac-son-yazilar">
+        <div class="widget__head">
+          <AppIcon name="blog" />
+          <h2 class="widget__title" id="arac-son-yazilar">
+            Son yazılar
+          </h2>
+          <a href={paths.blog}>Tümü</a>
+        </div>
+        <ul class="widget-list">
+          {posts.map((post) => (
+            <li>
+              <a href={paths.blogPost(post.data.urlSlug)}>
+                <span class="widget-list__title">{post.data.title}</span>
+                <span class="widget-list__meta">{formatDate(post.data.publishedAt)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <a class="widget widget--small widget--stat" href={paths.notes}>
+    <span class="widget__head">
+      <AppIcon name="notes" />
+      <span class="widget__title">Notlar</span>
+    </span>
+    <span class="stat__value">{noteCount}</span>
+    <span class="stat__label">not · {collectionCount} koleksiyon</span>
+  </a>
+
+  <a class="widget widget--small widget--stat" href={paths.projects}>
+    <span class="widget__head">
+      <AppIcon name="projects" />
+      <span class="widget__title">Projeler</span>
+    </span>
+    <span class="stat__value">{projectCount}</span>
+    <span class="stat__label">proje</span>
+  </a>
+</aside>
+
+<script>
+  // Saat ve takvim ziyaretçinin yerel saatini gösterir; dakikada bir güncellenir.
+  const clock = document.querySelector<SVGSVGElement>('[data-widget-clock] .clock');
+  const city = document.querySelector<SVGTextElement>('[data-clock-city]');
+  const weekday = document.querySelector<HTMLElement>('[data-calendar-weekday]');
+  const day = document.querySelector<HTMLElement>('[data-calendar-day]');
+  const month = document.querySelector<HTMLElement>('[data-calendar-month]');
+  const timeLabel = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  const weekdayLabel = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' });
+  const monthLabel = new Intl.DateTimeFormat('tr-TR', { month: 'long', year: 'numeric' });
+
+  const zone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
+  const place = zone.split('/').pop()?.replace(/_/g, ' ');
+  if (city && place) {
+    const name = place === 'Istanbul' ? 'İstanbul' : place;
+    city.textContent = name.slice(0, 3).toLocaleUpperCase('tr');
+  }
+
+  let timer = 0;
+  function update() {
+    window.clearTimeout(timer);
+    if (document.hidden) return;
+    const now = new Date();
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    if (clock) {
+      clock.style.setProperty('--minute', `${minutes * 6}deg`);
+      clock.style.setProperty('--hour', `${minutes * 0.5}deg`);
+      clock.setAttribute('aria-label', `Saat ${timeLabel.format(now)}`);
+      clock.setAttribute('data-ready', '');
+    }
+    if (weekday) weekday.textContent = weekdayLabel.format(now).toLocaleUpperCase('tr');
+    if (day) day.textContent = String(now.getDate());
+    if (month) month.textContent = monthLabel.format(now);
+    timer = window.setTimeout(update, 60_000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 50);
+  }
+  update();
+  document.addEventListener('visibilitychange', update);
+</script>

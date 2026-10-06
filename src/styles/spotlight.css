@@ -1,0 +1,241 @@
+/*
+ * Spotlight tarzı arama: yüzen cam arama alanı ve altında cam sonuç paneli.
+ */
+.spotlight {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: clamp(56px, 16vh, 150px) 14px 24px;
+  border: 0;
+  background: transparent;
+  color: var(--label);
+  overflow-y: auto;
+}
+
+.spotlight[open] {
+  display: block;
+}
+
+.spotlight::backdrop {
+  background: rgb(0 0 0 / 0.12);
+}
+
+.spotlight__inner {
+  display: grid;
+  gap: 10px;
+  width: min(720px, 100%);
+  margin: 0 auto;
+  animation: spotlight-in 260ms var(--ease-spring);
+}
+
+@keyframes spotlight-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+}
+
+.spotlight__field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 64px;
+  padding: 0 12px 0 20px;
+  border-radius: 32px;
+  background: var(--glass-strong);
+}
+
+.spotlight__field > svg {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  color: var(--label-2);
+}
+
+.spotlight__input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--label);
+  font-size: 22px;
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  outline: none;
+}
+
+.spotlight__input::placeholder {
+  color: var(--label-3);
+}
+
+.spotlight__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.spotlight__esc {
+  flex: none;
+  min-width: 44px;
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--label-2);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.spotlight__panel {
+  max-height: min(60vh, 560px);
+  padding: 8px;
+  border-radius: 28px;
+  background: var(--glass-strong);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.search-status {
+  margin: 6px 12px;
+  color: var(--label-2);
+  font-size: 13px;
+}
+
+.search-group + .search-group {
+  margin-top: 6px;
+}
+
+.search-group__title {
+  margin: 8px 12px 4px;
+  color: var(--label-3);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.search-results {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-result a {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1px 12px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  color: var(--label);
+  text-decoration: none;
+  outline: none;
+}
+
+.search-result .app-icon {
+  --size: 36px;
+  grid-row: span 2;
+  border-radius: 9px;
+}
+
+.search-result__title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-result__excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--label-2);
+  font-size: 13px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.search-result__excerpt mark {
+  border-radius: 3px;
+  background: light-dark(rgb(255 214 10 / 0.55), rgb(255 214 10 / 0.3));
+  color: inherit;
+}
+
+.search-result a:hover {
+  background: var(--fill-2);
+}
+
+.search-result a:focus-visible {
+  background: var(--accent);
+  color: #fff;
+}
+
+.search-result a:focus-visible .search-result__excerpt {
+  color: rgb(255 255 255 / 0.88);
+}
+
+.search-result a:focus-visible mark {
+  background: rgb(255 255 255 / 0.28);
+}
+
+.search-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 12px 10px;
+}
+
+.search-more {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 4px;
+}
+
+/* Arama sayfasında (pencere içinde) panel cam değil, sade görünür. */
+.search-page .spotlight__field,
+.search-page .spotlight__panel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.search-page .spotlight__field {
+  background: var(--card-raised);
+  box-shadow: inset 0 0 0 0.5px var(--separator-strong), 0 1px 2px rgb(0 0 0 / 0.04);
+}
+
+.search-page .spotlight__panel {
+  max-height: none;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.search-page .spotlight__field::after,
+.search-page .spotlight__panel::after {
+  display: none;
+}
+
+@media (max-width: 599.98px) {
+  .spotlight {
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+
+  .spotlight__field {
+    height: 56px;
+  }
+
+  .spotlight__input {
+    font-size: 18px;
+  }
+
+  .spotlight__panel {
+    max-height: calc(100dvh - 120px);
+  }
+}

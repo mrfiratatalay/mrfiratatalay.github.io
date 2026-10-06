@@ -1,8 +1,8 @@
 ---
 import { render } from 'astro:content';
-import { ExternalLink } from 'lucide-react';
-import ArticleMeta from '../../../components/content/ArticleMeta.astro';
+import { CodeXml, ExternalLink } from 'lucide-react';
 import Breadcrumbs from '../../../components/content/Breadcrumbs.astro';
+import Byline from '../../../components/content/Byline.astro';
 import Pager from '../../../components/content/Pager.astro';
 import SeriesBanner from '../../../components/content/SeriesBanner.astro';
 import Toc from '../../../components/content/Toc.astro';
@@ -57,8 +57,10 @@ const jsonLd = {
   title={note.title}
   description={description}
   section="notes"
-  windowTitle="Öğrenme Notları"
+  windowTitle={sourceLabel}
   icon="notes"
+  backHref={paths.noteSource(note.sourceId)}
+  backLabel={sourceLabel}
   headings={headings}
   type="article"
   publishedTime={note.publishedAt}
@@ -77,13 +79,13 @@ const jsonLd = {
     {series && <SeriesBanner context={series} />}
     <header class="article-header">
       <p class="article-kicker" data-pagefind-ignore>
-        {label && <span class="badge">{label}</span>}
-        <span>Öğrenme notu · {sourceLabel}</span>
+        {label && <span class="pill">{label}</span>}
+        <span>Öğrenme notu</span>
       </p>
       <h1 class="article-title">{note.title}</h1>
       {/* İçe aktarılan notun açıklaması ilk paragrafından çıkarıldığı için tekrar gösterilmez. */}
       {note.description && note.sourceId === LOCAL_NOTE_SOURCE_ID && <p class="article-lead">{note.description}</p>}
-      <ArticleMeta publishedAt={note.publishedAt} updatedAt={note.updatedAt} minutes={note.readingMinutes} folder={note.folder || undefined} />
+      <Byline publishedAt={note.publishedAt} updatedAt={note.updatedAt} minutes={note.readingMinutes} folder={note.folder || undefined} />
     </header>
     <Toc headings={headings} variant="inline" />
     <div class="prose">
@@ -92,10 +94,13 @@ const jsonLd = {
     {
       note.source && (
         <p class="source-note" data-pagefind-ignore>
-          Bu not <strong>{note.source.repository}</strong> reposundan alınmıştır.{' '}
-          <a href={note.source.url} rel="noopener">
-            Kaynak dosyayı GitHub'da görüntüle <ExternalLink aria-hidden="true" size={14} />
-          </a>
+          <span class="app-icon app-icon--link-github" style="--size: 32px; border-radius: 9px;" aria-hidden="true"><CodeXml /></span>
+          <span>
+            Bu not <strong>{note.source.repository}</strong> reposundan alınmıştır.{' '}
+            <a href={note.source.url} rel="noopener">
+              Kaynak dosyayı GitHub'da görüntüle <ExternalLink aria-hidden="true" size={13} />
+            </a>
+          </span>
         </p>
       )
     }

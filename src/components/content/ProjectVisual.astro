@@ -16,13 +16,13 @@ interface Props {
 const { title, slug, cover, coverAlt, eager = false } = Astro.props;
 
 const TINTS = [
-  'linear-gradient(140deg, #3b82f6, #1e3a8a)',
-  'linear-gradient(140deg, #8b5cf6, #4c1d95)',
-  'linear-gradient(140deg, #14b8a6, #115e59)',
-  'linear-gradient(140deg, #f97316, #9a3412)',
-  'linear-gradient(140deg, #ec4899, #9d174d)',
-  'linear-gradient(140deg, #22c55e, #166534)',
-  'linear-gradient(140deg, #0ea5e9, #075985)',
+  'linear-gradient(140deg, #7fd3ff 0%, #2f8fff 50%, #1d4fd6 100%)',
+  'linear-gradient(140deg, #c3b3ff 0%, #8b6cff 50%, #5b3fd6 100%)',
+  'linear-gradient(140deg, #8ef0d8 0%, #22c3a6 50%, #0f7f8c 100%)',
+  'linear-gradient(140deg, #ffcf8a 0%, #ff8f2e 50%, #e0480f 100%)',
+  'linear-gradient(140deg, #ffa6c4 0%, #ff4f8b 50%, #c2185b 100%)',
+  'linear-gradient(140deg, #9ef0a8 0%, #34c759 50%, #1a7f37 100%)',
+  'linear-gradient(140deg, #a5b4ff 0%, #5e6bff 50%, #3730a3 100%)',
 ];
 // FNV-1a: aynı proje her zaman aynı rengi alır, renkler projelere dengeli dağılır.
 let hash = 0x811c9dc5;
@@ -36,20 +36,15 @@ const mark = (words.length > 1 ? (words[0]?.charAt(0) ?? '') + (words[1]?.charAt
 const size = await publicImageSize(cover);
 ---
 
-<div class="project-visual" style={`--project-tint: ${tint}`}>
+<div class="card__media" style={`--tint: ${tint}`}>
   {
     cover ? (
-      <img
-        src={cover}
-        alt={coverAlt ?? ''}
-        width={size?.width}
-        height={size?.height}
-        loading={eager ? 'eager' : 'lazy'}
-        decoding="async"
-      />
+      <img src={cover} alt={coverAlt ?? ''} width={size?.width} height={size?.height} loading={eager ? 'eager' : 'lazy'} decoding="async" />
     ) : (
-      <span class="project-visual__mark" aria-hidden="true">
-        {mark}
+      <span class="card__art" aria-hidden="true">
+        <span class="card__tile">
+          <span class="card__mark">{mark}</span>
+        </span>
       </span>
     )
   }

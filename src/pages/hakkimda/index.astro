@@ -1,5 +1,5 @@
 ---
-import { Download, GraduationCap, Languages, Mail, MapPin } from 'lucide-react';
+import { Download, GraduationCap, Languages, Mail, MapPin, Sparkles } from 'lucide-react';
 import Window from '../../components/desktop/Window.astro';
 import LinkIcon from '../../components/icons/LinkIcon.tsx';
 import DesktopLayout from '../../layouts/DesktopLayout.astro';
@@ -34,69 +34,71 @@ const jsonLd = {
   imageAlt={profile.avatarAlt}
   jsonLd={jsonLd}
 >
-  <Window id="main" variant="main" title="Hakkımda" icon="about" closeHref="/">
+  <Window id="main" variant="main" title="Hakkımda" icon="about" section="about" closeHref="/" backHref="/" backLabel="Masaüstü">
     <div class="article">
-      <div class="profile-head">
+      <div class="profile-card">
         {
           profile.avatar ? (
-            <img class="avatar" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="108" height="108" />
+            <img class="avatar-xl" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="128" height="128" />
           ) : (
-            <span class="avatar avatar--initials" aria-hidden="true">
+            <span class="avatar-xl avatar-initials" aria-hidden="true">
               {initials(profile.name)}
             </span>
           )
         }
-        <div>
-          <h1 class="page-title">{profile.name}</h1>
-          <p class="page-lead">{profile.title}</p>
+        <h1 class="profile-card__name">{profile.name}</h1>
+        <p class="profile-card__title">{profile.title}</p>
+        {
+          profile.location && (
+            <p class="profile-card__location">
+              <MapPin aria-hidden="true" />
+              {profile.location}
+            </p>
+          )
+        }
+        <ul class="quick-actions" aria-label="Hızlı bağlantılar">
           {
-            profile.location && (
-              <p class="muted" style="margin: 6px 0 0; display: flex; align-items: center; gap: 6px;">
-                <MapPin aria-hidden="true" size={16} />
-                {profile.location}
-              </p>
+            profile.email && (
+              <li>
+                <a class="quick-action quick-action--primary" href={`mailto:${profile.email}`}>
+                  <span class="quick-action__icon">
+                    <Mail aria-hidden="true" />
+                  </span>
+                  E-posta
+                </a>
+              </li>
             )
           }
-        </div>
-      </div>
-
-      <div class="prose">
-        {paragraphs.map((text) => <p>{text}</p>)}
-      </div>
-
-      <div class="action-row">
-        {
-          profile.email && (
-            <a class="button button--primary" href={`mailto:${profile.email}`}>
-              <Mail aria-hidden="true" />
-              E-posta gönder
-            </a>
-          )
-        }
-        {
-          profile.cv && (
-            <a class="button" href={profile.cv} download>
-              <Download aria-hidden="true" />
-              CV'yi indir
-            </a>
-          )
-        }
-      </div>
-
-      {
-        profile.links.length > 0 && (
-          <ul class="link-list" aria-label="Bağlantılar">
-            {profile.links.map((link) => (
+          {
+            profile.links.map((link) => (
               <li>
-                <a class="button" href={link.url} rel="me noopener">
-                  <LinkIcon kind={link.kind} />
+                <a class="quick-action" href={link.url} rel="me noopener">
+                  <span class="quick-action__icon">
+                    <LinkIcon kind={link.kind} />
+                  </span>
                   {link.label}
                 </a>
               </li>
-            ))}
-          </ul>
-        )
-      }
+            ))
+          }
+          {
+            profile.cv && (
+              <li>
+                <a class="quick-action" href={profile.cv} download>
+                  <span class="quick-action__icon">
+                    <Download aria-hidden="true" />
+                  </span>
+                  CV
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+
+      <div class="bio">
+        {paragraphs.map((text) => <p>{text}</p>)}
+      </div>
 
       {
         profile.experience.length > 0 && (
@@ -104,11 +106,11 @@ const jsonLd = {
             <h2 class="section-title" id="deneyim">
               Deneyim
             </h2>
-            <ol class="timeline">
+            <ol class="group timeline">
               {profile.experience.map((item) => (
                 <li>
                   <h3>
-                    {item.role} · {item.organization}
+                    {item.role} <span class="org">· {item.organization}</span>
                   </h3>
                   {item.period && <span class="period">{item.period}</span>}
                   {item.description && <p>{item.description}</p>}
@@ -129,7 +131,7 @@ const jsonLd = {
               {profile.education.map((item) => (
                 <div>
                   <dt>
-                    <GraduationCap aria-hidden="true" size={14} /> Eğitim
+                    <GraduationCap aria-hidden="true" /> Eğitim
                   </dt>
                   <dd>
                     <strong>{item.school}</strong>
@@ -142,7 +144,7 @@ const jsonLd = {
               {profile.languages.length > 0 && (
                 <div>
                   <dt>
-                    <Languages aria-hidden="true" size={14} /> Diller
+                    <Languages aria-hidden="true" /> Diller
                   </dt>
                   <dd>{profile.languages.join(', ')}</dd>
                 </div>
@@ -158,16 +160,21 @@ const jsonLd = {
             <h2 class="section-title" id="yetenekler">
               Yetenekler
             </h2>
-            {profile.skills.map((group) => (
-              <div style="margin-bottom: 14px;">
-                <h3 style="margin: 0 0 8px; font-size: 15px;">{group.group}</h3>
-                <ul class="chip-list">
-                  {group.items.map((skill) => (
-                    <li class="chip">{skill}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <div class="facts">
+              {profile.skills.map((group) => (
+                <div class="skill-group" style="padding: 16px 18px; border-radius: 18px; background: var(--card-bg); box-shadow: var(--shadow-card);">
+                  <h3 style="display: flex; align-items: center; gap: 7px;">
+                    <Sparkles aria-hidden="true" size={14} color="var(--accent)" />
+                    {group.group}
+                  </h3>
+                  <ul class="chip-list">
+                    {group.items.map((skill) => (
+                      <li class="chip">{skill}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </section>
         )
       }

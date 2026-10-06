@@ -1,0 +1,51 @@
+---
+/**
+ * İlk ziyarette sağ üstten gelen kısa yardım bildirimi. İçerik okumayı engellemez;
+ * kapatılınca bu tarayıcıda bir daha gösterilmez.
+ */
+import { X } from 'lucide-react';
+import { initials, profile } from '../../lib/content/site-data.ts';
+import AppIcon from '../icons/AppIcon.tsx';
+---
+
+<div class="notification glass glass-edge" data-notification role="status">
+  <button type="button" class="notification__close" data-notification-close aria-label="Bildirimi kapat">
+    <X aria-hidden="true" strokeWidth={2.6} />
+  </button>
+  <AppIcon name="monogram" text={initials(profile.name)} />
+  <div>
+    <p class="notification__title">
+      {profile.name}
+      <span class="notification__time">şimdi</span>
+    </p>
+    <p class="notification__text">Hoş geldin! Bir klasöre veya dock'taki bir simgeye tıklayarak içerikleri açabilirsin.</p>
+  </div>
+</div>
+
+<script>
+  const notification = document.querySelector<HTMLElement>('[data-notification]');
+  const KEY = 'bildirim-kapatildi';
+
+  function hide(remember: 'local' | 'session') {
+    if (!notification || notification.hasAttribute('data-closing')) return;
+    try {
+      (remember === 'local' ? localStorage : sessionStorage).setItem(KEY, '1');
+    } catch {
+      // Hatırlanamazsa bildirim bir sonraki ziyarette tekrar görünür.
+    }
+    notification.setAttribute('data-closing', '');
+    notification.addEventListener('animationend', () => notification.remove(), { once: true });
+    window.setTimeout(() => notification.remove(), 600);
+  }
+
+  if (notification) {
+    notification.querySelector('[data-notification-close]')?.addEventListener('click', () => hide('local'));
+    window.setTimeout(() => hide('session'), 14_000);
+  }
+</script>
+
+<style>
+  :global(html[data-hint-dismissed]) .notification {
+    display: none !important;
+  }
+</style>

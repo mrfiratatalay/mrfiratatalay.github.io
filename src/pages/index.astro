@@ -1,13 +1,22 @@
 ---
+import { BriefcaseBusiness } from 'lucide-react';
+import HomeApps from '../components/desktop/HomeApps.astro';
+import WelcomeNotification from '../components/desktop/WelcomeNotification.astro';
+import Widgets from '../components/desktop/Widgets.astro';
 import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
 import DesktopLayout from '../layouts/DesktopLayout.astro';
-import { getPublishedNotes, getPublishedPosts } from '../lib/content/collections.ts';
-import { formatDate } from '../lib/content/dates.ts';
+import { getNoteSources, getPublishedPosts, getPublishedProjects, getPublishedSeries } from '../lib/content/collections.ts';
 import { initials, profile } from '../lib/content/site-data.ts';
 import { paths } from '../lib/content/urls.ts';
 
-const posts = (await getPublishedPosts()).slice(0, 3);
-const notes = (await getPublishedNotes()).slice(0, 3);
+const [posts, sources, projects, series] = await Promise.all([
+  getPublishedPosts(),
+  getNoteSources(),
+  getPublishedProjects(),
+  getPublishedSeries(),
+]);
+const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
 const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
 
 const jsonLd = {
@@ -27,67 +36,58 @@ const jsonLd = {
 ---
 
 <DesktopLayout title={profile.name} description={profile.siteDescription} section="home" home jsonLd={jsonLd}>
-  <Window id="intro" variant="intro" title="Hoş geldin" icon="home">
-    <div class="intro">
-      <div class="intro__head">
+  <Widgets posts={posts.slice(0, 3)} noteCount={noteCount} collectionCount={sources.length} projectCount={projects.length} />
+
+  <Window id="intro" variant="intro" title="Hoş geldin" icon="home" section="home">
+    <div class="welcome">
+      <div class="welcome__hero">
         {
           profile.avatar ? (
-            <img class="avatar avatar--small" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="76" height="76" />
+            <img class="welcome__avatar" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="86" height="86" />
           ) : (
-            <span class="avatar avatar--small avatar--initials" aria-hidden="true">
+            <span class="welcome__avatar avatar-initials" aria-hidden="true">
               {initials(profile.name)}
             </span>
           )
         }
         <div>
-          <h1 class="intro__name">{profile.name}</h1>
-          <p class="intro__title">{profile.title}</p>
+          <h1 class="welcome__name">{profile.name}</h1>
+          <p class="welcome__title"><span class="pill">{profile.title}</span></p>
         </div>
       </div>
-      <p class="intro__bio">{profile.shortBio}</p>
-      <div class="action-row">
-        <a class="button button--primary" href={paths.about}>Hakkımda</a>
-        <a class="button" href={paths.projects}>Projelerim</a>
-        <a class="button" href={paths.blog}>Blog</a>
+      <p class="welcome__bio">{profile.shortBio}</p>
+      <div class="welcome__actions">
+        <a class="button button--primary" href={paths.projects}>
+          <BriefcaseBusiness aria-hidden="true" />
+          Projelerimi gör
+        </a>
+        <a class="button" href={paths.about}>Hakkımda</a>
+        <a class="button" href={paths.contact}>İletişime geç</a>
       </div>
-      {
-        posts.length > 0 && (
-          <section aria-labelledby="son-yazilar">
-            <h2 class="section-title" id="son-yazilar">
-              Son yazılar
-            </h2>
-            <ul class="mini-list">
-              {posts.map((post) => (
-                <li>
-                  <a href={paths.blogPost(post.data.urlSlug)}>
-                    <span>{post.data.title}</span>
-                    <span>{formatDate(post.data.publishedAt)}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
-      {
-        notes.length > 0 && (
-          <section aria-labelledby="notlardan">
-            <h2 class="section-title" id="notlardan">
-              Öğrenme notlarından
-            </h2>
-            <ul class="mini-list">
-              {notes.map((note) => (
-                <li>
-                  <a href={note.url}>
-                    <span>{note.title}</span>
-                    <span>{note.readingMinutes} dk</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )
-      }
+      <ul class="welcome__apps">
+        <li>
+          <a class="welcome-app" href={paths.blog}>
+            <AppIcon name="blog" />
+            <span><strong>Blog</strong><span>{posts.length} yazı</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="welcome-app" href={paths.notes}>
+            <AppIcon name="notes" />
+            <span><strong>Notlar</strong><span>{noteCount} not</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="welcome-app" href={paths.series}>
+            <AppIcon name="series" />
+            <span><strong>Çalışmalar</strong><span>{series.length} seri</span></span>
+          </a>
+        </li>
+      </ul>
+      <p class="muted no-js-only" style="margin: 0;">Bir klasöre tıklayarak içerikleri açabilirsin.</p>
     </div>
   </Window>
+
+  <HomeApps />
+  <WelcomeNotification />
 </DesktopLayout>

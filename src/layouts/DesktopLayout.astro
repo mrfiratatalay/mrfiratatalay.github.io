@@ -13,14 +13,14 @@ import { HOME_SECTION, SECTIONS, type SectionId } from '../lib/site/sections.ts'
 
 type Props = SeoProps & {
   section: SectionId;
-  /** Ana sayfa: klasörler telefonda da görünür ve kısa yardım metni eklenir. */
+  /** Ana sayfa (masaüstü). */
   home?: boolean;
 };
 
 const { section, home = false, ...seo } = Astro.props;
 const pathname = Astro.url.pathname;
 const dockItems: DockItem[] = [
-  { id: HOME_SECTION.id, label: HOME_SECTION.shortLabel, href: HOME_SECTION.href, icon: HOME_SECTION.icon, desktopOnly: true },
+  { id: HOME_SECTION.id, label: HOME_SECTION.label, href: HOME_SECTION.href, icon: HOME_SECTION.icon, desktopOnly: true },
   ...SECTIONS.map((item) => ({ id: item.id, label: item.shortLabel, href: item.href, icon: item.icon })),
 ];
 ---
@@ -30,23 +30,33 @@ const dockItems: DockItem[] = [
   <head>
     <BaseHead {...seo} isHome={home} />
     <script is:inline>
-      // Sayfa çizilmeden önce: tema, okuma modu ve pencere konumu (aynı sekmede hatırlanır).
+      // Sayfa çizilmeden önce: tema, okuma boyutu, bildirim, okuma modu ve pencere konumu.
       (() => {
         const root = document.documentElement;
         root.classList.add('js');
         let theme = null;
         try {
           theme = localStorage.getItem('tema');
+          const scale = Number(localStorage.getItem('okuma-boyutu'));
+          if (scale >= 0.9 && scale <= 1.3) root.style.setProperty('--reading-scale', String(scale));
+          if (localStorage.getItem('bildirim-kapatildi') || sessionStorage.getItem('bildirim-kapatildi')) {
+            root.setAttribute('data-hint-dismissed', '');
+          }
         } catch (error) {}
         if (theme !== 'light' && theme !== 'dark') {
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         root.dataset.theme = theme;
         try {
+          if (document.referrer && new URL(document.referrer).origin === location.origin) {
+            root.setAttribute('data-navigated', '');
+          }
+        } catch (error) {}
+        try {
           if (sessionStorage.getItem('okuma-modu') === '1') root.setAttribute('data-reading', '');
           if (!matchMedia('(min-width: 900px)').matches) return;
           const areaWidth = innerWidth;
-          const areaHeight = innerHeight - 32 - 92;
+          const areaHeight = innerHeight - 34 - 100;
           for (const id of ['main', 'intro']) {
             const raw = sessionStorage.getItem('pencere:' + id);
             if (!raw) continue;
@@ -71,8 +81,7 @@ const dockItems: DockItem[] = [
     <div class="desktop">
       <MenuBar current={section} pathname={pathname} />
       <div class="workspace" data-workspace>
-        {home && <p class="desktop-hint">Bir klasöre tıklayarak içerikleri açabilirsin.</p>}
-        <DesktopIcons current={section} home={home} />
+        <DesktopIcons current={section} />
         <slot />
       </div>
       <div class="dock-bar">
@@ -81,11 +90,13 @@ const dockItems: DockItem[] = [
     </div>
     <SearchDialog client:load />
     <script>
+      import { watchSystemTheme } from '../lib/ui/appearance.ts';
       import { initReadingEnhancements } from '../lib/ui/enhancements.ts';
       import { initDesktop } from '../lib/window-manager/controller.ts';
 
       initDesktop();
       initReadingEnhancements();
+      watchSystemTheme();
     </script>
   </body>
 </html>

@@ -1,18 +1,22 @@
 ---
 import Window from '../../components/desktop/Window.astro';
+import AppIcon from '../../components/icons/AppIcon.tsx';
 import SearchPanel from '../../components/search/SearchPanel.tsx';
 import DesktopLayout from '../../layouts/DesktopLayout.astro';
 import { paths } from '../../lib/content/urls.ts';
 ---
 
 <DesktopLayout title="Arama" description="Blog yazılarında ve öğrenme notlarında ara." section="search" noindex>
-  <Window id="main" variant="main" title="Arama" icon="search" closeHref="/">
+  <Window id="main" variant="main" title="Arama" icon="search" section="search" closeHref="/" backHref="/" backLabel="Masaüstü">
     <div class="article">
-      <header class="page-header">
+      <header class="page-head">
+        <p class="page-head__eyebrow"><AppIcon name="search" /> Spotlight</p>
         <h1 class="page-title">Arama</h1>
         <p class="page-lead">Yayınlanmış blog yazılarında, öğrenme notlarında ve projelerde başlık ve metin içinde arar.</p>
       </header>
-      <SearchPanel client:load syncUrl autoFocus />
+      <div class="search-page">
+        <SearchPanel client:load syncUrl autoFocus />
+      </div>
       <noscript>
         <p class="empty-state">
           Arama için JavaScript gerekiyor. Bu sırada <a href={paths.blog}>blog yazılarına</a> veya
@@ -22,3 +26,10 @@ import { paths } from '../../lib/content/urls.ts';
     </div>
   </Window>
 </DesktopLayout>
+
+<style>
+  .search-page {
+    display: grid;
+    gap: 14px;
+  }
+</style>

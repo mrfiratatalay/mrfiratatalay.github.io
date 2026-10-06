@@ -1,0 +1,53 @@
+---
+import type { BlogPost } from '../../lib/content/collections.ts';
+import { formatDate, isoDate } from '../../lib/content/dates.ts';
+import { publicImageSize } from '../../lib/content/images.ts';
+import { readingMinutes } from '../../lib/content/rules.ts';
+import { categoryLabel } from '../../lib/content/site-data.ts';
+import { paths } from '../../lib/content/urls.ts';
+import CategoryGlyph, { categoryTint } from '../icons/CategoryGlyph.tsx';
+
+interface Props {
+  post: BlogPost;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const { data } = post;
+const size = await publicImageSize(data.cover);
+const label = categoryLabel(data.category);
+---
+
+<article class:list={['card', { 'card--featured': featured }]}>
+  <div class="card__media" style={`--tint: ${categoryTint(data.category)}`}>
+    {
+      data.cover ? (
+        <img
+          src={data.cover}
+          alt={data.coverAlt ?? ''}
+          width={size?.width}
+          height={size?.height}
+          loading={featured ? 'eager' : 'lazy'}
+          decoding="async"
+        />
+      ) : (
+        <span class="card__art" aria-hidden="true">
+          <span class="card__tile card__glyph">
+            <CategoryGlyph category={data.category} />
+          </span>
+        </span>
+      )
+    }
+  </div>
+  <div class="card__body">
+    {label && <p class="card__kicker"><span class="pill">{label}</span></p>}
+    <h2 class="card__title">
+      <a href={paths.blogPost(data.urlSlug)}>{data.title}</a>
+    </h2>
+    {data.description && <p class="card__text">{data.description}</p>}
+    <ul class="card__meta">
+      <li><time datetime={isoDate(data.publishedAt)}>{formatDate(data.publishedAt)}</time></li>
+      <li>{readingMinutes(post.body ?? '')} dk okuma</li>
+    </ul>
+  </div>
+</article>

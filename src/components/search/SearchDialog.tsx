@@ -1,4 +1,3 @@
-import { X } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import { OPEN_SEARCH } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
@@ -6,8 +5,8 @@ import SearchPanel from './SearchPanel.tsx';
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * Gerçek modal arama penceresi (WAI-ARIA modal dialog deseni):
- * odak içeri taşınır, Tab dolaşımı pencere içinde kalır, Escape kapatır ve
+ * Spotlight: gerçek modal arama penceresi (WAI-ARIA modal dialog deseni).
+ * Odak içeri taşınır, Tab dolaşımı pencere içinde kalır, Escape kapatır ve
  * kapanınca odak aramayı açan düğmeye döner.
  */
 export default function SearchDialog() {
@@ -52,26 +51,26 @@ export default function SearchDialog() {
     }
   };
 
+  // Arama alanı ve panel dışındaki boşluğa tıklamak kapatır.
   const onBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === dialogRef.current) close();
+    const target = event.target as HTMLElement;
+    if (target === dialogRef.current || target.classList.contains('spotlight__inner')) close();
   };
 
   return (
     <dialog
       ref={dialogRef}
-      className="search-dialog"
-      aria-labelledby="arama-penceresi-baslik"
+      className="spotlight"
+      aria-label="Spotlight araması"
       onClose={onClose}
       onKeyDown={onKeyDown}
       onClick={onBackdropClick}
     >
-      <div className="search-dialog__head">
-        <h2 id="arama-penceresi-baslik">Sitede ara</h2>
-        <button type="button" className="icon-button" aria-label="Aramayı kapat" onClick={close}>
-          <X aria-hidden="true" />
-        </button>
-      </div>
-      <div className="search-dialog__body">{open && <SearchPanel autoFocus onNavigate={close} />}</div>
+      {open && (
+        <div className="spotlight__inner">
+          <SearchPanel autoFocus onNavigate={close} onClose={close} />
+        </div>
+      )}
     </dialog>
   );
 }

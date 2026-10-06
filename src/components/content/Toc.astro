@@ -14,23 +14,25 @@ const items = tocItems(headings);
 {
   hasToc(headings) &&
     (variant === 'sidebar' ? (
-      <nav class="toc" data-toc aria-label="İçindekiler" data-pagefind-ignore>
-        <p class="toc-title">İçindekiler</p>
-        <ol>
+      <nav class="sidebar-section" data-toc aria-label="Bu sayfada" data-pagefind-ignore>
+        <p class="sidebar-heading">Bu sayfada</p>
+        <ul class="sidebar-list">
           {items.map((heading) => (
-            <li class={`toc__depth-${heading.depth}`}>
-              <a href={`#${heading.slug}`}>{heading.text}</a>
+            <li>
+              <a class={`sidebar-link sidebar-link--toc depth-${heading.depth}`} href={`#${heading.slug}`}>
+                {heading.text}
+              </a>
             </li>
           ))}
-        </ol>
+        </ul>
       </nav>
     ) : (
       <details class="toc-inline" data-pagefind-ignore>
         <summary>İçindekiler ({items.length} başlık)</summary>
-        <nav class="toc" aria-label="İçindekiler (kısa liste)">
+        <nav aria-label="İçindekiler">
           <ol>
             {items.map((heading) => (
-              <li class={`toc__depth-${heading.depth}`}>
+              <li class={`depth-${heading.depth}`}>
                 <a href={`#${heading.slug}`}>{heading.text}</a>
               </li>
             ))}

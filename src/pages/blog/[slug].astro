@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
-import ArticleMeta from '../../components/content/ArticleMeta.astro';
 import Breadcrumbs from '../../components/content/Breadcrumbs.astro';
+import Byline from '../../components/content/Byline.astro';
 import Pager from '../../components/content/Pager.astro';
 import SeriesBanner from '../../components/content/SeriesBanner.astro';
 import Toc from '../../components/content/Toc.astro';
@@ -54,6 +54,8 @@ const jsonLd = {
   section="blog"
   windowTitle="Blog"
   icon="blog"
+  backHref={paths.blog}
+  backLabel="Blog"
   headings={headings}
   type="article"
   publishedTime={data.publishedAt}
@@ -68,12 +70,12 @@ const jsonLd = {
     {series && <SeriesBanner context={series} />}
     <header class="article-header">
       <p class="article-kicker" data-pagefind-ignore>
-        {label && <a class="badge" href={`${paths.blog}?kategori=${data.category}`}>{label}</a>}
+        {label && <a class="pill" href={`${paths.blog}?kategori=${data.category}`}>{label}</a>}
         <span>Makale</span>
       </p>
       <h1 class="article-title">{data.title}</h1>
       {data.description && <p class="article-lead">{data.description}</p>}
-      <ArticleMeta publishedAt={data.publishedAt} updatedAt={data.updatedAt} minutes={readingMinutes(post.body ?? '')} />
+      <Byline publishedAt={data.publishedAt} updatedAt={data.updatedAt} minutes={readingMinutes(post.body ?? '')} />
     </header>
     {
       data.cover && (

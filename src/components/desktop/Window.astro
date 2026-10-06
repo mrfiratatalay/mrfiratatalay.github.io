@@ -1,10 +1,11 @@
 ---
 /**
- * Pencere çerçevesi. İçerik Astro'nun ürettiği HTML olarak kalır; düğmelerin
- * davranışını pencere yöneticisi (src/lib/window-manager) ekler.
+ * Finder esinli pencere: içe gömülü cam kenar çubuğu (Favoriler + sayfaya özel
+ * bölümler), cam kapsül araç çubuğu ve kaydırılan içerik. İçerik Astro'nun
+ * ürettiği HTML olarak kalır; davranışı pencere yöneticisi ekler.
  */
-import { BookOpen, Link2, Minus, Plus, X } from 'lucide-react';
-import type { IconName } from '../../lib/site/sections.ts';
+import { BookOpen, ChevronLeft, ChevronRight, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
+import { SECTIONS, type IconName, type SectionId } from '../../lib/site/sections.ts';
 import SectionIcon from '../icons/SectionIcon.tsx';
 
 interface Props {
@@ -12,74 +13,135 @@ interface Props {
   title: string;
   icon: IconName;
   variant: 'main' | 'intro';
+  /** Kenar çubuğunda vurgulanacak bölüm. */
+  section?: SectionId;
   /** Ana içerik penceresinde kırmızı düğme masaüstüne giden gerçek bir bağlantıdır. */
   closeHref?: string;
   /** Okuma modu ve bağlantı kopyalama düğmeleri. */
   readingTools?: boolean;
-  /** Kenar çubuğunun erişilebilir adı; verilmezse kenar çubuğu çizilmez. */
-  sidebarLabel?: string;
+  /** Telefonda sol üstteki geri düğmesi. */
+  backHref?: string;
+  backLabel?: string;
 }
 
-const { id, title, icon, variant, closeHref, readingTools = false, sidebarLabel } = Astro.props;
-const hasSidebar = Boolean(sidebarLabel) && Astro.slots.has('sidebar');
+const { id, title, icon, variant, section, closeHref, readingTools = false, backHref, backLabel } = Astro.props;
+const showSidebar = variant === 'main';
+const pathname = Astro.url.pathname;
 ---
 
 <div
-  class:list={['window', `window--${variant}`]}
+  class:list={['window', `window--${variant}`, { 'window--no-sidebar': !showSidebar }]}
   data-window-id={id}
   data-window-title={title}
   data-window-icon={icon}
   data-window-main
   tabindex="-1"
 >
-  <div class="window__titlebar" data-window-handle>
-    <div class="window__controls">
-      {
-        closeHref ? (
-          <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label="Pencereyi kapat ve masaüstüne dön">
-            <X aria-hidden="true" strokeWidth={3} />
-          </a>
-        ) : (
-          <button type="button" class="traffic traffic--close" data-window-action="close" aria-label="Pencereyi kapat">
-            <X aria-hidden="true" strokeWidth={3} />
-          </button>
-        )
-      }
-      <button type="button" class="traffic traffic--minimize" data-window-action="minimize" aria-label="Pencereyi küçült">
-        <Minus aria-hidden="true" strokeWidth={3} />
-      </button>
-      <button type="button" class="traffic traffic--zoom" data-window-action="zoom" aria-label="Pencereyi büyüt" aria-pressed="false">
-        <Plus aria-hidden="true" strokeWidth={3} />
-      </button>
-    </div>
-    <p class="window__title">
-      <SectionIcon name={icon} />
-      <span>{title}</span>
-    </p>
-    <div class="window__tools">
-      {
-        readingTools && (
-          <>
-            <button type="button" class="icon-button js-only" data-window-action="reading" aria-pressed="false" aria-label="Okuma modu" title="Okuma modu">
-              <BookOpen aria-hidden="true" />
-            </button>
-            <button type="button" class="icon-button js-only" data-copy-link aria-label="Bağlantıyı kopyala" title="Bağlantıyı kopyala">
-              <Link2 aria-hidden="true" />
-            </button>
-          </>
-        )
-      }
-      <slot name="tools" />
-    </div>
-  </div>
-  <div class="window__frame">
+  <div class="window__controls">
     {
-      hasSidebar && (
-        <aside class="window__sidebar" aria-label={sidebarLabel}>
-          <slot name="sidebar" />
-        </aside>
+      closeHref ? (
+        <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label="Pencereyi kapat ve masaüstüne dön">
+          <X aria-hidden="true" strokeWidth={3} />
+        </a>
+      ) : (
+        <button type="button" class="traffic traffic--close" data-window-action="close" aria-label="Pencereyi kapat">
+          <X aria-hidden="true" strokeWidth={3} />
+        </button>
       )
     }
+    <button type="button" class="traffic traffic--minimize" data-window-action="minimize" aria-label="Pencereyi küçült">
+      <Minus aria-hidden="true" strokeWidth={3} />
+    </button>
+    <button type="button" class="traffic traffic--zoom" data-window-action="zoom" aria-label="Pencereyi büyüt" aria-pressed="false">
+      <Plus aria-hidden="true" strokeWidth={3} />
+    </button>
+  </div>
+
+  {
+    showSidebar && (
+      <aside class="window__sidebar" aria-label="Kenar çubuğu">
+        <div class="window__sidebar-head" data-window-handle />
+        <nav class="sidebar-section" aria-label="Favoriler">
+          <p class="sidebar-heading">Favoriler</p>
+          <ul class="sidebar-list">
+            <li>
+              <a class="sidebar-link" href="/" data-section-link>
+                <House aria-hidden="true" />
+                Masaüstü
+              </a>
+            </li>
+            {SECTIONS.map((item) => (
+              <li>
+                <a
+                  class="sidebar-link"
+                  href={item.href}
+                  data-section-link
+                  aria-current={pathname === item.href ? 'page' : section === item.id ? 'true' : undefined}
+                >
+                  <SectionIcon name={item.icon} />
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <slot name="sidebar" />
+      </aside>
+    )
+  }
+
+  <div class="window__main">
+    <div class="window__toolbar" data-window-handle>
+      {
+        backHref && (
+          <a class="toolbar-back" href={backHref}>
+            <ChevronLeft aria-hidden="true" />
+            <span>{backLabel ?? 'Geri'}</span>
+          </a>
+        )
+      }
+      <div class="toolbar-capsule toolbar-nav js-only">
+        <button type="button" class="icon-button" data-window-action="back" aria-label="Geri git" title="Geri">
+          <ChevronLeft aria-hidden="true" />
+        </button>
+        <button type="button" class="icon-button" data-window-action="forward" aria-label="İleri git" title="İleri">
+          <ChevronRight aria-hidden="true" />
+        </button>
+      </div>
+      <p class="window__title">{title}</p>
+      <div class="toolbar-spacer"></div>
+      {
+        readingTools && (
+          <div class="toolbar-capsule js-only only-desktop">
+            <button type="button" class="icon-button" data-window-action="reading" aria-pressed="false" aria-label="Okuma modu" title="Okuma modu">
+              <BookOpen aria-hidden="true" />
+            </button>
+            <button type="button" class="icon-button" data-copy-link aria-label="Bağlantıyı kopyala" title="Bağlantıyı kopyala">
+              <Link2 aria-hidden="true" />
+            </button>
+          </div>
+        )
+      }
+      <div class="toolbar-capsule js-only only-compact">
+        {
+          readingTools && (
+            <button type="button" class="icon-button" data-copy-link aria-label="Bağlantıyı kopyala">
+              <Link2 aria-hidden="true" />
+            </button>
+          )
+        }
+        <button type="button" class="icon-button" data-action="theme-toggle" aria-label="Açık veya koyu temaya geç">
+          <SunMoon aria-hidden="true" />
+        </button>
+        <button type="button" class="icon-button" data-open-search aria-haspopup="dialog" aria-label="Sitede ara">
+          <Search aria-hidden="true" />
+        </button>
+      </div>
+      <button type="button" class="toolbar-search js-only only-desktop" data-open-search aria-haspopup="dialog" aria-label="Sitede ara">
+        <Search aria-hidden="true" />
+        <span>Ara</span>
+      </button>
+    </div>
     <main id="icerik" class="window__content" tabindex="-1">
       <div class="window__inner">
         <slot />
@@ -90,7 +152,23 @@ const hasSidebar = Boolean(sidebarLabel) && Astro.slots.has('sidebar');
 </div>
 
 <style>
-  :global(html:not(.js)) .js-only {
-    display: none;
+  .window__sidebar-head {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 46px;
+  }
+
+  @media (min-width: 900px) {
+    .only-compact {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 899.98px) {
+    .only-desktop {
+      display: none !important;
+    }
   }
 </style>

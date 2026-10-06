@@ -1,0 +1,62 @@
+---
+import { CalendarDays, Clock3, FolderOpen, RefreshCw } from 'lucide-react';
+import { formatDate, isoDate } from '../../lib/content/dates.ts';
+import { initials, profile } from '../../lib/content/site-data.ts';
+
+interface Props {
+  publishedAt?: Date | undefined;
+  updatedAt?: Date | undefined;
+  minutes: number;
+  folder?: string | undefined;
+}
+
+// Tarihi bilinmeyen içerikte tarih uydurulmaz; satır hiç gösterilmez.
+const { publishedAt, updatedAt, minutes, folder } = Astro.props;
+---
+
+<div class="byline" data-pagefind-ignore>
+  {
+    profile.avatar ? (
+      <img class="byline__avatar" src={profile.avatar} alt="" width="40" height="40" loading="lazy" />
+    ) : (
+      <span class="byline__avatar avatar-initials" aria-hidden="true" style="font-size: 0.9rem;">
+        {initials(profile.name)}
+      </span>
+    )
+  }
+  <div>
+    <p class="byline__name">{profile.name}</p>
+    <ul class="article-meta">
+      {
+        publishedAt && (
+          <li>
+            <CalendarDays aria-hidden="true" />
+            <time datetime={isoDate(publishedAt)}>{formatDate(publishedAt)}</time>
+          </li>
+        )
+      }
+      {
+        updatedAt && (
+          <li>
+            <RefreshCw aria-hidden="true" />
+            <span>
+              Güncellendi: <time datetime={isoDate(updatedAt)}>{formatDate(updatedAt)}</time>
+            </span>
+          </li>
+        )
+      }
+      <li>
+        <Clock3 aria-hidden="true" />
+        <span>{minutes} dk okuma</span>
+      </li>
+      {
+        folder && (
+          <li>
+            <FolderOpen aria-hidden="true" />
+            <span>{folder}</span>
+          </li>
+        )
+      }
+    </ul>
+  </div>
+</div>

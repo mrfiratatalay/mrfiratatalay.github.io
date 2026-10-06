@@ -9,8 +9,9 @@
  * Telefon ve tablet düzeninde (900 px altı) sürükleme/boyutlandırma yoktur;
  * pencere sayfanın kendisidir.
  */
+import { toggleTheme } from '../ui/appearance.ts';
 import { clampRect, isRect, moveRect, resizeRect, type Rect, type Size } from './bounds.ts';
-import { WINDOW_COMMAND, WINDOWS_CHANGED, type WindowCommand, type WindowSummary } from './events.ts';
+import { openSearch, WINDOW_COMMAND, WINDOWS_CHANGED, type WindowCommand, type WindowSummary } from './events.ts';
 
 const DESKTOP_QUERY = '(min-width: 900px)';
 const STORAGE_PREFIX = 'pencere:';
@@ -285,15 +286,26 @@ function register(el: HTMLElement): ManagedWindow {
 
   el.addEventListener('pointerdown', () => focusWindow(win));
 
-  const titlebar = el.querySelector<HTMLElement>('[data-window-handle]');
-  titlebar?.addEventListener('pointerdown', (event) => {
-    if ((event.target as Element).closest('a, button, input, [data-no-drag]')) return;
-    startPointerAction(win, event, titlebar, (start, dx, dy) => moveRect(start, dx, dy, area()));
-  });
-  titlebar?.addEventListener('dblclick', (event) => {
-    if ((event.target as Element).closest('a, button, input')) return;
-    toggleZoom(win);
-  });
+  for (const handle of el.querySelectorAll<HTMLElement>('[data-window-handle]')) {
+    handle.addEventListener('pointerdown', (event) => {
+      if ((event.target as Element).closest('a, button, input, [data-no-drag]')) return;
+      startPointerAction(win, event, handle, (start, dx, dy) => moveRect(start, dx, dy, area()));
+    });
+    handle.addEventListener('dblclick', (event) => {
+      if ((event.target as Element).closest('a, button, input')) return;
+      toggleZoom(win);
+    });
+  }
+
+  // Kaydırma kenarı efekti: içerik kaydırılınca araç çubuğunun altı bulanıklaşır.
+  const content = el.querySelector<HTMLElement>('.window__content');
+  content?.addEventListener(
+    'scroll',
+    () => {
+      el.toggleAttribute('data-scrolled', content.scrollTop > 4);
+    },
+    { passive: true },
+  );
 
   const resizer = el.querySelector<HTMLElement>('[data-window-resize]');
   resizer?.addEventListener('pointerdown', (event) => {
@@ -317,6 +329,13 @@ function register(el: HTMLElement): ManagedWindow {
     } else if (action === 'reading') {
       event.preventDefault();
       setReadingMode(!document.documentElement.hasAttribute('data-reading'));
+    } else if (action === 'back') {
+      event.preventDefault();
+      if (window.history.length > 1) window.history.back();
+      else window.location.assign('/');
+    } else if (action === 'forward') {
+      event.preventDefault();
+      window.history.forward();
     }
   });
 
@@ -368,6 +387,18 @@ export function initDesktop(): void {
   else window.addEventListener('resize', onResize);
 
   document.addEventListener('click', onSectionLinkClick);
+  document.addEventListener('click', (event) => {
+    const target = (event.target as Element | null)?.closest<HTMLElement>('[data-open-search], [data-action="theme-toggle"]');
+    if (!target) return;
+    event.preventDefault();
+    if (target.hasAttribute('data-open-search')) openSearch(target);
+    else toggleTheme();
+  });
+
+  // Telefonda sayfa kaydırılınca üst gezinme çubuğu cam görünüme geçer.
+  const onPageScroll = () => document.documentElement.toggleAttribute('data-page-scrolled', window.scrollY > 6);
+  window.addEventListener('scroll', onPageScroll, { passive: true });
+  onPageScroll();
   window.addEventListener(WINDOW_COMMAND, (event) => {
     const { id, action } = (event as CustomEvent<WindowCommand>).detail;
     const win = windows.get(id);

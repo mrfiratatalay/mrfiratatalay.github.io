@@ -1,0 +1,54 @@
+---
+import type { NoteSourceInfo } from '../../lib/content/collections.ts';
+import { paths } from '../../lib/content/urls.ts';
+import { folderColor } from '../../lib/site/folder-colors.ts';
+import FolderIcon from '../icons/FolderIcon.astro';
+
+interface Props {
+  sources: NoteSourceInfo[];
+  current?: string;
+}
+
+const { sources, current } = Astro.props;
+---
+
+<nav class="sidebar-section" aria-label="Not koleksiyonları">
+  <p class="sidebar-heading">Koleksiyonlar</p>
+  <ul class="sidebar-list">
+    {
+      sources.map((source, index) => (
+        <li>
+          <a class="sidebar-link sidebar-link--folder" href={paths.noteSource(source.id)} aria-current={source.id === current ? 'page' : undefined}>
+            <FolderIcon color={folderColor(index)} />
+            {source.label}
+            <span class="count">{source.notes.length}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .sidebar-link--folder :global(.folder) {
+    width: 18px;
+    height: 15px;
+    filter: none;
+  }
+
+  .sidebar-link--folder :global(.folder__back) {
+    inset: 2px 0 1px;
+    border-radius: 2px 3px 3px 3px;
+  }
+
+  .sidebar-link--folder :global(.folder__back::before) {
+    top: -2px;
+    height: 4px;
+    border-radius: 2px 3px 0 0;
+  }
+
+  .sidebar-link--folder :global(.folder__front) {
+    inset: 4px 0 0;
+    border-radius: 3px;
+  }
+</style>

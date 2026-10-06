@@ -1,6 +1,7 @@
 ---
 import type { SeriesContext } from '../../lib/content/collections.ts';
 import { paths } from '../../lib/content/urls.ts';
+import AppIcon from '../icons/AppIcon.tsx';
 
 interface Props {
   context: SeriesContext;
@@ -9,7 +10,10 @@ interface Props {
 const { context } = Astro.props;
 ---
 
-<p class="series-context" data-pagefind-ignore>
-  <a href={`${paths.series}#${context.series.id}`}>{context.series.title}</a>
-  serisi · {context.chapterTitle} · {context.position}/{context.total}
-</p>
+<div class="series-context" data-pagefind-ignore>
+  <AppIcon name="series" />
+  <p style="margin: 0;">
+    <a href={`${paths.series}#${context.series.id}`}>{context.series.title}</a>
+    <span>{context.chapterTitle} · Part {context.position} / {context.total}</span>
+  </p>
+</div>

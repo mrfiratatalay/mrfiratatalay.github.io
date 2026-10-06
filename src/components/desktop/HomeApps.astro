@@ -1,0 +1,35 @@
+---
+/** Telefonda ana ekran: bölümler uygulama ikonları olarak görünür. */
+import { SECTIONS } from '../../lib/site/sections.ts';
+import AppIcon from '../icons/AppIcon.tsx';
+---
+
+<nav class="home-apps" aria-label="Uygulamalar">
+  <ul>
+    {
+      SECTIONS.map((section) => (
+        <li>
+          <a class="home-app" href={section.href}>
+            <AppIcon name={section.icon} />
+            <span>{section.shortLabel}</span>
+          </a>
+        </li>
+      ))
+    }
+    <li class="js-only">
+      <button type="button" class="home-app" data-open-search aria-haspopup="dialog">
+        <AppIcon name="search" />
+        <span>Ara</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+<style>
+  .home-app {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+  }
+</style>
