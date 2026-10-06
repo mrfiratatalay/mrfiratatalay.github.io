@@ -1,6 +1,6 @@
 /*
- * Pencereler (Finder esinli): içe gömülü cam kenar çubuğu, cam kapsül araç
- * çubuğu ve kaydırma kenarı bulanıklığı. Konum ve boyutu --<id>-x/y/w/h
+ * Finder esinli pencereler: gümüş araç çubuğu, saydam kenar çubuğu ve
+ * açık içerik yüzeyi. Konum ve boyutu --<id>-x/y/w/h
  * değişkenleriyle pencere yöneticisi belirler (yalnızca 900 px ve üzeri).
  */
 .window {
@@ -270,11 +270,12 @@
     display: flex;
     border-radius: var(--radius-window);
     background: var(--window-bg);
-    -webkit-backdrop-filter: blur(48px) saturate(1.8);
-    backdrop-filter: blur(48px) saturate(1.8);
+    -webkit-backdrop-filter: blur(32px) saturate(1.15);
+    backdrop-filter: blur(32px) saturate(1.15);
     box-shadow: var(--shadow-window-inactive);
     overflow: hidden;
     isolation: isolate;
+    container: finder / inline-size;
     transition: box-shadow var(--dur);
   }
 
@@ -305,8 +306,8 @@
 
   .window__controls {
     position: absolute;
-    top: 16px;
-    left: 18px;
+    top: calc((var(--toolbar-h) - 24px) / 2);
+    left: 16px;
     z-index: 6;
   }
 
@@ -325,20 +326,40 @@
     display: flex;
     flex: none;
     flex-direction: column;
-    width: 232px;
-    margin: 8px 0 8px 8px;
-    padding: 52px 10px 16px;
-    border-radius: var(--radius-panel);
+    width: 216px;
+    padding: calc(var(--toolbar-h) + 14px) 10px 20px;
+    border-right: 1px solid var(--separator);
     background: var(--sidebar-bg);
-    -webkit-backdrop-filter: blur(28px) saturate(1.7);
-    backdrop-filter: blur(28px) saturate(1.7);
-    box-shadow:
-      inset 0 0 0 0.5px var(--glass-rim),
-      inset 0 1px 0 var(--glass-highlight),
-      0 1px 3px rgb(0 0 0 / 0.06);
+    -webkit-backdrop-filter: blur(24px) saturate(1.15);
+    backdrop-filter: blur(24px) saturate(1.15);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
+  }
+
+  .sidebar-heading {
+    margin-bottom: 7px;
+    font-weight: 600;
+  }
+
+  .sidebar-link {
+    min-height: 32px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .sidebar-link[aria-current],
+  .sidebar-link[aria-pressed='true'] {
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .sidebar-link--toc {
+    min-height: 0;
+    font-size: 12.5px;
+    line-height: 1.45;
   }
 
   .window__main {
@@ -347,6 +368,7 @@
     flex: 1;
     flex-direction: column;
     min-width: 0;
+    background: var(--window-solid);
   }
 
   .window__toolbar {
@@ -357,25 +379,85 @@
     z-index: 4;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     height: var(--toolbar-h);
-    padding: 0 14px 0 16px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--separator);
+    background: var(--window-bg);
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
+    backdrop-filter: blur(20px) saturate(1.1);
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
   }
 
-  /* Kaydırma kenarı efekti: içerik kaydırılınca araç çubuğunun altı yumuşakça bulanıklaşır. */
+  .toolbar-capsule {
+    height: 32px;
+    padding: 0;
+    gap: 2px;
+    border-radius: 7px;
+    background: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .toolbar-capsule .icon-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    color: var(--label-2);
+  }
+
+  .toolbar-capsule .icon-button[aria-pressed='true'] {
+    color: var(--accent-text);
+  }
+
+  .toolbar-capsule .icon-button[disabled] {
+    color: var(--label-3);
+    opacity: 0.45;
+  }
+
+  .window__title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .toolbar-search {
+    height: 30px;
+    min-width: 164px;
+    padding: 0 8px;
+    border: 1px solid var(--separator);
+    border-radius: 7px;
+    background: var(--fill-3);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.025);
+    font-size: 12px;
+    transition: background-color var(--dur-fast), border-color var(--dur-fast);
+  }
+
+  .toolbar-search:hover {
+    border-color: var(--separator-strong);
+    background: var(--fill-2);
+  }
+
+  .toolbar-search .shortcut {
+    padding: 1px 3px;
+    background: transparent;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  /* Kaydırıldığında araç çubuğunun sınırını hafif bir gölge belirginleştirir. */
   .window__toolbar::before {
     content: '';
     position: absolute;
-    inset: 0 0 -28px;
+    inset: auto 0 -10px;
+    height: 10px;
     z-index: -1;
-    background: linear-gradient(180deg, var(--window-bg) 25%, transparent);
-    -webkit-backdrop-filter: blur(12px) saturate(1.6);
-    backdrop-filter: blur(12px) saturate(1.6);
-    -webkit-mask: linear-gradient(180deg, #000 45%, transparent);
-    mask: linear-gradient(180deg, #000 45%, transparent);
+    background: linear-gradient(180deg, light-dark(rgb(0 0 0 / 0.035), rgb(0 0 0 / 0.12)), transparent);
     opacity: 0;
     transition: opacity var(--dur);
     pointer-events: none;
@@ -400,7 +482,7 @@
   }
 
   .window__inner {
-    padding: 10px clamp(26px, 4.4vw, 64px) 72px;
+    padding: 24px clamp(26px, 4.4vw, 64px) 64px;
   }
 
   .window__resize {
@@ -421,7 +503,7 @@
   /* Ana içerik penceresi */
   .window--main {
     --default-w: min(1200px, calc(100% - 2 * var(--gutter) - var(--icons-column)));
-    left: var(--main-x, max(var(--gutter), calc((100% - var(--icons-column) - var(--default-w)) / 2)));
+    left: var(--main-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--default-w)) / 2)));
     top: var(--main-y, 8px);
     width: var(--main-w, var(--default-w));
     height: var(--main-h, calc(100% - 20px));
@@ -430,8 +512,8 @@
 
   /* Ana sayfa karşılama penceresi */
   .window--intro {
-    --default-w: min(600px, calc(100% - 2 * var(--gutter) - var(--icons-column)));
-    left: var(--intro-x, max(var(--gutter), calc((100% - var(--icons-column) - var(--default-w)) / 2)));
+    --default-w: min(760px, calc(100% - var(--icons-column) - var(--widgets-column) - 3 * var(--gutter)));
+    left: var(--intro-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--widgets-column) - var(--gutter) - var(--default-w)) / 2)));
     top: var(--intro-y, clamp(14px, 6%, 60px));
     width: var(--intro-w, var(--default-w));
     height: var(--intro-h, auto);
@@ -449,7 +531,8 @@
   }
 
   .window--intro .window__inner {
-    padding-bottom: 34px;
+    padding-top: 24px;
+    padding-bottom: 32px;
   }
 
   .window[data-maximized],
@@ -491,12 +574,30 @@
   .window.is-moving {
     transition: none;
   }
-}
 
-@media (min-width: 1240px) {
-  .window--intro {
-    --default-w: min(620px, calc(100% - 420px - var(--icons-column)));
-    left: var(--intro-x, max(400px, calc((100% - var(--icons-column) - var(--default-w) + 380px) / 2)));
+  /* Daraltılan masaüstü penceresinde kontroller ve başlık erişilebilir kalır. */
+  @container finder (max-width: 740px) {
+    .window__sidebar {
+      display: none;
+    }
+
+    .window__toolbar {
+      gap: 6px;
+      padding-left: 104px;
+      padding-right: 12px;
+    }
+
+    .toolbar-search {
+      justify-content: center;
+      width: 30px;
+      min-width: 30px;
+      padding: 0;
+    }
+
+    .toolbar-search > span,
+    .toolbar-search .shortcut {
+      display: none;
+    }
   }
 }
 

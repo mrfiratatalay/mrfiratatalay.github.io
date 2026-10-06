@@ -27,8 +27,8 @@ interface Props {
   pathname: string;
 }
 
-const MAGNIFY = 0.6;
-const RADIUS = 170;
+const MAGNIFY = 0.38;
+const RADIUS = 145;
 
 /**
  * Dock: bölümlere gerçek bağlantılar verir. Masaüstünde imleç yaklaştıkça

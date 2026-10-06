@@ -6,8 +6,10 @@
 import type { BlogPost, NoteItem } from '../../lib/content/collections.ts';
 import { formatDate } from '../../lib/content/dates.ts';
 import { readingMinutes } from '../../lib/content/rules.ts';
+import { profile } from '../../lib/content/site-data.ts';
 import { localePaths } from '../../lib/content/urls.ts';
 import type { Locale } from '../../lib/i18n/locales.ts';
+import { text } from '../../lib/i18n/text.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
 import AppIcon from '../icons/AppIcon.tsx';
 
@@ -23,6 +25,19 @@ interface Props {
 const { locale, posts, notes = [], noteCount, collectionCount, projectCount } = Astro.props;
 const t = useTranslations(locale).widgets;
 const paths = localePaths(locale);
+const achievementCopy = locale === 'tr' ? {
+  turkcell: 'Trabzon Birinciliği',
+  turkcellDetail: 'All-Star Finalisti · Takım Kaptanı',
+  educonnectDetail: 'Desteklenen bitirme tez projem',
+  viewProject: 'Projeyi incele',
+} : {
+  turkcell: 'Trabzon First Place',
+  turkcellDetail: 'All-Star Finalist · Team Captain',
+  educonnectDetail: 'Funded university capstone project',
+  viewProject: 'View project',
+};
+const turkcellAward = profile.awards?.find((award) => award.icon === 'trophy');
+const educonnectAward = profile.awards?.find((award) => award.icon === 'award');
 const recent = [
   ...posts.map((post) => ({
     title: post.data.title,
@@ -47,6 +62,81 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
 ---
 
 <aside class="widgets" aria-label={t.label}>
+  {
+    turkcellAward && (
+      <a
+        class="widget widget--wide widget--achievement widget--turkcell"
+        href={paths.project('turkcell-skillhub')}
+        aria-label={`${text(turkcellAward.title, locale)} — ${text(turkcellAward.detail, locale)}. ${achievementCopy.viewProject}`}
+      >
+        <span class="achievement__content">
+          <span class="achievement__emblem achievement__emblem--trophy" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <defs>
+                <linearGradient id="achievement-trophy-gold" x1="13" y1="7" x2="34" y2="39" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#ecd5a3" />
+                  <stop offset="0.48" stop-color="#c59c50" />
+                  <stop offset="1" stop-color="#a47732" />
+                </linearGradient>
+              </defs>
+              <path d="M14 11H9v5a8 8 0 0 0 9 8m16-13h5v5a8 8 0 0 1-9 8" stroke="#b38b48" stroke-width="2.5" stroke-linecap="round" />
+              <path d="M14 8h20v9c0 7-4 12-10 12s-10-5-10-12V8Z" fill="url(#achievement-trophy-gold)" stroke="#ae8240" stroke-width="0.8" />
+              <path d="M18 11v6c0 4 1 7 4 9" stroke="#fff5da" stroke-width="2" stroke-linecap="round" opacity="0.65" />
+              <path d="M22 28h4v8h-4zM17 36h14l2 5H15l2-5Z" fill="url(#achievement-trophy-gold)" />
+              <path d="M17 41h14" stroke="#966c2e" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="achievement__text">
+            <span class="achievement__eyebrow">Turkcell Code Night</span>
+            <span class="achievement__title">{achievementCopy.turkcell}</span>
+            <span class="achievement__detail">{achievementCopy.turkcellDetail}</span>
+          </span>
+        </span>
+        <span class="achievement__footer">
+          <span>Spring Boot · React</span>
+          <span class="achievement__link">{achievementCopy.viewProject}<span aria-hidden="true">↗</span></span>
+        </span>
+      </a>
+    )
+  }
+
+  {
+    educonnectAward && (
+      <a
+        class="widget widget--wide widget--achievement widget--educonnect"
+        href={paths.project('educonnect')}
+        aria-label={`${text(educonnectAward.title, locale)} — ${text(educonnectAward.detail, locale)}. ${achievementCopy.educonnectDetail}. ${achievementCopy.viewProject}`}
+      >
+        <span class="achievement__content">
+          <span class="achievement__emblem achievement__emblem--research" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none">
+              <defs>
+                <linearGradient id="achievement-document-silver" x1="12" y1="7" x2="36" y2="42" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#fff" />
+                  <stop offset="1" stop-color="#e1e7ee" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="7" width="28" height="34" rx="3" fill="url(#achievement-document-silver)" stroke="#a5b2c1" stroke-width="1.2" />
+              <path d="M17 15h14M17 20h10M17 25h6" stroke="#8294a8" stroke-width="1.7" stroke-linecap="round" />
+              <path d="m26 32-1 11 5-3 5 3-1-11" fill="#8aa8c8" stroke="#587da6" stroke-width="0.8" />
+              <circle cx="30" cy="30" r="6.5" fill="#6189b3" stroke="#456d99" stroke-width="1" />
+              <path d="m27 30 2 2 4-4" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <span class="achievement__text">
+            <span class="achievement__eyebrow">TÜBİTAK 2209-A</span>
+            <span class="achievement__title">EduConnect</span>
+            <span class="achievement__detail">{achievementCopy.educonnectDetail}</span>
+          </span>
+        </span>
+        <span class="achievement__footer">
+          <span>ASP.NET Core · Docker</span>
+          <span class="achievement__link">{achievementCopy.viewProject}<span aria-hidden="true">↗</span></span>
+        </span>
+      </a>
+    )
+  }
+
   <div class="widget widget--small widget--clock js-only" data-widget-clock>
     <svg class="clock" viewBox="0 0 120 120" role="img" aria-label={t.clock}>
       <circle class="clock__face" cx="60" cy="60" r="58"></circle>
@@ -112,6 +202,143 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
     <span class="stat__label">{t.projectsStat}</span>
   </a>
 </aside>
+
+<style>
+  .widget--achievement {
+    display: flex;
+    min-height: 136px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 14px;
+    border-radius: 20px;
+    padding: 14px 15px 12px;
+    background: light-dark(rgb(250 250 249 / 0.77), rgb(38 40 42 / 0.78));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.12);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.12);
+    color: var(--label);
+    text-decoration: none;
+    transition: background-color var(--dur-fast), transform var(--dur-fast) var(--ease-out);
+  }
+
+  .widget--achievement:hover {
+    background: light-dark(rgb(255 255 255 / 0.9), rgb(49 51 54 / 0.88));
+    transform: translateY(-2px);
+  }
+
+  .widget--achievement:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+  }
+
+  .achievement__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .achievement__emblem {
+    display: grid;
+    width: 44px;
+    height: 52px;
+    flex: 0 0 44px;
+    place-items: center;
+    border-radius: 14px;
+    background: linear-gradient(145deg, light-dark(#fff, #4c4c4b), light-dark(#e9e7e2, #303133));
+    box-shadow: inset 0 1px 0 light-dark(#fff, rgb(255 255 255 / 0.17)), 0 1px 3px rgb(0 0 0 / 0.1);
+  }
+
+  .achievement__emblem svg {
+    width: 39px;
+    height: 39px;
+    filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.1));
+  }
+
+  .achievement__text {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+  }
+
+  .achievement__eyebrow {
+    color: var(--label-2);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.025em;
+    line-height: 1.3;
+  }
+
+  .achievement__title {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.035em;
+    line-height: 1.16;
+  }
+
+  .achievement__detail {
+    color: var(--label-2);
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .achievement__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+    border-top: 1px solid var(--separator);
+    padding-top: 10px;
+    color: var(--label-3);
+    font-size: 10.5px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .achievement__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--accent-text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 1240px) {
+    .widget--achievement {
+      min-height: 146px;
+      padding: 17px 18px 13px;
+      gap: 17px;
+    }
+
+    .achievement__emblem {
+      width: 54px;
+      height: 60px;
+      flex-basis: 54px;
+    }
+
+    .achievement__emblem svg {
+      width: 46px;
+      height: 46px;
+    }
+
+    .achievement__title {
+      font-size: 21px;
+    }
+  }
+
+  @media (max-width: 899px) {
+    .widget--achievement {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .widget--achievement {
+      background: var(--window-solid);
+    }
+  }
+</style>
 
 <script>
   import { pageLocale, strings } from '../../lib/i18n/client.ts';

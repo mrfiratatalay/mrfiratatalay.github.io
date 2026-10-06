@@ -1,7 +1,7 @@
 ---
 /**
- * Finder esinli pencere: içe gömülü cam kenar çubuğu (Favoriler + sayfaya özel
- * bölümler), cam kapsül araç çubuğu ve kaydırılan içerik. İçerik Astro'nun
+ * Finder esinli pencere: kenar çubuğu (Favoriler + sayfaya özel bölümler),
+ * sistem araç çubuğu ve kaydırılan içerik. İçerik Astro'nun
  * ürettiği HTML olarak kalır; davranışı pencere yöneticisi ekler.
  */
 import { BookOpen, ChevronLeft, ChevronRight, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
@@ -174,7 +174,7 @@ const otherPath = alternatePath ?? localizePath(pathname, other);
     top: 0;
     right: 0;
     left: 0;
-    height: 46px;
+    height: var(--toolbar-h);
   }
 
   @media (min-width: 900px) {

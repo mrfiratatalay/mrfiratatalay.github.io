@@ -640,6 +640,134 @@
 
 /* ---------- Masaüstü düzeni (900 px ve üzeri) ---------- */
 @media (min-width: 900px) {
+  .menubar {
+    gap: 8px;
+    padding: 0 12px;
+    border-bottom: 0.5px solid var(--separator);
+    background: light-dark(rgb(246 246 247 / 0.74), rgb(36 36 38 / 0.78));
+    -webkit-backdrop-filter: blur(24px) saturate(1.15);
+    backdrop-filter: blur(24px) saturate(1.15);
+    color: var(--label-on-wallpaper);
+    font-size: 13px;
+    text-shadow: none;
+  }
+
+  .menubar__item {
+    padding: 0 8px;
+    border-radius: 5px;
+  }
+
+  .menubar__item:hover,
+  .menubar__item[aria-expanded='true'],
+  .menubar__item[aria-current] {
+    background: var(--fill);
+    box-shadow: none;
+  }
+
+  .menubar__status:hover,
+  .menubar__status[aria-expanded='true'] {
+    background: var(--fill);
+    box-shadow: none;
+  }
+
+  .menubar__status svg {
+    filter: none;
+  }
+
+  .menubar__logo {
+    background: light-dark(#424247, #e1e1e5);
+    color: light-dark(#ffffff, #29292d);
+    box-shadow: none;
+  }
+
+  .menubar__logo::before {
+    display: none;
+  }
+
+  .desktop-icon {
+    width: 96px;
+    gap: 6px;
+    border-radius: 8px;
+  }
+
+  .desktop-icon:hover {
+    background: light-dark(rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.08));
+  }
+
+  .desktop-icon:focus-visible {
+    outline-color: var(--accent);
+  }
+
+  .desktop-icon__label {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: light-dark(rgb(247 247 247 / 0.34), rgb(30 30 32 / 0.36));
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    backdrop-filter: blur(12px) saturate(1.1);
+    color: var(--label-on-wallpaper);
+    font-size: 12px;
+    font-weight: 500;
+    text-shadow: none;
+  }
+
+  .desktop-icon[aria-current] .desktop-icon__label {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .widget {
+    border-radius: 18px;
+    -webkit-backdrop-filter: blur(24px) saturate(1.15);
+    backdrop-filter: blur(24px) saturate(1.15);
+    box-shadow: inset 0 1px 0 var(--glass-highlight), 0 0 0 0.5px var(--glass-edge),
+      0 8px 24px -10px rgb(0 0 0 / 0.24);
+  }
+
+  .notification {
+    top: calc(var(--menubar-h) + 10px);
+    right: calc(var(--widgets-column) + 2 * var(--gutter));
+    max-width: min(360px, calc(100vw - var(--widgets-column) - var(--icons-column) - 3 * var(--gutter)));
+    border-radius: 16px;
+  }
+
+  body[data-section='home'] .welcome__name {
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    color: var(--label);
+    font-weight: 750;
+  }
+
+  body[data-section='home'] .welcome__title .pill {
+    background: var(--fill);
+    color: var(--label-2);
+  }
+
+  .welcome__actions .button {
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 0.5px var(--separator-strong);
+    font-weight: 550;
+  }
+
+  .welcome__actions .button--primary {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 1px 3px rgb(0 0 0 / 0.12);
+  }
+
+  body[data-section='home'] .welcome-app {
+    padding: 10px;
+    border-radius: 9px;
+    box-shadow: inset 0 0 0 0.5px var(--separator);
+  }
+
+  body[data-section='home'] .welcome-app strong {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  body[data-section='home'] .welcome-app .app-icon {
+    --size: 34px;
+  }
+
   .desktop {
     display: grid;
     grid-template-rows: var(--menubar-h) minmax(0, 1fr) var(--dock-reserved);
@@ -674,7 +802,7 @@
   .desktop-icons {
     position: absolute;
     top: 10px;
-    right: 8px;
+    left: 8px;
     bottom: 10px;
     z-index: 2;
     display: block;
@@ -683,31 +811,60 @@
   .desktop-icons ul {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap-reverse;
+    flex-wrap: nowrap;
     align-content: flex-start;
-    gap: 2px;
+    gap: 10px;
     height: 100%;
   }
 
   html.js .notification {
     display: grid;
   }
-}
 
-@media (min-width: 1240px) {
   .widgets {
     position: absolute;
     top: 16px;
-    left: 22px;
+    right: var(--gutter);
+    bottom: 16px;
     z-index: 2;
     display: grid;
-    grid-template-columns: repeat(2, 164px);
-    gap: 16px;
+    width: var(--widgets-column);
+    padding: 1px 1px 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    grid-auto-rows: min-content;
+    gap: 14px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .widgets::-webkit-scrollbar {
+    display: none;
+  }
+
+  .widgets :is(.widget--clock, .widget--calendar, .widget--latest, .widget--stat) {
+    display: none;
   }
 }
 
-@media (min-width: 1240px) and (max-height: 760px) {
-  .widget--stat {
-    display: none;
+@media (min-width: 1240px) and (min-height: 720px) {
+  .widgets .widget--latest {
+    display: block;
+  }
+}
+
+@media (min-width: 1240px) and (min-height: 900px) {
+  .widgets .widget--clock {
+    display: grid;
+  }
+
+  .widgets .widget--calendar {
+    display: flex;
+  }
+}
+
+@media (min-width: 1240px) and (min-height: 1080px) {
+  .widgets .widget--stat {
+    display: flex;
   }
 }

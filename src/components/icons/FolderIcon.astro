@@ -1,5 +1,5 @@
 ---
-/** macOS tarzı klasör (özgün çizim). Dekoratiftir. */
+/** Finder mavisini, üst sekmeyi ve katmanlı kenarı koruyan özgün klasör. */
 import type { IconName } from '../../lib/site/sections.ts';
 import SectionIcon from './SectionIcon.tsx';
 
@@ -14,5 +14,5 @@ const { icon, color = 'blue', size = 'normal' } = Astro.props;
 
 <span class:list={['folder', `folder--${color}`, { 'folder--large': size === 'large' }]} aria-hidden="true">
   <span class="folder__back"></span>
-  <span class="folder__front">{icon && <SectionIcon name={icon} strokeWidth={2.2} />}</span>
+  <span class="folder__front">{icon && <SectionIcon name={icon} strokeWidth={1.8} />}</span>
 </span>

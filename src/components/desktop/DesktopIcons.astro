@@ -10,12 +10,13 @@ interface Props {
 }
 
 const { locale, current } = Astro.props;
+const desktopSections = sectionsFor(locale).filter((section) => ['projects', 'blog', 'notes'].includes(section.id));
 ---
 
 <nav class="desktop-icons" aria-label={useTranslations(locale).home.desktopFolders}>
   <ul>
     {
-      sectionsFor(locale).map((section) => (
+      desktopSections.map((section) => (
         <li>
           <a class="desktop-icon" href={section.href} data-section-link aria-current={current === section.id ? 'true' : undefined}>
             <FolderIcon icon={section.icon} />
