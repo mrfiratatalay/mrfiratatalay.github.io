@@ -1,38 +1,91 @@
 ---
 /**
- * Proje kapağı. Gerçek ekran görüntüsü yoksa sahte görsel yerine projenin adının
- * baş harflerini taşıyan sade bir renk alanı gösterilir.
+ * Proje kapağı. Gerçek ekran görüntüsü yoksa sahte görsel yerine projenin
+ * ikonunu (veya adının baş harflerini) taşıyan cam bir uygulama karosu gösterilir.
  */
+import {
+  Bot,
+  ChartLine,
+  CodeXml,
+  Database,
+  FileCheck2,
+  Globe,
+  GraduationCap,
+  HardHat,
+  Layers,
+  School,
+  Server,
+  ShieldAlert,
+  ShoppingCart,
+  Smartphone,
+  Sparkles,
+  Trophy,
+} from 'lucide-react';
 import { publicImageSize } from '../../lib/content/images.ts';
+import type { PROJECT_COLORS, PROJECT_ICONS } from '../../lib/content/schemas.ts';
 
 interface Props {
   title: string;
   slug: string;
   cover?: string | undefined;
   coverAlt?: string | undefined;
+  icon?: (typeof PROJECT_ICONS)[number] | undefined;
+  color?: (typeof PROJECT_COLORS)[number] | undefined;
   eager?: boolean;
 }
 
-const { title, slug, cover, coverAlt, eager = false } = Astro.props;
+const { title, slug, cover, coverAlt, icon, color, eager = false } = Astro.props;
 
-const TINTS = [
-  'linear-gradient(140deg, #7fd3ff 0%, #2f8fff 50%, #1d4fd6 100%)',
-  'linear-gradient(140deg, #c3b3ff 0%, #8b6cff 50%, #5b3fd6 100%)',
-  'linear-gradient(140deg, #8ef0d8 0%, #22c3a6 50%, #0f7f8c 100%)',
-  'linear-gradient(140deg, #ffcf8a 0%, #ff8f2e 50%, #e0480f 100%)',
-  'linear-gradient(140deg, #ffa6c4 0%, #ff4f8b 50%, #c2185b 100%)',
-  'linear-gradient(140deg, #9ef0a8 0%, #34c759 50%, #1a7f37 100%)',
-  'linear-gradient(140deg, #a5b4ff 0%, #5e6bff 50%, #3730a3 100%)',
-];
-// FNV-1a: aynı proje her zaman aynı rengi alır, renkler projelere dengeli dağılır.
+const TINTS = {
+  blue: 'linear-gradient(140deg, #7fd3ff 0%, #2f8fff 50%, #1d4fd6 100%)',
+  purple: 'linear-gradient(140deg, #c3b3ff 0%, #8b6cff 50%, #5b3fd6 100%)',
+  teal: 'linear-gradient(140deg, #8ef0d8 0%, #22c3a6 50%, #0f7f8c 100%)',
+  orange: 'linear-gradient(140deg, #ffcf8a 0%, #ff8f2e 50%, #e0480f 100%)',
+  pink: 'linear-gradient(140deg, #ffa6c4 0%, #ff4f8b 50%, #c2185b 100%)',
+  green: 'linear-gradient(140deg, #9ef0a8 0%, #34c759 50%, #1a7f37 100%)',
+  indigo: 'linear-gradient(140deg, #a5b4ff 0%, #5e6bff 50%, #3730a3 100%)',
+  red: 'linear-gradient(140deg, #ffb3a7 0%, #ff5b4f 50%, #c4161c 100%)',
+} as const;
+
+const ICONS = {
+  shield: ShieldAlert,
+  sparkles: Sparkles,
+  graduation: GraduationCap,
+  trophy: Trophy,
+  campus: School,
+  construction: HardHat,
+  document: FileCheck2,
+  server: Server,
+  database: Database,
+  layers: Layers,
+  code: CodeXml,
+  globe: Globe,
+  cart: ShoppingCart,
+  chart: ChartLine,
+  mobile: Smartphone,
+  bot: Bot,
+} as const;
+
+// Renk seçilmemişse FNV-1a ile hesaplanır: aynı proje hep aynı rengi alır.
 let hash = 0x811c9dc5;
 for (const char of slug) {
   hash ^= char.charCodeAt(0);
   hash = Math.imul(hash, 0x01000193) >>> 0;
 }
-const tint = TINTS[hash % TINTS.length];
+const palette = Object.values(TINTS);
+const tint = color ? TINTS[color] : palette[hash % palette.length];
+const Icon = icon ? ICONS[icon] : undefined;
+
+// Baş harfler: iki kelimeden ilk harfler; tek kelimede büyük harfler (ör. FraudCell → FC).
 const words = title.split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word));
-const mark = (words.length > 1 ? (words[0]?.charAt(0) ?? '') + (words[1]?.charAt(0) ?? '') : title.slice(0, 2)).toLocaleUpperCase('tr');
+const capitals = (words[0] ?? '').match(/\p{Lu}/gu) ?? [];
+const mark = (
+  words.length > 1
+    ? (words[0]?.charAt(0) ?? '') + (words[1]?.charAt(0) ?? '')
+    : capitals.length >= 2
+      ? capitals.slice(0, 2).join('')
+      : title.slice(0, 2)
+).toLocaleUpperCase('tr');
 const size = await publicImageSize(cover);
 ---
 
@@ -42,8 +95,8 @@ const size = await publicImageSize(cover);
       <img src={cover} alt={coverAlt ?? ''} width={size?.width} height={size?.height} loading={eager ? 'eager' : 'lazy'} decoding="async" />
     ) : (
       <span class="card__art" aria-hidden="true">
-        <span class="card__tile">
-          <span class="card__mark">{mark}</span>
+        <span class:list={['card__tile', { 'card__glyph': Icon }]}>
+          {Icon ? <Icon strokeWidth={1.8} /> : <span class="card__mark">{mark}</span>}
         </span>
       </span>
     )

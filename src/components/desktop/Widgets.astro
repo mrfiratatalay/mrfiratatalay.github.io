@@ -3,19 +3,42 @@
  * Masaüstü araçları (macOS widget esinli). Saat ve takvim ziyaretçinin yerel
  * saatini gösterir; JavaScript kapalıyken bu ikisi gizlenir.
  */
-import type { BlogPost } from '../../lib/content/collections.ts';
+import type { BlogPost, NoteItem } from '../../lib/content/collections.ts';
 import { formatDate } from '../../lib/content/dates.ts';
-import { paths } from '../../lib/content/urls.ts';
+import { readingMinutes } from '../../lib/content/rules.ts';
+import { localePaths } from '../../lib/content/urls.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import AppIcon from '../icons/AppIcon.tsx';
 
 interface Props {
+  locale: Locale;
   posts: BlogPost[];
+  notes?: NoteItem[];
   noteCount: number;
   collectionCount: number;
   projectCount: number;
 }
 
-const { posts, noteCount, collectionCount, projectCount } = Astro.props;
+const { locale, posts, notes = [], noteCount, collectionCount, projectCount } = Astro.props;
+const t = useTranslations(locale).widgets;
+const paths = localePaths(locale);
+const recent = [
+  ...posts.map((post) => ({
+    title: post.data.title,
+    url: paths.blogPost(post.data.urlSlug),
+    date: post.data.updatedAt ?? post.data.publishedAt,
+    lang: post.data.lang ?? 'tr',
+    metadata: useTranslations(locale).blog.readingTime(readingMinutes(post.body ?? '')),
+  })),
+  ...notes.map((note) => ({
+    title: note.title,
+    url: paths.note(note.sourceId, note.slug),
+    date: note.updatedAt ?? note.publishedAt,
+    lang: note.lang,
+    metadata: useTranslations(locale).blog.readingTime(note.readingMinutes),
+  })),
+].sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0)).slice(0, 3);
 const numbers = Array.from({ length: 12 }, (_, index) => {
   const value = index + 1;
   const angle = (value * 30 * Math.PI) / 180;
@@ -23,9 +46,9 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
 });
 ---
 
-<aside class="widgets" aria-label="Araçlar">
+<aside class="widgets" aria-label={t.label}>
   <div class="widget widget--small widget--clock js-only" data-widget-clock>
-    <svg class="clock" viewBox="0 0 120 120" role="img" aria-label="Saat">
+    <svg class="clock" viewBox="0 0 120 120" role="img" aria-label={t.clock}>
       <circle class="clock__face" cx="60" cy="60" r="58"></circle>
       {
         numbers.map((number) => (
@@ -48,21 +71,21 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
   </div>
 
   {
-    posts.length > 0 && (
+    recent.length > 0 && (
       <section class="widget widget--wide widget--latest" aria-labelledby="arac-son-yazilar">
         <div class="widget__head">
           <AppIcon name="blog" />
           <h2 class="widget__title" id="arac-son-yazilar">
-            Son yazılar
+            {t.latestPosts}
           </h2>
-          <a href={paths.blog}>Tümü</a>
+          <a href={paths.blog}>{t.all}</a>
         </div>
         <ul class="widget-list">
-          {posts.map((post) => (
+          {recent.map((item) => (
             <li>
-              <a href={paths.blogPost(post.data.urlSlug)}>
-                <span class="widget-list__title">{post.data.title}</span>
-                <span class="widget-list__meta">{formatDate(post.data.publishedAt)}</span>
+              <a href={item.url}>
+                <span class="widget-list__title" lang={item.lang}>{item.title}</span>
+                <span class="widget-list__meta">{item.date ? formatDate(item.date, locale) : item.metadata}</span>
               </a>
             </li>
           ))}
@@ -74,38 +97,44 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
   <a class="widget widget--small widget--stat" href={paths.notes}>
     <span class="widget__head">
       <AppIcon name="notes" />
-      <span class="widget__title">Notlar</span>
+      <span class="widget__title">{t.notes}</span>
     </span>
     <span class="stat__value">{noteCount}</span>
-    <span class="stat__label">not · {collectionCount} koleksiyon</span>
+    <span class="stat__label">{t.notesStat(collectionCount)}</span>
   </a>
 
   <a class="widget widget--small widget--stat" href={paths.projects}>
     <span class="widget__head">
       <AppIcon name="projects" />
-      <span class="widget__title">Projeler</span>
+      <span class="widget__title">{t.projects}</span>
     </span>
     <span class="stat__value">{projectCount}</span>
-    <span class="stat__label">proje</span>
+    <span class="stat__label">{t.projectsStat}</span>
   </a>
 </aside>
 
 <script>
+  import { pageLocale, strings } from '../../lib/i18n/client.ts';
+  import { LOCALE_TAGS } from '../../lib/i18n/locales.ts';
+
   // Saat ve takvim ziyaretçinin yerel saatini gösterir; dakikada bir güncellenir.
+  const locale = pageLocale();
+  const tag = LOCALE_TAGS[locale];
+  const t = strings().widgets;
   const clock = document.querySelector<SVGSVGElement>('[data-widget-clock] .clock');
   const city = document.querySelector<SVGTextElement>('[data-clock-city]');
   const weekday = document.querySelector<HTMLElement>('[data-calendar-weekday]');
   const day = document.querySelector<HTMLElement>('[data-calendar-day]');
   const month = document.querySelector<HTMLElement>('[data-calendar-month]');
-  const timeLabel = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' });
-  const weekdayLabel = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' });
-  const monthLabel = new Intl.DateTimeFormat('tr-TR', { month: 'long', year: 'numeric' });
+  const timeLabel = new Intl.DateTimeFormat(tag, { hour: '2-digit', minute: '2-digit' });
+  const weekdayLabel = new Intl.DateTimeFormat(tag, { weekday: 'long' });
+  const monthLabel = new Intl.DateTimeFormat(tag, { month: 'long', year: 'numeric' });
 
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? '';
   const place = zone.split('/').pop()?.replace(/_/g, ' ');
   if (city && place) {
-    const name = place === 'Istanbul' ? 'İstanbul' : place;
-    city.textContent = name.slice(0, 3).toLocaleUpperCase('tr');
+    const name = place === 'Istanbul' && locale === 'tr' ? 'İstanbul' : place;
+    city.textContent = name.slice(0, 3).toLocaleUpperCase(tag);
   }
 
   let timer = 0;
@@ -117,10 +146,10 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
     if (clock) {
       clock.style.setProperty('--minute', `${minutes * 6}deg`);
       clock.style.setProperty('--hour', `${minutes * 0.5}deg`);
-      clock.setAttribute('aria-label', `Saat ${timeLabel.format(now)}`);
+      clock.setAttribute('aria-label', t.clockAt(timeLabel.format(now)));
       clock.setAttribute('data-ready', '');
     }
-    if (weekday) weekday.textContent = weekdayLabel.format(now).toLocaleUpperCase('tr');
+    if (weekday) weekday.textContent = weekdayLabel.format(now).toLocaleUpperCase(tag);
     if (day) day.textContent = String(now.getDate());
     if (month) month.textContent = monthLabel.format(now);
     timer = window.setTimeout(update, 60_000 - (now.getSeconds() * 1000 + now.getMilliseconds()) + 50);

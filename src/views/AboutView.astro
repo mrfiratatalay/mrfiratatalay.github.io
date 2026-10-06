@@ -1,0 +1,329 @@
+---
+/** Hakkımda: profil kartı, tanıtım, deneyim, projeler, beceriler, eğitim ve ödüller (CV'den). */
+import {
+  Award,
+  BriefcaseBusiness,
+  ChevronRight,
+  Download,
+  GraduationCap,
+  Mail,
+  MapPin,
+  PenLine,
+  Phone,
+  Sparkles,
+  Trophy,
+} from 'lucide-react';
+import ProjectVisual from '../components/content/ProjectVisual.astro';
+import Window from '../components/desktop/Window.astro';
+import LinkIcon from '../components/icons/LinkIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getPublishedProjects } from '../lib/content/collections.ts';
+import { initials, profile } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import { LOCALE_TAGS, type Locale } from '../lib/i18n/locales.ts';
+import { list, text } from '../lib/i18n/text.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import '../styles/profile.css';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const projects = await getPublishedProjects();
+const title = text(profile.title, locale);
+const shortBio = text(profile.shortBio, locale);
+const location = text(profile.location, locale);
+const paragraphs = text(profile.bio, locale)
+  .split(/\n\s*\n/)
+  .map((paragraph) => paragraph.trim())
+  .filter(Boolean);
+const AWARD_ICONS = { trophy: Trophy, award: Award, writing: PenLine } as const;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: new URL(paths.about, site).toString(),
+  inLanguage: LOCALE_TAGS[locale],
+  mainEntity: {
+    '@type': 'Person',
+    name: profile.name,
+    jobTitle: title,
+    description: shortBio,
+    ...(profile.email ? { email: profile.email } : {}),
+    ...(profile.phone ? { telephone: profile.phone } : {}),
+    ...(location ? { homeLocation: { '@type': 'Place', name: location } } : {}),
+    ...(profile.avatar ? { image: new URL(profile.avatar, site).toString() } : {}),
+    alumniOf: profile.education.map((item) => ({ '@type': 'EducationalOrganization', name: text(item.school, locale) })),
+    knowsAbout: profile.skills.flatMap((group) => group.items),
+    sameAs: profile.links.map((link) => link.url),
+  },
+};
+---
+
+<DesktopLayout
+  locale={locale}
+  title={t.about.title}
+  description={`${profile.name}: ${shortBio}`}
+  section="about"
+  type="profile"
+  image={profile.avatar}
+  imageAlt={text(profile.avatarAlt, locale)}
+  jsonLd={jsonLd}
+>
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={t.about.title}
+    icon="about"
+    section="about"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+  >
+    <div class="article about">
+      <div class="profile-card">
+        {
+          profile.avatar ? (
+            <img class="avatar-xl" src={profile.avatar} alt={text(profile.avatarAlt, locale)} width="128" height="128" />
+          ) : (
+            <span class="avatar-xl avatar-initials" aria-hidden="true">
+              {initials(profile.name)}
+            </span>
+          )
+        }
+        <h1 class="profile-card__name">{profile.name}</h1>
+        <p class="profile-card__title">{title}</p>
+        {
+          location && (
+            <p class="profile-card__location">
+              <MapPin aria-hidden="true" />
+              {location}
+            </p>
+          )
+        }
+        <div class="profile-card__contact">
+          {profile.email && <a href={`mailto:${profile.email}`}>{profile.email}</a>}
+          {profile.phone && <a href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`}>{profile.phone}</a>}
+        </div>
+        <ul class="quick-actions" aria-label={t.about.quickLinks}>
+          {
+            profile.email && (
+              <li>
+                <a class="quick-action quick-action--primary" href={`mailto:${profile.email}`}>
+                  <span class="quick-action__icon">
+                    <Mail aria-hidden="true" />
+                  </span>
+                  {t.about.email}
+                </a>
+              </li>
+            )
+          }
+          {
+            profile.phone && (
+              <li>
+                <a class="quick-action" href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`}>
+                  <span class="quick-action__icon">
+                    <Phone aria-hidden="true" />
+                  </span>
+                  {t.about.phone}
+                </a>
+              </li>
+            )
+          }
+          {
+            profile.links.map((link) => (
+              <li>
+                <a class="quick-action" href={link.url} rel="me noopener">
+                  <span class="quick-action__icon">
+                    <LinkIcon kind={link.kind} />
+                  </span>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+          {
+            profile.cv && (
+              <li>
+                <a class="quick-action" href={profile.cv} download="Firat-Atalay-CV.pdf">
+                  <span class="quick-action__icon">
+                    <Download aria-hidden="true" />
+                  </span>
+                  {t.about.cv}
+                </a>
+              </li>
+            )
+          }
+        </ul>
+      </div>
+
+      <div class="bio">
+        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+
+      {
+        profile.experience.length > 0 && (
+          <section class="about-section" aria-labelledby="deneyim">
+            <h2 class="section-title" id="deneyim">
+              {t.about.experience}
+            </h2>
+            <ol class="experience">
+              {profile.experience.map((item) => {
+                const meta = [text(item.organization, locale), text(item.location, locale), text(item.period, locale)].filter(Boolean);
+                const highlights = list(item.highlights, locale);
+                return (
+                  <li class="experience__item">
+                    <div class="experience__head">
+                      <span class="experience__icon" aria-hidden="true">
+                        <BriefcaseBusiness />
+                      </span>
+                      <div>
+                        <h3 class="experience__role">{text(item.role, locale)}</h3>
+                        <p class="experience__meta">
+                          <strong>{meta[0]}</strong>
+                          {meta.slice(1).map((part) => (
+                            <span> · {part}</span>
+                          ))}
+                        </p>
+                      </div>
+                    </div>
+                    {highlights.length > 0 && (
+                      <ul class="experience__highlights">
+                        {highlights.map((highlight) => (
+                          <li>{highlight}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        )
+      }
+
+      {
+        projects.length > 0 && (
+          <section class="about-section" aria-labelledby="projeler">
+            <div class="section-head">
+              <h2 class="section-title" id="projeler">
+                {t.about.projects}
+              </h2>
+              <a class="section-head__link" href={paths.projects}>
+                {t.about.allProjects}
+                <ChevronRight aria-hidden="true" />
+              </a>
+            </div>
+            <ul class="group project-rows">
+              {projects.map((project) => {
+                const context = text(project.data.context, locale);
+                const tagline = text(project.data.tagline, locale);
+                return (
+                  <li>
+                    <a class="group__row project-row" href={paths.project(project.data.urlSlug)}>
+                      <span class="project-row__visual">
+                        <ProjectVisual title={project.data.title} slug={project.data.urlSlug} icon={project.data.icon} color={project.data.color} />
+                      </span>
+                      <span class="group__text">
+                        <span class="group__title">{project.data.title}</span>
+                        {tagline && <span class="group__subtitle">{tagline}</span>}
+                        {context && <span class="project-row__context">{context}</span>}
+                      </span>
+                      <ChevronRight className="group__chevron" aria-hidden="true" />
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        profile.skills.length > 0 && (
+          <section class="about-section" aria-labelledby="beceriler">
+            <h2 class="section-title" id="beceriler">
+              {t.about.skills}
+            </h2>
+            <div class="skills-grid">
+              {profile.skills.map((group) => (
+                <div class="skill-group">
+                  <h3>
+                    <Sparkles aria-hidden="true" />
+                    {text(group.group, locale)}
+                  </h3>
+                  <ul class="chip-list">
+                    {group.items.map((skill) => (
+                      <li class="chip">{skill}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        profile.education.length > 0 && (
+          <section class="about-section" aria-labelledby="egitim">
+            <h2 class="section-title" id="egitim">
+              {t.about.education}
+            </h2>
+            <ul class="info-cards">
+              {profile.education.map((item) => {
+                const meta = [text(item.location, locale), text(item.period, locale)].filter(Boolean);
+                return (
+                  <li class="info-card">
+                    <span class="info-card__icon info-card__icon--blue" aria-hidden="true">
+                      <GraduationCap />
+                    </span>
+                    <div>
+                      <h3 class="info-card__title">{text(item.school, locale)}</h3>
+                      {text(item.program, locale) && <p class="info-card__detail">{text(item.program, locale)}</p>}
+                      {meta.length > 0 && <p class="info-card__meta">{meta.join(' · ')}</p>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        profile.awards.length > 0 && (
+          <section class="about-section" aria-labelledby="oduller">
+            <h2 class="section-title" id="oduller">
+              {t.about.awards}
+            </h2>
+            <ul class="info-cards">
+              {profile.awards.map((item) => {
+                const Icon = AWARD_ICONS[item.icon ?? 'award'];
+                const detail = text(item.detail, locale);
+                const description = text(item.description, locale);
+                return (
+                  <li class="info-card">
+                    <span class:list={['info-card__icon', `info-card__icon--${item.icon ?? 'award'}`]} aria-hidden="true">
+                      <Icon />
+                    </span>
+                    <div>
+                      <h3 class="info-card__title">{text(item.title, locale)}</h3>
+                      {detail && <p class="info-card__detail">{detail}</p>}
+                      {description && <p class="info-card__text">{description}</p>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </Window>
+</DesktopLayout>

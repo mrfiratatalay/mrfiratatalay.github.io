@@ -3,9 +3,12 @@
  * fonksiyonları kullanır; böylece taslaklar hiçbir çıktıya karışmaz.
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales.ts';
+import { text } from '../i18n/text.ts';
+import { useTranslations } from '../i18n/ui.ts';
 import { blogPostIssues, findDuplicates, isPublished, localNoteIssues, projectIssues, readingMinutes } from './rules.ts';
 import { categoryIds, readImportedSources, seriesList } from './site-data.ts';
-import { LOCAL_NOTE_SOURCE_ID, contentRefToPath, parseContentPath, paths } from './urls.ts';
+import { LOCAL_NOTE_SOURCE_ID, contentRefToPath, localePaths, parseContentPath, paths } from './urls.ts';
 
 const ctx = { categoryIds };
 
@@ -52,7 +55,10 @@ export interface NoteItem {
   key: string;
   sourceId: string;
   slug: string;
+  /** Türkçe adres; içeriğin dilden bağımsız kimliği olarak da kullanılır. */
   url: string;
+  /** Notun yazıldığı dil. */
+  lang: Locale;
   title: string;
   description?: string;
   category?: string;
@@ -85,6 +91,7 @@ export function getPublishedNotes(): Promise<NoteItem[]> {
           sourceId: LOCAL_NOTE_SOURCE_ID,
           slug: note.data.urlSlug,
           url: paths.note(LOCAL_NOTE_SOURCE_ID, note.data.urlSlug),
+          lang: note.data.lang ?? DEFAULT_LOCALE,
           title: note.data.title,
           tags: note.data.tags,
           folder: '',
@@ -108,6 +115,7 @@ export function getPublishedNotes(): Promise<NoteItem[]> {
           sourceId: note.data.sourceId,
           slug: note.data.noteSlug,
           url: paths.note(note.data.sourceId, note.data.noteSlug),
+          lang: note.data.lang ?? DEFAULT_LOCALE,
           title: note.data.title,
           category: note.data.category,
           tags: note.data.tags,
@@ -145,28 +153,36 @@ export interface NoteSourceInfo {
 }
 
 /** Not koleksiyonları: önce editörden eklenen yeni notlar, sonra bağlı repolar. */
-export async function getNoteSources(): Promise<NoteSourceInfo[]> {
+export async function getNoteSources(locale: Locale = DEFAULT_LOCALE): Promise<NoteSourceInfo[]> {
   const notes = await getPublishedNotes();
+  const t = useTranslations(locale).notes;
   const local: NoteSourceInfo = {
     id: LOCAL_NOTE_SOURCE_ID,
-    label: 'Notlarım',
-    description: 'Sitede yazdığım yeni öğrenme notları.',
+    label: t.localLabel,
+    description: t.localDescription,
     notes: notes.filter((note) => note.sourceId === LOCAL_NOTE_SOURCE_ID),
   };
   const imported = readImportedSources()
     .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
     .map((source) => {
+      const english = locale === 'en';
       const info: NoteSourceInfo = {
         id: source.id,
-        label: source.label,
+        label: (english && source.labelEn) || source.label,
         category: source.category,
         repository: source.repository,
         notes: notes.filter((note) => note.sourceId === source.id),
       };
-      if (source.description) info.description = source.description;
+      const description = (english && source.descriptionEn) || source.description;
+      if (description) info.description = description;
       return info;
     });
   return [local, ...imported].filter((source) => source.notes.length > 0);
+}
+
+/** Notun istenen dildeki adresi. */
+export function noteUrl(note: Pick<NoteItem, 'sourceId' | 'slug'>, locale: Locale): string {
+  return localePaths(locale).note(note.sourceId, note.slug);
 }
 
 export function getPublishedProjects(): Promise<ProjectEntry[]> {
@@ -186,10 +202,15 @@ export function getPublishedProjects(): Promise<ProjectEntry[]> {
   });
 }
 
+export type SeriesPartKind = 'post' | 'note' | 'project';
+
 export interface SeriesPart {
   title: string;
+  /** İstenen dildeki adres. */
   url: string;
-  kind: 'Makale' | 'Not' | 'Proje';
+  /** İçeriğin dilden bağımsız kimliği (Türkçe adresi). */
+  key: string;
+  kind: SeriesPartKind;
 }
 
 export interface ResolvedSeries {
@@ -200,13 +221,13 @@ export interface ResolvedSeries {
 }
 
 /** Seri kayıtlarını yayınlanmış içeriklere bağlar. Çözülemeyen kayıt build'i durdurur. */
-export function getPublishedSeries(): Promise<ResolvedSeries[]> {
-  return memo('series', async () => {
+export function getPublishedSeries(locale: Locale = DEFAULT_LOCALE): Promise<ResolvedSeries[]> {
+  return memo(`series:${locale}`, async () => {
     const [posts, notes, projects] = await Promise.all([getPublishedPosts(), getPublishedNotes(), getPublishedProjects()]);
-    const titles = new Map<string, { title: string; kind: SeriesPart['kind'] }>();
-    for (const post of posts) titles.set(paths.blogPost(post.data.urlSlug), { title: post.data.title, kind: 'Makale' });
-    for (const note of notes) titles.set(note.url, { title: note.title, kind: 'Not' });
-    for (const project of projects) titles.set(paths.project(project.data.urlSlug), { title: project.data.title, kind: 'Proje' });
+    const titles = new Map<string, { title: string; kind: SeriesPartKind }>();
+    for (const post of posts) titles.set(paths.blogPost(post.data.urlSlug), { title: post.data.title, kind: 'post' });
+    for (const note of notes) titles.set(note.url, { title: note.title, kind: 'note' });
+    for (const project of projects) titles.set(paths.project(project.data.urlSlug), { title: project.data.title, kind: 'project' });
 
     const problems: string[] = [];
     const resolved = seriesList
@@ -214,22 +235,23 @@ export function getPublishedSeries(): Promise<ResolvedSeries[]> {
       .map((series) => {
         const item: ResolvedSeries = {
           id: series.id,
-          title: series.title,
+          title: text(series.title, locale),
           chapters: series.chapters.map((chapter) => ({
-            title: chapter.title,
+            title: text(chapter.title, locale),
             parts: chapter.parts.flatMap((part) => {
               const ref = parseContentPath(part.ref);
-              const url = ref ? contentRefToPath(ref) : part.ref;
-              const target = titles.get(url);
-              if (!target) {
-                problems.push(`"${series.title}" serisindeki "${part.ref}" yayınlanmış bir içerik değil.`);
+              const key = ref ? contentRefToPath(ref) : part.ref;
+              const target = titles.get(key);
+              if (!target || !ref) {
+                problems.push(`"${text(series.title, DEFAULT_LOCALE)}" serisindeki "${part.ref}" yayınlanmış bir içerik değil.`);
                 return [];
               }
-              return [{ title: part.title || target.title, url, kind: target.kind }];
+              return [{ title: text(part.title, locale) || target.title, url: contentRefToPath(ref, locale), key, kind: target.kind }];
             }),
           })),
         };
-        if (series.description) item.description = series.description;
+        const description = text(series.description, locale);
+        if (description) item.description = description;
         return item;
       });
     if (problems.length > 0) throw new Error(`Çalışma serilerinde sorun var:\n- ${problems.join('\n- ')}`);
@@ -246,11 +268,14 @@ export interface SeriesContext {
   next?: SeriesPart;
 }
 
-/** İçerik bir serinin parçasıysa önceki/sonraki part bilgisini döndürür. */
-export async function findSeriesContext(url: string): Promise<SeriesContext | null> {
-  for (const series of await getPublishedSeries()) {
+/**
+ * İçerik bir serinin parçasıysa önceki/sonraki part bilgisini döndürür.
+ * `key` içeriğin Türkçe adresidir (ör. /blog/x/); sonuçtaki adresler istenen dildedir.
+ */
+export async function findSeriesContext(key: string, locale: Locale = DEFAULT_LOCALE): Promise<SeriesContext | null> {
+  for (const series of await getPublishedSeries(locale)) {
     const parts = series.chapters.flatMap((chapter) => chapter.parts.map((part) => ({ part, chapter: chapter.title })));
-    const index = parts.findIndex(({ part }) => part.url === url);
+    const index = parts.findIndex(({ part }) => part.key === key);
     if (index === -1) continue;
     const context: SeriesContext = {
       series,

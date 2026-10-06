@@ -13,7 +13,7 @@ import { contentRehypePlugins } from './src/lib/markdown/pipeline.ts';
 const SITE = 'https://mrfiratatalay.github.io';
 
 /** Arama motorlarına bildirilmeyecek yardımcı sayfalar. */
-const SITEMAP_EXCLUDED_PATHS = ['/arama/', '/404/', '/404.html'];
+const SITEMAP_EXCLUDED_PATHS = ['/arama/', '/404/', '/404.html', '/en/search/', '/en/404/'];
 
 export default defineConfig({
   site: SITE,

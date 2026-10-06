@@ -1,0 +1,107 @@
+---
+/** Masaüstü (ana sayfa): araçlar, karşılama penceresi ve telefondaki ana ekran. */
+import { BriefcaseBusiness } from 'lucide-react';
+import HomeApps from '../components/desktop/HomeApps.astro';
+import WelcomeNotification from '../components/desktop/WelcomeNotification.astro';
+import Widgets from '../components/desktop/Widgets.astro';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getNoteSources, getPublishedNotes, getPublishedPosts, getPublishedProjects, getPublishedSeries } from '../lib/content/collections.ts';
+import { initials, profile } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import { LOCALE_TAGS, type Locale } from '../lib/i18n/locales.ts';
+import { text } from '../lib/i18n/text.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const [posts, sources, projects, series, notes] = await Promise.all([
+  getPublishedPosts(),
+  getNoteSources(locale),
+  getPublishedProjects(),
+  getPublishedSeries(locale),
+  getPublishedNotes(),
+]);
+const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const description = text(profile.siteDescription, locale);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: profile.name,
+  url: new URL(paths.home, site).toString(),
+  inLanguage: LOCALE_TAGS[locale],
+  description,
+  author: {
+    '@type': 'Person',
+    name: profile.name,
+    jobTitle: text(profile.title, locale),
+    url: new URL(paths.about, site).toString(),
+    sameAs: profile.links.map((link) => link.url),
+  },
+};
+---
+
+<DesktopLayout locale={locale} title={profile.name} description={description} section="home" home jsonLd={jsonLd}>
+  <Widgets locale={locale} posts={posts.slice(0, 3)} notes={notes.slice(0, 3)} noteCount={noteCount} collectionCount={sources.length} projectCount={projects.length} />
+
+  <Window locale={locale} id="intro" variant="intro" title={t.home.windowTitle} icon="home" section="home">
+    <div class="welcome">
+      <div class="welcome__hero">
+        {
+          profile.avatar ? (
+            <img class="welcome__avatar" src={profile.avatar} alt={text(profile.avatarAlt, locale)} width="86" height="86" />
+          ) : (
+            <span class="welcome__avatar avatar-initials" aria-hidden="true">
+              {initials(profile.name)}
+            </span>
+          )
+        }
+        <div>
+          <h1 class="welcome__name">{profile.name}</h1>
+          <p class="welcome__title"><span class="pill">{text(profile.title, locale)}</span></p>
+        </div>
+      </div>
+      <p class="welcome__bio">{text(profile.shortBio, locale)}</p>
+      <div class="welcome__actions">
+        <a class="button button--primary" href={paths.projects}>
+          <BriefcaseBusiness aria-hidden="true" />
+          {t.home.seeProjects}
+        </a>
+        <a class="button" href={paths.about}>{t.home.about}</a>
+        <a class="button" href={paths.contact}>{t.home.contact}</a>
+      </div>
+      <ul class="welcome__apps">
+        <li>
+          <a class="welcome-app" href={paths.blog}>
+            <AppIcon name="blog" />
+            <span><strong>{t.sections.blog.short}</strong><span>{t.home.posts(posts.length + noteCount)}</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="welcome-app" href={paths.notes}>
+            <AppIcon name="notes" />
+            <span><strong>{t.sections.notes.short}</strong><span>{t.home.notes(noteCount)}</span></span>
+          </a>
+        </li>
+        <li>
+          <a class="welcome-app" href={paths.series}>
+            <AppIcon name="series" />
+            <span><strong>{t.sections.series.short}</strong><span>{t.home.series(series.length)}</span></span>
+          </a>
+        </li>
+      </ul>
+      <p class="muted no-js-only" style="margin: 0;">{t.home.noJsHint}</p>
+    </div>
+  </Window>
+
+  <HomeApps locale={locale} />
+  <WelcomeNotification locale={locale} />
+</DesktopLayout>

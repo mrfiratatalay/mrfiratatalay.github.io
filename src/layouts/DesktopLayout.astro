@@ -9,30 +9,104 @@ import DesktopIcons from '../components/desktop/DesktopIcons.astro';
 import Dock, { type DockItem } from '../components/desktop/Dock.tsx';
 import MenuBar from '../components/desktop/MenuBar.astro';
 import SearchDialog from '../components/search/SearchDialog.tsx';
-import { HOME_SECTION, SECTIONS, type SectionId } from '../lib/site/sections.ts';
+import { localizePath } from '../lib/content/urls.ts';
+import { otherLocale, type Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import { homeSection, sectionsFor, type SectionId } from '../lib/site/sections.ts';
 
 type Props = SeoProps & {
+  locale: Locale;
   section: SectionId;
   /** Ana sayfa (masaüstü). */
   home?: boolean;
+  /** Diğer dildeki karşılık; verilmezse adresten hesaplanır. */
+  alternatePath?: string;
 };
 
-const { section, home = false, ...seo } = Astro.props;
+const { locale, section, home = false, alternatePath, ...seo } = Astro.props;
+const t = useTranslations(locale);
 const pathname = Astro.url.pathname;
+const other = otherLocale(locale);
+const otherPath = alternatePath ?? localizePath(pathname, other);
+const alternates: Partial<Record<Locale, string>> =
+  otherPath !== pathname ? { [locale]: pathname, [other]: otherPath } : { [locale]: pathname };
+const desktop = homeSection(locale);
 const dockItems: DockItem[] = [
-  { id: HOME_SECTION.id, label: HOME_SECTION.label, href: HOME_SECTION.href, icon: HOME_SECTION.icon, desktopOnly: true },
-  ...SECTIONS.map((item) => ({ id: item.id, label: item.shortLabel, href: item.href, icon: item.icon })),
+  { id: desktop.id, label: desktop.label, href: desktop.href, icon: desktop.icon, desktopOnly: true },
+  ...sectionsFor(locale).map((item) => ({ id: item.id, label: item.shortLabel, href: item.href, icon: item.icon })),
 ];
 ---
 
 <!doctype html>
-<html lang="tr">
+<html lang={locale}>
   <head>
-    <BaseHead {...seo} isHome={home} />
+    <BaseHead {...seo} locale={locale} alternates={alternates} isHome={home} />
     <script is:inline>
-      // Sayfa çizilmeden önce: tema, okuma boyutu, bildirim, okuma modu ve pencere konumu.
+      // Sayfa çizilmeden önce: dil, tema, okuma boyutu, bildirim, okuma modu ve pencere konumu.
       (() => {
         const root = document.documentElement;
+        const pageLang = root.lang === 'en' ? 'en' : 'tr';
+        const valid = (value) => value === 'tr' || value === 'en';
+
+        // Dil: kayıtlı tercih (veya ?dil=) varsa o, yoksa cihazın dili. Arama motoru
+        // botları yönlendirilmez; her dilin sayfası kendi adresinde dizine girer.
+        let saved = null;
+        try {
+          const params = new URLSearchParams(location.search);
+          const forced = params.get('dil');
+          if (valid(forced)) {
+            saved = forced;
+            let stored = false;
+            try {
+              localStorage.setItem('dil', forced);
+              stored = true;
+            } catch (error) {
+              try {
+                sessionStorage.setItem('dil', forced);
+                stored = true;
+              } catch (ignored) {}
+            }
+            root.toggleAttribute('data-lang-transient', !stored);
+            if (stored) {
+              params.delete('dil');
+              const query = params.toString();
+              history.replaceState(history.state, '', location.pathname + (query ? '?' + query : '') + location.hash);
+            }
+          } else {
+            try {
+              saved = localStorage.getItem('dil');
+            } catch (error) {}
+            if (!valid(saved)) {
+              try {
+                saved = sessionStorage.getItem('dil');
+              } catch (error) {}
+            }
+          }
+        } catch (error) {}
+        if (!valid(saved)) saved = null;
+        root.dataset.langPref = saved || 'auto';
+        let wanted = saved;
+        if (!wanted) {
+          const list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+          wanted = 'en';
+          for (const item of list) {
+            const code = String(item).slice(0, 2).toLowerCase();
+            if (valid(code)) {
+              wanted = code;
+              break;
+            }
+          }
+        }
+        const bot = /bot|crawl|spider|slurp|lighthouse|headless|preview|facebookexternalhit|embedly/i.test(navigator.userAgent);
+        if (wanted !== pageLang && !bot) {
+          const link = document.querySelector('link[rel="alternate"][hreflang="' + wanted + '"]');
+          if (link) {
+            root.style.visibility = 'hidden';
+            location.replace(new URL(link.href).pathname + location.search + location.hash);
+            return;
+          }
+        }
+
         root.classList.add('js');
         if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) root.setAttribute('data-mac', '');
         let theme = null;
@@ -78,23 +152,25 @@ const dockItems: DockItem[] = [
     </script>
   </head>
   <body data-section={section}>
-    <a class="skip-link" href="#icerik">İçeriğe geç</a>
+    <a class="skip-link" href="#icerik">{t.site.skipToContent}</a>
     <div class="desktop">
-      <MenuBar current={section} pathname={pathname} />
+      <MenuBar locale={locale} current={section} pathname={pathname} alternatePath={alternates[other]} />
       <div class="workspace" data-workspace>
-        <DesktopIcons current={section} />
+        <DesktopIcons locale={locale} current={section} />
         <slot />
       </div>
       <div class="dock-bar">
-        <Dock client:load items={dockItems} current={section} pathname={pathname} />
+        <Dock client:load locale={locale} items={dockItems} current={section} pathname={pathname} />
       </div>
     </div>
-    <SearchDialog client:load />
+    <SearchDialog client:load locale={locale} />
     <script>
+      import { initLanguage } from '../lib/i18n/client.ts';
       import { watchSystemTheme } from '../lib/ui/appearance.ts';
       import { initReadingEnhancements } from '../lib/ui/enhancements.ts';
       import { initDesktop } from '../lib/window-manager/controller.ts';
 
+      initLanguage();
       initDesktop();
       initReadingEnhancements();
       watchSystemTheme();

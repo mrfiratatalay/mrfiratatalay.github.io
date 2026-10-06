@@ -1,19 +1,24 @@
 ---
 import type { NoteSourceInfo } from '../../lib/content/collections.ts';
-import { paths } from '../../lib/content/urls.ts';
+import { localePaths } from '../../lib/content/urls.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import { folderColor } from '../../lib/site/folder-colors.ts';
 import FolderIcon from '../icons/FolderIcon.astro';
 
 interface Props {
+  locale: Locale;
   sources: NoteSourceInfo[];
   current?: string;
 }
 
-const { sources, current } = Astro.props;
+const { locale, sources, current } = Astro.props;
+const t = useTranslations(locale).notes;
+const paths = localePaths(locale);
 ---
 
-<nav class="sidebar-section" aria-label="Not koleksiyonları">
-  <p class="sidebar-heading">Koleksiyonlar</p>
+<nav class="sidebar-section" aria-label={t.collectionsLabel}>
+  <p class="sidebar-heading">{t.collections}</p>
   <ul class="sidebar-list">
     {
       sources.map((source, index) => (

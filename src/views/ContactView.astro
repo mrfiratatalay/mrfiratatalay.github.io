@@ -1,0 +1,98 @@
+---
+import { ChevronRight, Mail, MapPin, Phone } from 'lucide-react';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import LinkIcon from '../components/icons/LinkIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { profile } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { text } from '../lib/i18n/text.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const location = text(profile.location, locale);
+---
+
+<DesktopLayout locale={locale} title={t.contact.title} description={t.contact.description(profile.name)} section="contact">
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={t.contact.title}
+    icon="contact"
+    section="contact"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+  >
+    <div class="article">
+      <header class="page-head">
+        <p class="page-head__eyebrow"><AppIcon name="contact" /> {t.contact.title}</p>
+        <h1 class="page-title">{t.contact.heading}</h1>
+        <p class="page-lead">{t.contact.lead}</p>
+      </header>
+
+      {
+        (profile.email || profile.phone) ? (
+          <ul class="group">
+            {profile.email && (
+              <li>
+                <a class="group__row" href={`mailto:${profile.email}`}>
+                  <span class="app-icon app-icon--contact" aria-hidden="true"><Mail /></span>
+                  <span class="group__text">
+                    <span class="group__title">{t.contact.sendEmail}</span>
+                    <span class="group__subtitle">{profile.email}</span>
+                  </span>
+                  <ChevronRight className="group__chevron" aria-hidden="true" />
+                </a>
+              </li>
+            )}
+            {profile.phone && (
+              <li>
+                <a class="group__row" href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`}>
+                  <span class="app-icon app-icon--contact" aria-hidden="true"><Phone /></span>
+                  <span class="group__text">
+                    <span class="group__title">{t.contact.call}</span>
+                    <span class="group__subtitle">{profile.phone}</span>
+                  </span>
+                  <ChevronRight className="group__chevron" aria-hidden="true" />
+                </a>
+              </li>
+            )}
+          </ul>
+        ) : <p class="empty-state">{t.contact.noEmail}</p>
+      }
+
+      {
+        profile.links.length > 0 && (
+          <section aria-labelledby="hesaplar">
+            <h2 class="section-title" id="hesaplar">{t.contact.accounts}</h2>
+            <ul class="group">
+              {profile.links.map((link) => (
+                <li>
+                  <a class="group__row" href={link.url} rel="me noopener">
+                    <span class={`app-icon app-icon--link-${link.kind}`} aria-hidden="true"><LinkIcon kind={link.kind} /></span>
+                    <span class="group__text">
+                      <span class="group__title">{link.label}</span>
+                      <span class="group__subtitle">{link.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</span>
+                    </span>
+                    <ChevronRight className="group__chevron" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {location && <p class="profile-card__location" style="margin-top: 26px;"><MapPin aria-hidden="true" />{location}</p>}
+    </div>
+  </Window>
+</DesktopLayout>

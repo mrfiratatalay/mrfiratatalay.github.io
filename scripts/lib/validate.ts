@@ -21,6 +21,7 @@ import {
   taxonomySchema,
 } from '../../src/lib/content/schemas.ts';
 import { LOCAL_NOTE_SOURCE_ID, parseContentPath, paths } from '../../src/lib/content/urls.ts';
+import { text } from '../../src/lib/i18n/text.ts';
 import { splitFrontmatter } from './markdown-scan.ts';
 
 export interface ValidationResult {
@@ -222,7 +223,7 @@ export function validateContent(root: string): ValidationResult {
               (ref.kind === 'note' && published.notes.has(`${ref.sourceId}/${ref.slug}`)));
           if (!found) {
             errors.push(
-              `src/data/series.json: "${series.title}" serisindeki "${part.ref}" adresi yayınlanmış bir içeriğe karşılık gelmiyor.`,
+              `src/data/series.json: "${text(series.title, 'tr')}" serisindeki "${part.ref}" adresi yayınlanmış bir içeriğe karşılık gelmiyor.`,
             );
           }
         });

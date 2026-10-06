@@ -1,0 +1,53 @@
+---
+import ProjectCard from '../components/content/ProjectCard.astro';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getPublishedProjects } from '../lib/content/collections.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import '../styles/profile.css';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const projects = await getPublishedProjects();
+---
+
+<DesktopLayout locale={locale} title={t.projects.title} description={t.projects.description} section="projects">
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={t.projects.title}
+    icon="projects"
+    section="projects"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+  >
+    <header class="page-head">
+      <p class="page-head__eyebrow"><AppIcon name="projects" /> {t.projects.title}</p>
+      <h1 class="page-title">{t.projects.heading}</h1>
+      <p class="page-lead">{t.projects.lead}</p>
+    </header>
+    {
+      projects.length > 0 ? (
+        <ul class="card-grid">
+          {projects.map((project) => (
+            <li>
+              <ProjectCard locale={locale} project={project} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty-state">{t.projects.empty}</p>
+      )
+    }
+  </Window>
+</DesktopLayout>

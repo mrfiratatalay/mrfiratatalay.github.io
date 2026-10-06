@@ -1,4 +1,6 @@
-import { paths } from '../content/urls.ts';
+import { localePaths } from '../content/urls.ts';
+import { DEFAULT_LOCALE, type Locale } from '../i18n/locales.ts';
+import { useTranslations } from '../i18n/ui.ts';
 
 /** Masaüstündeki klasörler, dock ve menü çubuğu aynı listeden üretilir. */
 export type SectionId =
@@ -32,17 +34,19 @@ export interface Section {
   icon: IconName;
 }
 
-export const SECTIONS: readonly Section[] = [
-  { id: 'about', label: 'Hakkımda', shortLabel: 'Hakkımda', href: paths.about, icon: 'about' },
-  { id: 'projects', label: 'Projelerim', shortLabel: 'Projeler', href: paths.projects, icon: 'projects' },
-  { id: 'blog', label: 'Blog', shortLabel: 'Blog', href: paths.blog, icon: 'blog' },
-  { id: 'notes', label: 'Öğrenme Notları', shortLabel: 'Notlar', href: paths.notes, icon: 'notes' },
-  { id: 'series', label: 'Çalışmalarım', shortLabel: 'Çalışmalar', href: paths.series, icon: 'series' },
-  { id: 'contact', label: 'İletişim', shortLabel: 'İletişim', href: paths.contact, icon: 'contact' },
-];
+const ORDER = ['about', 'projects', 'blog', 'notes', 'series', 'contact'] as const;
 
-export const HOME_SECTION: Section = { id: 'home', label: 'Masaüstü', shortLabel: 'Masaüstü', href: paths.home, icon: 'home' };
-
-export function sectionById(id: SectionId): Section | undefined {
-  return [HOME_SECTION, ...SECTIONS].find((section) => section.id === id);
+/** Bölümler, istenen dildeki adları ve adresleriyle. */
+export function sectionsFor(locale: Locale): Section[] {
+  const labels = useTranslations(locale).sections;
+  const target = localePaths(locale);
+  return ORDER.map((id) => ({ id, label: labels[id].label, shortLabel: labels[id].short, href: target[id], icon: id }));
 }
+
+export function homeSection(locale: Locale): Section {
+  const label = useTranslations(locale).sections.home;
+  return { id: 'home', label: label.label, shortLabel: label.short, href: localePaths(locale).home, icon: 'home' };
+}
+
+export const SECTIONS: readonly Section[] = sectionsFor(DEFAULT_LOCALE);
+export const HOME_SECTION: Section = homeSection(DEFAULT_LOCALE);

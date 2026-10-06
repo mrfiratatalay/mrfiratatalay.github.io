@@ -14,7 +14,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-import { createGitFetcher, createLocalFetcher } from './lib/fetchers.ts';
+import { createPublishedSourceFetcher, createLocalFetcher } from './lib/fetchers.ts';
 import { ImportError, importNotes } from './lib/importer.ts';
 import { formatReportMarkdown, formatReportText, writeGithubSummary } from './lib/report.ts';
 
@@ -42,7 +42,7 @@ const localRepos = Object.fromEntries(
 );
 
 let configPath = path.join(projectRoot, 'config', 'note-sources.json');
-let fetcher = createGitFetcher();
+let fetcher = createPublishedSourceFetcher(projectRoot);
 let mode = 'production';
 
 if (fixturesMode) {

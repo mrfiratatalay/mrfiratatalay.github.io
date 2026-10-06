@@ -1,26 +1,33 @@
 ---
+import { localePaths } from '../../lib/content/urls.ts';
 import { initials, profile } from '../../lib/content/site-data.ts';
-import { SECTIONS, type SectionId } from '../../lib/site/sections.ts';
+import { otherLocale, type Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+import { sectionsFor, type SectionId } from '../../lib/site/sections.ts';
 import AppIcon from '../icons/AppIcon.tsx';
 import MenuBarStatus from './MenuBarStatus.tsx';
 
 interface Props {
+  locale: Locale;
   current: SectionId;
   pathname: string;
+  /** Sayfanın diğer dildeki adresi (varsa). */
+  alternatePath?: string | undefined;
 }
 
-const { current, pathname } = Astro.props;
+const { locale, current, pathname, alternatePath } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 <header class="menubar">
-  <nav class="menubar__left" aria-label="Ana menü">
-    <a class="menubar__item menubar__brand" href="/" data-section-link aria-label={`${profile.name} — masaüstüne dön`}>
+  <nav class="menubar__left" aria-label={t.menubar.mainMenu}>
+    <a class="menubar__item menubar__brand" href={localePaths(locale).home} data-section-link aria-label={t.menubar.brand(profile.name)}>
       <AppIcon name="monogram" text={initials(profile.name)} className="menubar__logo" />
       <span>{profile.name}</span>
     </a>
     <ul class="menubar__menus">
       {
-        SECTIONS.map((section) => (
+        sectionsFor(locale).map((section) => (
           <li>
             <a
               class="menubar__item"
@@ -35,5 +42,5 @@ const { current, pathname } = Astro.props;
       }
     </ul>
   </nav>
-  <MenuBarStatus client:load />
+  <MenuBarStatus client:load locale={locale} alternatePath={alternatePath} otherLocale={otherLocale(locale)} />
 </header>

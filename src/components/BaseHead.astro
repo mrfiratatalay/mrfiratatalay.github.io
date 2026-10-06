@@ -1,10 +1,13 @@
 ---
 /**
- * Her sayfanın <head> alanı: başlık, açıklama, canonical, paylaşım (Open Graph)
- * ve yapılandırılmış veri. Kullanıcıdan HTML etiketi yazması istenmez.
+ * Her sayfanın <head> alanı: başlık, açıklama, canonical, dil karşılıkları
+ * (hreflang), paylaşım (Open Graph) ve yapılandırılmış veri. Kullanıcıdan HTML
+ * etiketi yazması istenmez.
  */
+import { localePaths } from '../lib/content/urls.ts';
+import { LOCALES, OG_LOCALES, type Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
 import { profile } from '../lib/content/site-data.ts';
-import { paths } from '../lib/content/urls.ts';
 
 export interface SeoProps {
   title: string;
@@ -20,11 +23,20 @@ export interface SeoProps {
   isHome?: boolean;
 }
 
+type Props = SeoProps & {
+  locale: Locale;
+  /** Sayfanın her dildeki adresi; tek dilli sayfalarda boş. */
+  alternates: Partial<Record<Locale, string>>;
+};
+
+const t = useTranslations(Astro.props.locale);
 const {
+  locale,
+  alternates,
   title,
   description,
   image = '/og-default.png',
-  imageAlt = `${profile.name} · Projeler, blog ve öğrenme notları`,
+  imageAlt = `${profile.name} · ${t.site.tagline}`,
   type = 'website',
   publishedTime,
   modifiedTime,
@@ -32,13 +44,19 @@ const {
   noindex = false,
   jsonLd,
   isHome = false,
-} = Astro.props as SeoProps;
+} = Astro.props as Props;
 
 const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const paths = localePaths(locale);
 const canonical = new URL(Astro.url.pathname, site).toString();
-const fullTitle = isHome ? `${profile.name} · Projeler, blog ve öğrenme notları` : `${title} · ${profile.name}`;
+const fullTitle = isHome ? `${profile.name} · ${t.site.tagline}` : `${title} · ${profile.name}`;
 const imageUrl = new URL(image, site).toString();
 const structuredData = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null;
+const alternateLinks = LOCALES.flatMap((code) => {
+  const path = alternates[code];
+  return path ? [{ code, href: new URL(path, site).toString() }] : [];
+});
+const defaultAlternate = alternates.tr ? new URL(alternates.tr, site).toString() : undefined;
 ---
 
 <meta charset="utf-8" />
@@ -46,6 +64,8 @@ const structuredData = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{alternateLinks.length > 1 && alternateLinks.map((link) => <link rel="alternate" hreflang={link.code} href={link.href} />)}
+{alternateLinks.length > 1 && defaultAlternate && <link rel="alternate" hreflang="x-default" href={defaultAlternate} />}
 {noindex && <meta name="robots" content="noindex, follow" />}
 <meta name="author" content={profile.name} />
 <meta name="generator" content={Astro.generator} />
@@ -58,7 +78,8 @@ const structuredData = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') 
 <link rel="sitemap" href="/sitemap-index.xml" />
 
 <meta property="og:type" content={type} />
-<meta property="og:locale" content="tr_TR" />
+<meta property="og:locale" content={OG_LOCALES[locale]} />
+{LOCALES.filter((code) => code !== locale && alternates[code]).map((code) => <meta property="og:locale:alternate" content={OG_LOCALES[code]} />)}
 <meta property="og:site_name" content={profile.name} />
 <meta property="og:title" content={isHome ? fullTitle : title} />
 <meta property="og:description" content={description} />

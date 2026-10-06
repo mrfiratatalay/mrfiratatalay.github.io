@@ -1,0 +1,13 @@
+---
+import NoteSourceView from '../../../../views/NoteSourceView.astro';
+import { getNoteSources, type NoteSourceInfo } from '../../../../lib/content/collections.ts';
+
+export async function getStaticPaths() {
+  const sources = await getNoteSources('en');
+  return sources.map((source, index) => ({ params: { sourceId: source.id }, props: { source, sources, index } }));
+}
+interface Props { source: NoteSourceInfo; sources: NoteSourceInfo[]; index: number }
+const { source, sources, index } = Astro.props;
+---
+
+<NoteSourceView locale="en" source={source} sources={sources} index={index} />

@@ -1,0 +1,20 @@
+---
+import ProjectView from '../../../views/ProjectView.astro';
+import { getPublishedProjects, type ProjectEntry } from '../../../lib/content/collections.ts';
+
+export async function getStaticPaths() {
+  const projects = await getPublishedProjects();
+  return projects.map((project, index) => ({
+    params: { slug: project.data.urlSlug },
+    props: { project, previous: projects[index - 1], next: projects[index + 1] },
+  }));
+}
+
+interface Props {
+  project: ProjectEntry;
+  previous?: ProjectEntry | undefined;
+  next?: ProjectEntry | undefined;
+}
+---
+
+<ProjectView locale="en" {...Astro.props} />

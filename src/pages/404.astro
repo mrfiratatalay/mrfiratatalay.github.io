@@ -1,26 +1,5 @@
 ---
-import { House } from 'lucide-react';
-import Window from '../components/desktop/Window.astro';
-import AppIcon from '../components/icons/AppIcon.tsx';
-import DesktopLayout from '../layouts/DesktopLayout.astro';
-import { paths } from '../lib/content/urls.ts';
+import NotFoundView from '../views/NotFoundView.astro';
 ---
 
-<DesktopLayout title="Sayfa bulunamadı" description="Aradığın sayfa bulunamadı." section="notfound" noindex>
-  <Window id="main" variant="main" title="Bulunamadı" icon="search" closeHref="/" backHref="/" backLabel="Masaüstü">
-    <div class="alert-card" role="alert">
-      <AppIcon name="search" />
-      <h1>Bu sayfa bulunamadı</h1>
-      <p>Adres yanlış yazılmış ya da sayfa taşınmış olabilir. Aşağıdaki bağlantılarla devam edebilirsin.</p>
-      <div class="action-row">
-        <a class="button button--primary" href={paths.home}>
-          <House aria-hidden="true" />
-          Masaüstüne dön
-        </a>
-        <a class="button" href={paths.blog}>Blog</a>
-        <a class="button" href={paths.notes}>Notlar</a>
-        <a class="button" href={paths.search}>Ara</a>
-      </div>
-    </div>
-  </Window>
-</DesktopLayout>
+<NotFoundView locale="tr" />

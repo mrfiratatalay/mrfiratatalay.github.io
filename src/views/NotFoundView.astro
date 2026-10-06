@@ -1,0 +1,50 @@
+---
+import { House } from 'lucide-react';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { localePaths } from '../lib/content/urls.ts';
+import { otherLocale, type Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+---
+
+<DesktopLayout
+  locale={locale}
+  title={t.notFound.title}
+  description={t.notFound.description}
+  section="notfound"
+  alternatePath={localePaths(otherLocale(locale)).notFound}
+  noindex
+>
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={t.notFound.windowTitle}
+    icon="search"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+    alternatePath={localePaths(otherLocale(locale)).notFound}
+  >
+    <div class="alert-card" role="alert">
+      <AppIcon name="search" />
+      <h1>{t.notFound.heading}</h1>
+      <p>{t.notFound.text}</p>
+      <div class="action-row">
+        <a class="button button--primary" href={paths.home}><House aria-hidden="true" />{t.notFound.home}</a>
+        <a class="button" href={paths.blog}>{t.sections.blog.short}</a>
+        <a class="button" href={paths.notes}>{t.sections.notes.short}</a>
+        <a class="button" href={paths.search}>{t.sections.search.short}</a>
+      </div>
+    </div>
+  </Window>
+</DesktopLayout>

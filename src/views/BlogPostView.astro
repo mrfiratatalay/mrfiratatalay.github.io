@@ -1,0 +1,69 @@
+---
+import { render } from 'astro:content';
+import Breadcrumbs from '../components/content/Breadcrumbs.astro';
+import Byline from '../components/content/Byline.astro';
+import Pager from '../components/content/Pager.astro';
+import SeriesBanner from '../components/content/SeriesBanner.astro';
+import Toc from '../components/content/Toc.astro';
+import ReadingLayout from '../layouts/ReadingLayout.astro';
+import { findSeriesContext, getPublishedPosts, type BlogPost } from '../lib/content/collections.ts';
+import { publicImageSize } from '../lib/content/images.ts';
+import { readingMinutes } from '../lib/content/rules.ts';
+import { categoryLabel, profile } from '../lib/content/site-data.ts';
+import { localePaths, paths as defaultPaths } from '../lib/content/urls.ts';
+import { DEFAULT_LOCALE, LOCALE_TAGS, type Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props { locale: Locale; post: BlogPost }
+const { locale, post } = Astro.props;
+const { data } = post;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const contentLang = data.lang ?? DEFAULT_LOCALE;
+const { Content, headings } = await render(post);
+const url = paths.blogPost(data.urlSlug);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const series = await findSeriesContext(defaultPaths.blogPost(data.urlSlug), locale);
+const related = series ? [] : (await getPublishedPosts()).filter((other) => other.id !== post.id && other.data.category === data.category).slice(0, 2);
+const coverSize = await publicImageSize(data.cover);
+const label = categoryLabel(data.category, locale);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: data.description,
+  datePublished: data.publishedAt.toISOString(),
+  ...(data.updatedAt ? { dateModified: data.updatedAt.toISOString() } : {}),
+  ...(data.cover ? { image: new URL(data.cover, site).toString() } : {}),
+  author: { '@type': 'Person', name: profile.name, url: new URL(paths.about, site).toString() },
+  mainEntityOfPage: new URL(url, site).toString(),
+  inLanguage: LOCALE_TAGS[contentLang],
+  ...(data.tags.length ? { keywords: data.tags.join(', ') } : {}),
+};
+---
+
+<ReadingLayout locale={locale} title={data.title} description={data.description ?? ''} section="blog" windowTitle={t.blog.title} icon="blog" backHref={paths.blog} backLabel={t.blog.title} headings={headings} type="article" publishedTime={data.publishedAt} modifiedTime={data.updatedAt} tags={data.tags} image={data.cover} imageAlt={data.coverAlt} jsonLd={jsonLd}>
+  <article class="article" data-pagefind-body data-pagefind-meta="type:post">
+    <Breadcrumbs locale={locale} items={[{ label: t.blog.title, href: paths.blog }, { label: data.title }]} />
+    {series && <SeriesBanner locale={locale} context={series} />}
+    <header class="article-header">
+      <p class="article-kicker" data-pagefind-ignore>{label && <a class="pill" href={`${paths.blog}?kategori=${data.category}`}>{label}</a>}<span>{t.blog.kicker}</span></p>
+      <h1 class="article-title" lang={contentLang}>{data.title}</h1>
+      {data.description && <p class="article-lead" lang={contentLang}>{data.description}</p>}
+      {contentLang !== locale && <p class="content-language-note" data-pagefind-ignore>{t.content.writtenIn[contentLang]}</p>}
+      <Byline locale={locale} publishedAt={data.publishedAt} updatedAt={data.updatedAt} minutes={readingMinutes(post.body ?? '')} />
+    </header>
+    {data.cover && <figure class="article-cover"><img src={data.cover} alt={data.coverAlt ?? ''} width={coverSize?.width} height={coverSize?.height} /></figure>}
+    <Toc locale={locale} headings={headings} variant="inline" />
+    <div class="prose" lang={contentLang}><Content /></div>
+    {series ? (
+      <Pager locale={locale} heading={t.series.pagerHeading(series.series.title)} previous={series.previous} next={series.next} previousLabel={t.series.previous} nextLabel={t.series.next} />
+    ) : (
+      <Pager locale={locale} heading={t.blog.related} previous={related[0] ? { title: related[0].data.title, url: paths.blogPost(related[0].data.urlSlug) } : undefined} next={related[1] ? { title: related[1].data.title, url: paths.blogPost(related[1].data.urlSlug) } : undefined} previousLabel={t.blog.relatedPrevious} nextLabel={t.blog.relatedNext} />
+    )}
+  </article>
+</ReadingLayout>
+
+<style>
+  .content-language-note { margin: 14px 0; color: var(--label-2); font-size: 0.875rem; }
+</style>

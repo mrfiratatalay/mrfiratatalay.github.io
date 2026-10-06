@@ -5,6 +5,8 @@
  * - Taslak (published: false) eksik bilgiyle kaydedilebilir; sayfası üretilmez.
  * - Yayına açılmış içerikte eksik bilgi varsa build durur, önceki canlı sürüm kalır.
  */
+import { DEFAULT_LOCALE } from '../i18n/locales.ts';
+import { text } from '../i18n/text.ts';
 import type { BlogData, LocalNoteData, ProjectData } from './schemas.ts';
 
 export interface RuleContext {
@@ -57,12 +59,13 @@ export function localNoteIssues(data: LocalNoteData, body: string, ctx: RuleCont
 export function projectIssues(data: ProjectData, _body: string): string[] {
   if (!isPublished(data)) return [];
   const issues: string[] = [];
-  if (!data.summary?.trim()) issues.push('Kısa açıklama eksik.');
-  if (data.cover && !data.coverAlt?.trim()) {
+  // İki dilli alanlarda en az bir dilde metin olması yeterlidir; diğer dilde o metin gösterilir.
+  if (!text(data.summary, DEFAULT_LOCALE)) issues.push('Kısa açıklama eksik.');
+  if (data.cover && !text(data.coverAlt, DEFAULT_LOCALE)) {
     issues.push('Kapak görseli var ama görselin açıklaması (alternatif metin) eksik.');
   }
   data.gallery.forEach((item, index) => {
-    if (!item.alt?.trim()) issues.push(`${index + 1}. galeri görselinin açıklaması eksik.`);
+    if (!text(item.alt, DEFAULT_LOCALE)) issues.push(`${index + 1}. galeri görselinin açıklaması eksik.`);
   });
   return issues;
 }

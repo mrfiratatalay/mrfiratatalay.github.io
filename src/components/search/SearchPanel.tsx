@@ -1,13 +1,16 @@
 import { Search } from 'lucide-react';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
-import { paths } from '../../lib/content/urls.ts';
-import { SECTIONS, type IconName } from '../../lib/site/sections.ts';
+import { localePaths } from '../../lib/content/urls.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+import { sectionsFor, type IconName } from '../../lib/site/sections.ts';
 import AppIcon from '../icons/AppIcon.tsx';
 import { search, type SearchHit } from './pagefind.ts';
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
 
 interface Props {
+  locale: Locale;
   autoFocus?: boolean;
   /** Arama sayfasında sorgu adres çubuğundaki ?q= ile eşlenir. */
   syncUrl?: boolean;
@@ -16,11 +19,13 @@ interface Props {
 }
 
 const PAGE_SIZE = 9;
-const TYPE_ICONS: Record<string, IconName> = { Makale: 'blog', Not: 'notes', Proje: 'projects' };
-const GROUP_TITLES: Record<string, string> = { Makale: 'Makaleler', Not: 'Öğrenme notları', Proje: 'Projeler' };
+const TYPE_ICONS: Record<string, IconName> = { post: 'blog', note: 'notes', project: 'projects' };
 
 /** Spotlight tarzı arama: alan, durum, gruplanmış sonuçlar ve öneriler. */
-export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavigate, onClose }: Props) {
+export default function SearchPanel({ locale, autoFocus = false, syncUrl = false, onNavigate, onClose }: Props) {
+  const t = useTranslations(locale).search;
+  const paths = localePaths(locale);
+  const groupTitle = (type: string) => t.groups[type as keyof typeof t.groups] ?? t.groups.page;
   const inputId = useId();
   const statusId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -104,12 +109,10 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
   };
 
   const term = query.trim();
-  let message = 'Blog yazılarında, öğrenme notlarında ve projelerde ara.';
-  if (status === 'loading') message = 'Aranıyor…';
-  if (status === 'ready') {
-    message = total > 0 ? `${total} sonuç bulundu.` : `"${term}" için sonuç bulunamadı. Başka bir kelime deneyebilirsin.`;
-  }
-  if (status === 'error') message = 'Arama şu anda yüklenemedi.';
+  let message = t.idle;
+  if (status === 'loading') message = t.loading;
+  if (status === 'ready') message = total > 0 ? t.results(total) : t.noResults(term);
+  if (status === 'error') message = t.error;
 
   const groups = new Map<string, SearchHit[]>();
   for (const hit of hits) groups.set(hit.type, [...(groups.get(hit.type) ?? []), hit]);
@@ -119,7 +122,7 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
       <div className="spotlight__field glass glass-edge">
         <Search aria-hidden="true" />
         <label className="visually-hidden" htmlFor={inputId}>
-          Aranacak kelime
+          {t.inputLabel}
         </label>
         <input
           ref={inputRef}
@@ -127,7 +130,7 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
           className="spotlight__input"
           type="search"
           value={query}
-          placeholder="Spotlight'ta ara"
+          placeholder={t.placeholder}
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="search"
@@ -139,7 +142,7 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
           }}
         />
         {onClose && (
-          <button type="button" className="spotlight__esc" onClick={onClose} aria-label="Aramayı kapat">
+          <button type="button" className="spotlight__esc" onClick={onClose} aria-label={t.close}>
             esc
           </button>
         )}
@@ -151,10 +154,10 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
         </p>
 
         {status === 'idle' && (
-          <section className="search-group" aria-label="Önerilenler">
-            <p className="search-group__title">Önerilenler</p>
+          <section className="search-group" aria-label={t.suggestions}>
+            <p className="search-group__title">{t.suggestions}</p>
             <ul className="search-results">
-              {SECTIONS.map((section) => (
+              {sectionsFor(locale).map((section) => (
                 <li className="search-result" key={section.id}>
                   <a href={section.href} onClick={() => onNavigate?.()}>
                     <AppIcon name={section.icon} />
@@ -170,21 +173,21 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
         {status === 'error' && (
           <div className="search-actions">
             <button type="button" className="button button--primary" onClick={() => setAttempt((value) => value + 1)}>
-              Tekrar dene
+              {t.retry}
             </button>
             <a className="button" href={paths.blog}>
-              Blog yazıları
+              {t.posts}
             </a>
             <a className="button" href={paths.notes}>
-              Öğrenme notları
+              {t.notes}
             </a>
           </div>
         )}
 
         {status !== 'error' &&
           [...groups].map(([type, items]) => (
-            <section className="search-group" key={type} aria-label={GROUP_TITLES[type] ?? type}>
-              <p className="search-group__title">{GROUP_TITLES[type] ?? type}</p>
+            <section className="search-group" key={type} aria-label={groupTitle(type)}>
+              <p className="search-group__title">{groupTitle(type)}</p>
               <ul className="search-results">
                 {items.map((hit) => (
                   <li className="search-result" key={hit.url}>
@@ -203,7 +206,7 @@ export default function SearchPanel({ autoFocus = false, syncUrl = false, onNavi
         {status === 'ready' && total > hits.length && (
           <div className="search-more">
             <button type="button" className="button" onClick={() => setLimit((value) => value + PAGE_SIZE)}>
-              Daha fazla sonuç göster
+              {t.more}
             </button>
           </div>
         )}

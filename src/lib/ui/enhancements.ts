@@ -4,6 +4,8 @@
  * JavaScript kapalıyken içerik yine tamamen okunabilir.
  */
 
+import { strings } from '../i18n/client.ts';
+
 let toastTimer = 0;
 
 export function showToast(message: string): void {
@@ -51,9 +53,15 @@ export async function copyText(text: string): Promise<boolean> {
 }
 
 function initCodeCopy(): void {
+  const t = strings().runtime;
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy-code]')) {
     button.hidden = false;
-    button.setAttribute('aria-label', 'Kodu panoya kopyala');
+    button.textContent = t.copy;
+    button.setAttribute('aria-label', t.copyCode);
+  }
+  // Yazının içindeki tablo bölgeleri arayüz dilinde adlandırılır.
+  for (const region of document.querySelectorAll<HTMLElement>('.table-scroll[role="region"]')) {
+    region.setAttribute('aria-label', t.tableRegion);
   }
   document.addEventListener('click', async (event) => {
     const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-copy-code]');
@@ -62,10 +70,10 @@ function initCodeCopy(): void {
     if (!code) return;
     const ok = await copyText(code.innerText.replace(/\n$/, ''));
     button.dataset.state = ok ? 'copied' : 'error';
-    button.textContent = ok ? 'Kopyalandı' : 'Kopyalanamadı';
-    if (!ok) showToast('Tarayıcı panoya erişime izin vermedi. Kodu seçip kendin kopyalayabilirsin.');
+    button.textContent = ok ? t.copied : t.copyFailed;
+    if (!ok) showToast(t.clipboardDenied);
     window.setTimeout(() => {
-      button.textContent = 'Kopyala';
+      button.textContent = t.copy;
       delete button.dataset.state;
     }, 2200);
   });
@@ -78,7 +86,8 @@ function initCopyLink(): void {
     const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href;
     const url = canonical ?? window.location.href;
     const ok = await copyText(url);
-    showToast(ok ? 'Yazının bağlantısı kopyalandı.' : `Kopyalanamadı. Bağlantı: ${url}`);
+    const t = strings().runtime;
+    showToast(ok ? t.linkCopied : t.linkCopyFailed(url));
   });
 }
 

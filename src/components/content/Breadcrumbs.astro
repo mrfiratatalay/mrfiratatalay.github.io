@@ -1,17 +1,21 @@
 ---
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+
 interface Crumb {
   label: string;
   href?: string;
 }
 
 interface Props {
+  locale: Locale;
   items: Crumb[];
 }
 
-const { items } = Astro.props;
+const { locale, items } = Astro.props;
 ---
 
-<nav class="breadcrumbs" aria-label="Konum" data-pagefind-ignore>
+<nav class="breadcrumbs" aria-label={useTranslations(locale).content.breadcrumbs} data-pagefind-ignore>
   <ol>
     {
       items.map((item, index) => (

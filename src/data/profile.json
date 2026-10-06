@@ -1,63 +1,269 @@
 {
   "name": "Fırat Atalay",
-  "title": "Frontend Geliştirici",
-  "shortBio": "Modern web uygulamaları geliştiren bir Frontend Geliştiriciyim. Yeni teknolojiler öğrenmeye hevesliyim ve her gün kendimi geliştiriyorum.",
-  "bio": "Modern web uygulamaları geliştiren bir Frontend Geliştiriciyim. Kararlı ve disiplinli biriyim; her gün kendimi geliştirmeye çalışıyorum.\n\nYeni teknolojiler öğrenmeye hevesliyim. Freelance, tam zamanlı veya yarı zamanlı fırsatlara açığım.",
-  "location": "Türkiye",
+  "title": {
+    "tr": "Backend Yazılım Mühendisi",
+    "en": "Backend Software Engineer"
+  },
+  "shortBio": {
+    "tr": "Backend odaklı bir Bilgisayar Mühendisliği mezunuyum. ASP.NET Core, Entity Framework Core, PostgreSQL ve Docker ile REST API'ler, kimlik doğrulama ve yetkilendirme akışları, multi-tenant uygulamalar ve veritabanı tabanlı sistemler geliştiriyorum.",
+    "en": "Backend-focused Computer Engineering graduate. I build REST APIs, authentication and authorization flows, multi-tenant applications and database-backed systems with ASP.NET Core, Entity Framework Core, PostgreSQL and Docker."
+  },
+  "bio": {
+    "tr": "Backend odaklı bir Bilgisayar Mühendisliği mezunuyum. Uzun dönem ve yaz stajları, yarı zamanlı çalışma ve takım projeleri sayesinde gerçek yazılım ürünlerinin geliştirilmesine katkı sağladım. ASP.NET Core, Entity Framework Core, PostgreSQL ve Docker kullanarak REST API'ler, kimlik doğrulama ve yetkilendirme akışları, multi-tenant uygulamalar ve veritabanı tabanlı sistemler geliştirdim.\n\nGörev yönetimi, branch, pull request ve code review süreçlerini içeren ekip çalışmasında deneyimliyim; React, TypeScript ve Vue.js ile full-stack geliştirme deneyimim de var. Uzun vadeli kariyerimi backend yazılım mühendisliğinde kurmaya ve güvenilir, sürdürülebilir, iyi yapılandırılmış yazılım sistemlerine katkı sağlamaya odaklanıyorum.",
+    "en": "I'm a backend-focused Computer Engineering graduate with hands-on experience contributing to real-world software products through long-term and summer internships, part-time work and team-based projects. I've built REST APIs, authentication and authorization flows, multi-tenant applications and database-backed systems using ASP.NET Core, Entity Framework Core, PostgreSQL and Docker.\n\nI'm experienced in collaborative development workflows involving task management, branching, pull requests and code reviews, and I also have full-stack experience with React, TypeScript and Vue.js. I'm focused on building a long-term career in backend software engineering and contributing to reliable, maintainable and well-structured software systems."
+  },
+  "location": {
+    "tr": "Konya, Türkiye",
+    "en": "Konya, Turkey"
+  },
   "email": "firatatalay.cs@gmail.com",
+  "phone": "+90 552 813 78 50",
   "avatar": "/images/profile/firat-atalay.webp",
-  "avatarAlt": "Fırat Atalay'ın portre fotoğrafı",
-  "cv": "",
-  "languages": ["Türkçe", "İngilizce", "İspanyolca"],
-  "education": [
-    {
-      "school": "Recep Tayyip Erdoğan Üniversitesi",
-      "program": "Bilgisayar Mühendisliği (Lisans)",
-      "period": "Eylül 2021 –"
-    }
-  ],
+  "avatarAlt": {
+    "tr": "Fırat Atalay'ın portre fotoğrafı",
+    "en": "Portrait of Fırat Atalay"
+  },
+  "cv": "/cv/firat-atalay.pdf",
   "experience": [
     {
-      "role": "Web Sitesi Yöneticisi ve Geliştiricisi",
-      "organization": "Teknofest Topluluğu",
-      "period": "Devam ediyor",
-      "description": "Üniversitemizin Teknofest topluluğunun web sitesini geliştirmek ve yönetmekten sorumluyum; topluluğun dijital görünürlüğünü güçlendirip sorunsuz bir kullanıcı deneyimi sağlamaya çalışıyorum."
+      "organization": {
+        "tr": "Elasoft",
+        "en": "Elasoft"
+      },
+      "role": {
+        "tr": "Yazılım Geliştirme Stajyeri – Uzun Dönem ve Yaz Stajı",
+        "en": "Software Development Intern – Long-Term & Summer Placements"
+      },
+      "location": {
+        "tr": "Trabzon, Türkiye",
+        "en": "Trabzon, Turkey"
+      },
+      "highlights": {
+        "tr": [
+          "60 iş günlük yaz stajımın ardından bir dönemlik uzun dönem sektör uygulaması için yeniden döndüm; iki dönemde de gerçek yazılım ürünlerine katkı sağladım.",
+          "C#, ASP.NET Core, Entity Framework Core, Microsoft SQL Server ve Vue.js ile bir üniversite Topluluk Yönetim Sistemi ve şirket içi İnsan Kaynakları Yönetim Sistemi için backend ve full-stack özellikler geliştirdim.",
+          "Backend API'lerinde ve frontend modüllerinde personel, izin talebi, profil ve avatar, zimmet, rol bazlı erişim, validasyon ve doküman çıktısı akışlarını geliştirdim ve iyileştirdim.",
+          "Görevlerimi Git branch'leri ve pull request'ler üzerinden teslim ettim, yaptığım değişiklikleri belgeledim ve code review'larda kıdemli yazılım mühendislerinden gelen geri bildirimleri uyguladım."
+        ],
+        "en": [
+          "Completed a 60-working-day summer internship and later returned for a full-semester industry placement, contributing to real-world software products across both periods.",
+          "Developed backend and full-stack features for a university Community Management System and an internal Human Resources Management System using C#, ASP.NET Core, Entity Framework Core, Microsoft SQL Server and Vue.js.",
+          "Implemented and improved personnel, leave-request, profile and avatar, asset-assignment, role-based access, validation and document-export workflows across backend APIs and frontend modules.",
+          "Delivered assigned tasks through Git branches and pull requests, documented implementation changes and incorporated feedback from senior software engineers through code reviews."
+        ]
+      }
     },
     {
-      "role": "Frontend ve Backend Teknoloji Yazarı",
-      "organization": "Huawei Student Developers (HSD) Türkiye",
-      "period": "Ocak 2024 – Devam ediyor",
-      "description": "HSD'nin Medium programına gönüllü yazar olarak seçildim. Frontend ve backend teknolojileri, framework'ler ve yazılım geliştirme pratikleri üzerine eğitici içerikler yazıyorum."
+      "organization": {
+        "tr": "Medyanes 360",
+        "en": "Medyanes 360"
+      },
+      "role": {
+        "tr": "Gönüllü Yazılım Geliştirici",
+        "en": "Volunteer Software Developer"
+      },
+      "highlights": {
+        "tr": [
+          "Full-stack bir teknik vakayı tamamlayıp çözümümü canlı bir teknik mülakatta sunduktan sonra ekibe seçildim.",
+          "Bir dil öğrenme platformu dahil farklı iş alanlarındaki web uygulamalarına, bana atanan frontend ve backend özelliklerini geliştirerek katkı sağladım.",
+          "Geliştirme ekibiyle birlikte görev, issue, commit ve pull request akışlarıyla çalıştım ve proje geri bildirimlerini uyguladım."
+        ],
+        "en": [
+          "Selected after completing a full-stack technical case and presenting the solution during a live technical interview.",
+          "Contributed to web applications across multiple business domains, including a language-learning platform, by implementing assigned frontend and backend features.",
+          "Worked through task, issue, commit and pull-request workflows while collaborating with the development team and incorporating project feedback."
+        ]
+      }
     },
     {
-      "role": "Frontend Teknoloji Uzmanı ve Yazar",
-      "organization": "Stackademic",
-      "period": "Ocak 2023 – Devam ediyor",
-      "description": "In Plain English editörünün davetiyle Stackademic için JavaScript ve React üzerine eğitici makaleler yazıyorum."
-    },
+      "organization": {
+        "tr": "Recep Tayyip Erdoğan Üniversitesi",
+        "en": "Recep Tayyip Erdoğan University"
+      },
+      "role": {
+        "tr": "Yarı Zamanlı Yazılım Geliştirici",
+        "en": "Part-Time Software Developer"
+      },
+      "location": {
+        "tr": "Rize, Türkiye",
+        "en": "Rize, Turkey"
+      },
+      "highlights": {
+        "tr": [
+          "Operasyonel iş akışlarının dijitalleşmesine ve sadeleşmesine yardımcı olan full-stack modüller geliştirerek üniversitenin iç bilgi sistemlerine ve idari yazılımlarına katkı sağladım.",
+          "Teknik olmayan üniversite personeliyle doğrudan çalışarak operasyonel sorunları belirledim, gereksinimleri yazılım özelliklerine dönüştürdüm ve çözümleri paydaş geri bildirimlerine göre iyileştirdim."
+        ],
+        "en": [
+          "Contributed to internal university information systems and administrative software by developing full-stack modules that helped digitize and streamline operational workflows.",
+          "Collaborated directly with non-technical university staff to identify operational problems, translate requirements into software features and refine solutions based on stakeholder feedback."
+        ]
+      }
+    }
+  ],
+  "education": [
     {
-      "role": "Frontend Geliştirici",
-      "organization": "Freelance",
-      "period": "Aralık 2020 – Devam ediyor",
-      "description": "JavaScript, TypeScript, React, Redux, HTML5, CSS3, Sass ve Bootstrap ile ihtiyaca göre özelleştirilmiş, kullanıcı dostu web uygulamaları geliştiriyorum."
+      "school": {
+        "tr": "Recep Tayyip Erdoğan Üniversitesi",
+        "en": "Recep Tayyip Erdoğan University"
+      },
+      "program": {
+        "tr": "Bilgisayar Mühendisliği, Lisans",
+        "en": "B.Sc. in Computer Engineering"
+      },
+      "location": {
+        "tr": "Rize, Türkiye",
+        "en": "Rize, Turkey"
+      },
+      "period": {
+        "tr": "Eylül 2021 – Haziran 2026",
+        "en": "Sep 2021 – Jun 2026"
+      }
     }
   ],
   "skills": [
     {
-      "group": "Diller",
-      "items": ["JavaScript", "TypeScript", "Java", "C#", "C/C++", "SQL", "HTML", "CSS"]
+      "group": {
+        "tr": "Backend",
+        "en": "Backend"
+      },
+      "items": [
+        "C#",
+        "ASP.NET Core",
+        "Entity Framework Core (EF Core)",
+        "RESTful APIs",
+        "Python",
+        "FastAPI",
+        "Java",
+        "Spring Boot"
+      ]
     },
     {
-      "group": "Teknolojiler",
-      "items": ["React", "Next.js", "Remix", "React Native", "Node.js", "Tailwind CSS", "Sass", "MySQL", "MongoDB", "Git"]
+      "group": {
+        "tr": "Veritabanları",
+        "en": "Databases"
+      },
+      "items": [
+        "PostgreSQL",
+        "Microsoft SQL Server",
+        "MongoDB"
+      ]
+    },
+    {
+      "group": {
+        "tr": "Frontend",
+        "en": "Frontend"
+      },
+      "items": [
+        "React",
+        "TypeScript",
+        "JavaScript",
+        "Vue.js",
+        "Next.js",
+        "Tailwind CSS",
+        "Material UI"
+      ]
+    },
+    {
+      "group": {
+        "tr": "Mimari ve Pratikler",
+        "en": "Architecture & Practices"
+      },
+      "items": [
+        "RESTful API Design",
+        "Layered Architecture",
+        "CQRS",
+        "Authentication & Authorization",
+        "Role-Based Access Control (RBAC)",
+        "Multi-Tenancy"
+      ]
+    },
+    {
+      "group": {
+        "tr": "Mesajlaşma ve Geliştirme Araçları",
+        "en": "Messaging & Development Tools"
+      },
+      "items": [
+        "RabbitMQ",
+        "Git",
+        "GitHub",
+        "Docker",
+        "Docker Compose",
+        "Postman",
+        "Swagger/OpenAPI"
+      ]
+    },
+    {
+      "group": {
+        "tr": "Test",
+        "en": "Testing"
+      },
+      "items": [
+        "xUnit",
+        "Jest",
+        "Vitest",
+        "Cypress"
+      ]
+    }
+  ],
+  "awards": [
+    {
+      "title": {
+        "tr": "Turkcell Geleceği Yazanlar Code Night",
+        "en": "Turkcell Geleceği Yazanlar Code Night"
+      },
+      "detail": {
+        "tr": "Trabzon Birinciliği ve All-Star Finalisti · Takım Kaptanı",
+        "en": "Trabzon 1st Place & All-Star Finalist · Team Captain"
+      },
+      "icon": "trophy"
+    },
+    {
+      "title": {
+        "tr": "TÜBİTAK 2209-A Üniversite Öğrencileri Araştırma Projeleri Destekleme Programı",
+        "en": "TÜBİTAK 2209-A University Students Research Projects Support Program"
+      },
+      "detail": {
+        "tr": "Desteklenen Proje Sahibi · EduConnect",
+        "en": "Funded Project Recipient · EduConnect"
+      },
+      "icon": "award"
+    },
+    {
+      "title": {
+        "tr": "Huawei Student Developers",
+        "en": "Huawei Student Developers"
+      },
+      "detail": {
+        "tr": "Gönüllü Teknik Yazar",
+        "en": "Volunteer Technical Writer"
+      },
+      "description": {
+        "tr": "Huawei Developer'ın global ve Türkiye yayınları, kişisel Medium hesabım ve Stackademic için frontend ve backend geliştirme üzerine İngilizce teknik makaleler yazdım; birçok makalem 4 binin, biri 5 binin üzerinde okundu.",
+        "en": "Authored English-language technical articles on frontend and backend development for Huawei Developer's global and Türkiye publications, personal Medium and Stackademic, with multiple articles exceeding 4K views and one surpassing 5K views."
+      },
+      "icon": "writing"
     }
   ],
   "links": [
-    { "label": "GitHub", "url": "https://github.com/mrfiratatalay", "kind": "github" },
-    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/firat-atalayy/", "kind": "linkedin" },
-    { "label": "Medium", "url": "https://medium.com/@firatatalay", "kind": "medium" },
-    { "label": "YouTube", "url": "https://www.youtube.com/@mrfiratatalay", "kind": "youtube" }
+    {
+      "label": "GitHub",
+      "url": "https://github.com/mrfiratatalay",
+      "kind": "github"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/f%C4%B1rat-atalay-2581142b6/",
+      "kind": "linkedin"
+    },
+    {
+      "label": "Medium",
+      "url": "https://medium.com/@firatatalay",
+      "kind": "medium"
+    }
   ],
-  "siteDescription": "Fırat Atalay'ın kişisel sitesi: projeler, blog yazıları ve öğrenme notları.",
+  "siteDescription": {
+    "tr": "Fırat Atalay'ın kişisel sitesi: backend projeleri, blog yazıları ve öğrenme notları.",
+    "en": "Fırat Atalay's personal site: backend projects, blog posts and learning notes."
+  },
   "googleSiteVerification": ""
 }

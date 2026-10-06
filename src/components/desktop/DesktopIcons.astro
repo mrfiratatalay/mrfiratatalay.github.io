@@ -1,18 +1,21 @@
 ---
-import { SECTIONS, type SectionId } from '../../lib/site/sections.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+import { sectionsFor, type SectionId } from '../../lib/site/sections.ts';
 import FolderIcon from '../icons/FolderIcon.astro';
 
 interface Props {
+  locale: Locale;
   current: SectionId;
 }
 
-const { current } = Astro.props;
+const { locale, current } = Astro.props;
 ---
 
-<nav class="desktop-icons" aria-label="Masaüstü klasörleri">
+<nav class="desktop-icons" aria-label={useTranslations(locale).home.desktopFolders}>
   <ul>
     {
-      SECTIONS.map((section) => (
+      sectionsFor(locale).map((section) => (
         <li>
           <a class="desktop-icon" href={section.href} data-section-link aria-current={current === section.id ? 'true' : undefined}>
             <FolderIcon icon={section.icon} />

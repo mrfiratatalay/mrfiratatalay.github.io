@@ -61,7 +61,7 @@ export async function search(term: string, limit: number): Promise<{ hits: Searc
     hits: data.map((item) => ({
       url: item.url,
       title: item.meta.title ?? item.url,
-      type: item.meta.type ?? 'Sayfa',
+      type: item.meta.type ?? 'page',
       excerpt: item.excerpt,
     })),
   };

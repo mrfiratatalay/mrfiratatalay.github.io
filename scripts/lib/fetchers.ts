@@ -25,6 +25,8 @@ export interface FetchResult {
   commit: string;
   /** Yerel kopyadan alındıysa açıklama (ör. "yerel çalışma kopyası"). */
   note?: string;
+  /** Özel kaynaktan seçilerek yayınlanan dosyaların erişilebilir GitHub kopyası. */
+  mirror?: { repository: string; root: string; ref: string };
 }
 
 export type SourceFetcher = (request: FetchRequest) => Promise<FetchResult>;
@@ -89,6 +91,27 @@ export function createGitFetcher(): SourceFetcher {
     );
     const commit = (await run('git', ['-C', destination, 'rev-parse', 'HEAD'], 15_000, env)).trim();
     return { commit };
+  };
+}
+
+/** Public CI, özel not deposu için siteye kaydedilmiş seçilmiş kopyayı kullanır. */
+export function createPublishedSourceFetcher(projectRoot: string): SourceFetcher {
+  const github = createGitFetcher();
+  return async (request) => {
+    let manifest: Record<string, { path: string; commit: string; mirror: { repository: string; root: string; ref: string } }>;
+    try {
+      manifest = JSON.parse(await readFile(path.join(projectRoot, 'content-sources/manifest.json'), 'utf8'));
+    } catch {
+      return github(request);
+    }
+    const snapshot = manifest[`${request.repository}#${request.branch}`];
+    if (!snapshot) return github(request);
+    const directory = path.resolve(projectRoot, snapshot.path);
+    if (!directory.startsWith(path.join(projectRoot, 'content-sources') + path.sep)) {
+      throw new Error('Not kopyası content-sources klasörünün içinde olmalı.');
+    }
+    await cp(directory, request.destination, { recursive: true, dereference: false });
+    return { commit: snapshot.commit, note: 'yayın için seçilmiş kaynak kopyası', mirror: snapshot.mirror };
   };
 }
 

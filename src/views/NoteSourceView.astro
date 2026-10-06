@@ -1,0 +1,58 @@
+---
+import Breadcrumbs from '../components/content/Breadcrumbs.astro';
+import CollectionsSidebar from '../components/content/CollectionsSidebar.astro';
+import Window from '../components/desktop/Window.astro';
+import FolderIcon from '../components/icons/FolderIcon.astro';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import type { NoteItem, NoteSourceInfo } from '../lib/content/collections.ts';
+import { categoryLabel } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import { folderColor } from '../lib/site/folder-colors.ts';
+
+interface Props { locale: Locale; source: NoteSourceInfo; sources: NoteSourceInfo[]; index: number }
+const { locale, source, sources, index } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const groups = new Map<string, NoteItem[]>();
+for (const note of source.notes) groups.set(note.folder, [...(groups.get(note.folder) ?? []), note]);
+const description = source.description ?? t.notes.sourceDescription(source.label, source.notes.length);
+---
+
+<DesktopLayout locale={locale} title={source.label} description={description} section="notes">
+  <Window locale={locale} id="main" variant="main" title={source.label} icon="notes" section="notes" closeHref={paths.home} backHref={paths.notes} backLabel={t.sections.notes.short}>
+    <CollectionsSidebar slot="sidebar" locale={locale} sources={sources} current={source.id} />
+    <Breadcrumbs locale={locale} items={[{ label: t.notes.title, href: paths.notes }, { label: source.label }]} />
+    <header class="page-head note-source-head">
+      <FolderIcon color={folderColor(index)} icon="notes" size="large" />
+      <div><h1 class="page-title">{source.label}</h1><p class="page-lead">{description}</p></div>
+    </header>
+    {[...groups].map(([folder, notes]) => (
+      <section class="list-view" aria-label={folder || source.label}>
+        {folder && <h2 class="list-view__group">
+          <FolderIcon color={folderColor(index)} />
+          <span class="list-view__path">{folder.split('/').map((segment, position, all) => position < all.length - 1
+            ? <><span class="list-view__parent">{segment}</span><span class="list-view__sep" aria-hidden="true">›</span></>
+            : <span class="list-view__leaf">{segment}</span>)}</span>
+        </h2>}
+        <ul class="list-rows">{notes.map((note) => (
+          <li class="list-row">
+            <div class="list-row__name"><span class="doc-icon" aria-hidden="true" /><div style="min-width: 0;">
+              <h3 class="list-row__title" lang={note.lang}><a href={paths.note(note.sourceId, note.slug)}>{note.title}</a></h3>
+              {note.description && <p class="list-row__summary" lang={note.lang}>{note.description}</p>}
+              <p class="note-source-meta">{categoryLabel(note.category, locale)}{note.lang !== locale && <span> · {t.content.languageName[note.lang]}</span>}</p>
+            </div></div>
+            <span class="list-row__time">{t.notes.minutes(note.readingMinutes)}</span>
+          </li>
+        ))}</ul>
+      </section>
+    ))}
+  </Window>
+</DesktopLayout>
+
+<style>
+  .note-source-head { display: flex; align-items: center; gap: 18px; }
+  .note-source-head .page-lead { margin-top: 6px; }
+  .note-source-meta { margin: 5px 0 0; color: var(--label-3); font-size: 0.75rem; }
+</style>

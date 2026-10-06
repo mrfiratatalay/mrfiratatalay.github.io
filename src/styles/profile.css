@@ -1,0 +1,358 @@
+/* CV'deki deneyim, eğitim ve proje ayrıntıları. */
+.about .profile-card__contact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px 18px;
+  margin-top: 8px;
+  font-size: 0.875rem;
+}
+
+.profile-card__contact a {
+  color: var(--accent-text);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.profile-card__contact a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.about-section {
+  margin-top: 38px;
+}
+
+.about-section > .section-title,
+.section-head .section-title {
+  margin: 0 0 14px;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+}
+
+.section-head__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--accent-text);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.section-head__link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.experience,
+.info-cards {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience__item,
+.info-card,
+.skills-grid .skill-group {
+  min-width: 0;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--card-bg);
+  box-shadow: var(--shadow-card);
+}
+
+.experience__head,
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.experience__head > div,
+.info-card > div {
+  min-width: 0;
+}
+
+.experience__icon,
+.info-card__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+
+.experience__icon svg,
+.info-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.experience__role,
+.info-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+
+.experience__meta,
+.info-card__detail {
+  margin: 4px 0 0;
+  color: var(--label-2);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.experience__meta strong {
+  font-weight: 650;
+}
+
+.experience__highlights {
+  margin: 16px 0 0;
+  padding-left: 20px;
+  color: var(--label-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.experience__highlights li + li {
+  margin-top: 8px;
+}
+
+.experience__highlights li::marker {
+  color: var(--accent-text);
+}
+
+.info-card__meta {
+  margin: 5px 0 0;
+  color: var(--label-3);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.info-card__text {
+  margin: 10px 0 0;
+  color: var(--label-2);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.info-card__icon--trophy {
+  background: light-dark(rgb(255 138 0 / 0.12), rgb(255 160 51 / 0.18));
+  color: var(--orange);
+}
+
+.info-card__icon--award {
+  background: light-dark(rgb(40 180 78 / 0.12), rgb(54 209 96 / 0.18));
+  color: var(--green);
+}
+
+.info-card__icon--writing {
+  background: light-dark(rgb(162 76 224 / 0.12), rgb(196 114 245 / 0.18));
+  color: var(--purple);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.skills-grid .skill-group + .skill-group {
+  margin-top: 0;
+}
+
+.skill-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1.4;
+}
+
+.skill-group h3 svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--accent-text);
+}
+
+.project-row {
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.project-row__visual {
+  display: block;
+  flex: none;
+  width: 62px;
+  height: 62px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.project-row__visual .card__media {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+}
+
+.project-row__visual .card__tile {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.project-row__visual .card__glyph svg {
+  width: 24px;
+  height: 24px;
+}
+
+.project-row__visual .card__mark {
+  font-size: 1.2rem;
+}
+
+.project-rows .group__subtitle {
+  white-space: normal;
+  line-height: 1.45;
+}
+
+.project-row__context {
+  display: block;
+  margin-top: 5px;
+  color: var(--accent-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.project-rows > li + li .group__row::before {
+  left: 94px;
+}
+
+.card__tagline {
+  margin: 0;
+  color: var(--label);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.article-tagline {
+  margin: -2px 0 12px;
+  color: var(--accent-text);
+  font-size: 1.125rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.pill--award {
+  max-width: 100%;
+  background: light-dark(rgb(255 138 0 / 0.1), rgb(255 160 51 / 0.16));
+  color: light-dark(#8a4800, #ffc37d);
+  white-space: normal;
+  line-height: 1.45;
+}
+
+.highlights {
+  margin-bottom: 30px;
+}
+
+.highlights .section-title {
+  margin-top: 0;
+}
+
+.highlights__list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.highlights__list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--fill-3);
+  color: var(--label-2);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.highlights__list svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 3px;
+  color: var(--green);
+}
+
+.project-hero .card__glyph svg {
+  width: 66px;
+  height: 66px;
+}
+
+@media (max-width: 620px) {
+  .skills-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .experience__item,
+  .info-card,
+  .skills-grid .skill-group {
+    padding: 16px;
+  }
+
+  .experience__head,
+  .info-card {
+    gap: 11px;
+  }
+
+  .project-row__visual {
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+  }
+
+  .project-row__visual .card__tile {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .project-row {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .project-rows > li + li .group__row::before {
+    left: 72px;
+  }
+
+  .project-hero .card__tile {
+    width: 92px;
+    height: 92px;
+    border-radius: 26px;
+  }
+
+  .project-hero .card__glyph svg {
+    width: 46px;
+    height: 46px;
+  }
+}

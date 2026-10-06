@@ -1,0 +1,51 @@
+---
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import SearchPanel from '../components/search/SearchPanel.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+---
+
+<DesktopLayout locale={locale} title={t.search.title} description={t.search.description} section="search" noindex>
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={t.search.title}
+    icon="search"
+    section="search"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+  >
+    <div class="article">
+      <header class="page-head">
+        <p class="page-head__eyebrow"><AppIcon name="search" /> {t.search.eyebrow}</p>
+        <h1 class="page-title">{t.search.title}</h1>
+        <p class="page-lead">{t.search.lead}</p>
+      </header>
+      <div class="search-page"><SearchPanel locale={locale} client:load syncUrl autoFocus /></div>
+      <noscript>
+        <p class="empty-state">{t.search.noScript}</p>
+        <div class="action-row">
+          <a class="button" href={paths.blog}>{t.search.posts}</a>
+          <a class="button" href={paths.notes}>{t.search.notes}</a>
+        </div>
+      </noscript>
+    </div>
+  </Window>
+</DesktopLayout>
+
+<style>
+  .search-page { display: grid; gap: 14px; }
+</style>

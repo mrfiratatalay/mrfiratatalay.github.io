@@ -67,7 +67,10 @@ export interface SkippedFile {
 export interface SourceReport {
   id: string;
   label: string;
+  labelEn?: string;
   description?: string;
+  descriptionEn?: string;
+  lang?: 'tr' | 'en';
   category: string;
   order: number;
   repository: string;
@@ -95,6 +98,7 @@ interface Checkout {
   realDir: string;
   commit: string;
   note?: string;
+  mirror?: { repository: string; root: string; ref: string };
 }
 
 interface PlannedNote {
@@ -157,6 +161,10 @@ function encodePath(file: string): string {
 }
 
 function githubUrl(checkout: Checkout, kind: 'blob' | 'tree', file: string): string {
+  if (checkout.mirror) {
+    const mirror = checkout.mirror;
+    return `https://github.com/${mirror.repository}/${kind}/${encodePath(mirror.ref)}/${encodePath(path.posix.join(mirror.root, file))}`.replace(/\/$/, '');
+  }
   const ref = /^[0-9a-f]{40}$/.test(checkout.commit) ? checkout.commit : checkout.branch;
   return `https://github.com/${checkout.repository}/${kind}/${encodePath(ref)}/${encodePath(file)}`.replace(/\/$/, '');
 }
@@ -280,6 +288,7 @@ class ImportRun {
         commit: result.commit,
       };
       if (result.note) checkout.note = result.note;
+      if (result.mirror) checkout.mirror = result.mirror;
       return checkout;
     });
 
@@ -365,6 +374,9 @@ class ImportRun {
         warnings: [],
       };
       if (source.description) report.description = source.description;
+      if (source.labelEn) report.labelEn = source.labelEn;
+      if (source.descriptionEn) report.descriptionEn = source.descriptionEn;
+      report.lang = source.lang;
       if (checkout.note) report.fetchNote = checkout.note;
       this.reports.set(source.id, report);
     }
@@ -429,7 +441,11 @@ class ImportRun {
         }
 
         const raw = (await readFile(absolute, 'utf8')).replace(/^﻿/, '');
-        const { data, body: originalBody, warning } = splitFrontmatter(raw);
+        const { data: originalData, body: originalBody, warning } = splitFrontmatter(raw);
+        const metadata = Object.entries(source.noteMetadata).find(
+          ([file]) => file.toLowerCase() === rootRelative.toLowerCase(),
+        )?.[1];
+        const data: Record<string, unknown> = { ...originalData, ...metadata };
         if (warning) report.warnings.push(`${repoPath}: ${warning}`);
         if (data.published === false || data.draft === true) {
           report.skipped.push({ path: repoPath, reason: 'Taslak olarak işaretli (published: false veya draft: true).' });
@@ -615,8 +631,56 @@ class ImportRun {
       const asset = await this.copyImage(note, resolved.path);
       return withWarnings(asset ? asset.url : isImage ? MISSING_IMAGE_URL : undefined);
     }
-    // PDF ve diğer dosyalar siteye kopyalanmaz; kaynak dosyaya bağlantı verilir.
+    if (path.posix.extname(resolved.path).toLowerCase() === '.pdf') {
+      const asset = await this.copyDocument(note, resolved.path);
+      return withWarnings(asset?.url);
+    }
+    // Diğer dosyalar kaynak repoda açılır.
     return withWarnings(githubUrl(note.checkout, 'blob', resolved.path));
+  }
+
+  private async copyDocument(note: PlannedNote, repoPath: string): Promise<ImageInfo | null> {
+    const key = `${note.source.id}:${repoPath}`;
+    if (this.assets.has(key)) return this.assets.get(key) ?? null;
+    const absolute = path.join(note.checkout.dir, ...repoPath.split('/'));
+    const size = (await stat(absolute)).size;
+    if (size > this.config.limits.maxAssetBytes) {
+      this.problems.push(`"${note.source.id}": "${repoPath}" ${formatBytes(size)}; ek dosya sınırı aşıldı.`);
+      this.assets.set(key, null);
+      return null;
+    }
+    const relative = repoPath.startsWith(note.source.root + '/')
+      ? repoPath.slice(note.source.root.length + 1)
+      : `_repo/${repoPath}`;
+    const file = relative.split('/').map((segment) => slugify(segment.replace(/\.pdf$/i, '')) || `dosya-${shortHash(segment)}`).join('/') + '.pdf';
+    const destination = path.join(this.staging, 'assets', note.source.id, ...file.split('/'));
+    await mkdir(path.dirname(destination), { recursive: true });
+    await copyFile(absolute, destination);
+    const info = { url: `/imported-assets/${note.source.id}/${file}` };
+    this.assets.set(key, info);
+    this.report(note.source, note.checkout).assetCount += 1;
+    return info;
+  }
+
+  /** Markdown içinde bağlantı verilmemiş tekrar materyalleri de okunabilir. */
+  private async reviewAssets(note: PlannedNote): Promise<string> {
+    if (!note.source.includeReviewAssets || !/^(?:\d+|readme|index)\.(?:md|markdown)$/i.test(path.posix.basename(note.repoPath))) return '';
+    const directory = path.posix.join(path.posix.dirname(note.repoPath), 'TEKRAR');
+    const entries = (await this.listDirectory(path.join(note.checkout.dir, ...directory.split('/')))) ?? [];
+    const parts: string[] = [];
+    for (const name of entries.sort(naturalCompare)) {
+      if (!isImagePath(name) && !/\.pdf$/i.test(name)) continue;
+      const repoPath = path.posix.join(directory, name);
+      const resolved = await this.resolveRepoPath(note.checkout, repoPath);
+      if (!resolved || resolved.isDirectory) continue;
+      const asset = isImagePath(name) ? await this.copyImage(note, repoPath) : await this.copyDocument(note, repoPath);
+      if (!asset) continue;
+      const label = name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/[\[\]\\]/g, '').trim();
+      parts.push(isImagePath(name)
+        ? `### ${label}\n\n![${label}](${asset.url})\n\n[${note.source.lang === 'en' ? 'Open full image' : 'Görseli aç'}](${asset.url})`
+        : `- [${label} (PDF)](${asset.url})`);
+    }
+    return parts.length ? `\n\n## ${note.source.lang === 'en' ? 'Visual summaries and attachments' : 'Görsel özetler ve ekler'}\n\n${parts.join('\n\n')}\n` : '';
   }
 
   private async copyImage(note: PlannedNote, repoPath: string): Promise<ImageInfo | null> {
@@ -684,7 +748,21 @@ class ImportRun {
       if (warning) report.warnings.push(`${note.repoPath}: ${warning}`);
       if (value !== undefined && value !== occurrence.url) replacements.push({ occurrence, value });
     }
-    const body = replaceOccurrences(note.body, replacements).replace(/^\s+/, '');
+    let body = replaceOccurrences(note.body, replacements).replace(/^\s+/, '');
+    body += await this.reviewAssets(note);
+    const resources = Array.isArray(note.data.resources) ? note.data.resources as Array<{ label: string; path: string }> : [];
+    if (resources.length) {
+      const links: string[] = [];
+      for (const resource of resources) {
+        const resolved = await this.resolveRepoPath(note.checkout, resource.path);
+        if (!resolved) {
+          this.problems.push(`${note.repoPath}: Ek kaynak bulunamadı: ${resource.path}`);
+          continue;
+        }
+        links.push(`- [${resource.label.replace(/[\[\]\\]/g, '')}](${githubUrl(note.checkout, resolved.isDirectory ? 'tree' : 'blob', resolved.path)})`);
+      }
+      if (links.length) body += `\n\n## ${note.source.lang === 'en' ? 'Source code' : 'Kod örnekleri'}\n\n${links.join('\n')}\n`;
+    }
 
     const warnings = report.warnings;
     const publishedAt = readDate(note.data, ['publishedAt', 'date', 'published_at'], warnings, note.repoPath);
@@ -699,7 +777,7 @@ class ImportRun {
       title: note.title,
       sourceId: note.source.id,
       noteSlug: note.slug,
-      category: note.source.category,
+      category: typeof note.data.category === 'string' ? note.data.category : note.source.category,
       // Kaynak ayarında seçilmiş ve taslak işaretlenmemiş eski notlar yayındadır.
       published: true,
     };
@@ -710,6 +788,7 @@ class ImportRun {
     frontmatter.tags = readTags(note.data.tags);
     frontmatter.order = report.noteCount;
     frontmatter.folder = folder === '.' ? '' : folder;
+    frontmatter.lang = note.source.lang;
     frontmatter.source = {
       repository: note.checkout.repository,
       branch: note.checkout.branch,

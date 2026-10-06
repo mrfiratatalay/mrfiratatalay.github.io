@@ -7,11 +7,14 @@ import type { MarkdownHeading } from 'astro';
 import type { SeoProps } from '../components/BaseHead.astro';
 import Toc from '../components/content/Toc.astro';
 import Window from '../components/desktop/Window.astro';
+import { localePaths } from '../lib/content/urls.ts';
 import { hasToc } from '../lib/content/toc.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
 import type { IconName, SectionId } from '../lib/site/sections.ts';
 import DesktopLayout from './DesktopLayout.astro';
 
 type Props = SeoProps & {
+  locale: Locale;
   section: SectionId;
   windowTitle: string;
   icon: IconName;
@@ -20,22 +23,23 @@ type Props = SeoProps & {
   headings?: MarkdownHeading[];
 };
 
-const { section, windowTitle, icon, backHref, backLabel, headings = [], ...seo } = Astro.props;
+const { locale, section, windowTitle, icon, backHref, backLabel, headings = [], ...seo } = Astro.props;
 ---
 
-<DesktopLayout {...seo} section={section}>
+<DesktopLayout {...seo} locale={locale} section={section}>
   <Window
+    locale={locale}
     id="main"
     variant="main"
     title={windowTitle}
     icon={icon}
     section={section}
-    closeHref="/"
+    closeHref={localePaths(locale).home}
     readingTools
     backHref={backHref}
     backLabel={backLabel}
   >
-    {hasToc(headings) && <Toc slot="sidebar" headings={headings} variant="sidebar" />}
+    {hasToc(headings) && <Toc slot="sidebar" locale={locale} headings={headings} variant="sidebar" />}
     <slot />
   </Window>
 </DesktopLayout>

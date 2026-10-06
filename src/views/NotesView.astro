@@ -1,0 +1,43 @@
+---
+import CollectionsSidebar from '../components/content/CollectionsSidebar.astro';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import FolderIcon from '../components/icons/FolderIcon.astro';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getNoteSources } from '../lib/content/collections.ts';
+import { categoryLabel } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import { folderColor } from '../lib/site/folder-colors.ts';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const sources = await getNoteSources(locale);
+const total = sources.reduce((sum, source) => sum + source.notes.length, 0);
+---
+
+<DesktopLayout locale={locale} title={t.notes.title} description={t.notes.description} section="notes">
+  <Window locale={locale} id="main" variant="main" title={t.notes.title} icon="notes" section="notes" closeHref={paths.home} backHref={paths.home} backLabel={t.sections.home.label}>
+    <CollectionsSidebar slot="sidebar" locale={locale} sources={sources} />
+    <header class="page-head">
+      <p class="page-head__eyebrow"><AppIcon name="notes" />{t.notes.title}</p>
+      <h1 class="page-title">{t.notes.heading}</h1>
+      <p class="page-lead">{total > 0 ? t.notes.lead(total, sources.length) : t.notes.noNotes}</p>
+    </header>
+    {sources.length > 0 ? (
+      <ul class="finder-grid">
+        {sources.map((source, index) => (
+          <li><a class="finder-item" href={paths.noteSource(source.id)}>
+            <FolderIcon color={folderColor(index)} icon="notes" size="large" />
+            <span class="finder-item__name">{source.label}</span>
+            <span class="finder-item__meta">{t.notes.count(source.notes.length)}{source.category ? ` · ${categoryLabel(source.category, locale)}` : ''}</span>
+            {source.description && <span class="finder-item__desc">{source.description}</span>}
+          </a></li>
+        ))}
+      </ul>
+    ) : <p class="empty-state">{t.notes.emptyState}</p>}
+  </Window>
+</DesktopLayout>

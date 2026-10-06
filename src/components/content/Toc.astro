@@ -1,21 +1,25 @@
 ---
 import type { MarkdownHeading } from 'astro';
 import { hasToc, tocItems } from '../../lib/content/toc.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 
 interface Props {
+  locale: Locale;
   headings: MarkdownHeading[];
   variant: 'sidebar' | 'inline';
 }
 
-const { headings, variant } = Astro.props;
+const { locale, headings, variant } = Astro.props;
+const t = useTranslations(locale).content;
 const items = tocItems(headings);
 ---
 
 {
   hasToc(headings) &&
     (variant === 'sidebar' ? (
-      <nav class="sidebar-section" data-toc aria-label="Bu sayfada" data-pagefind-ignore>
-        <p class="sidebar-heading">Bu sayfada</p>
+      <nav class="sidebar-section" data-toc aria-label={t.onThisPage} data-pagefind-ignore>
+        <p class="sidebar-heading">{t.onThisPage}</p>
         <ul class="sidebar-list">
           {items.map((heading) => (
             <li>
@@ -28,8 +32,8 @@ const items = tocItems(headings);
       </nav>
     ) : (
       <details class="toc-inline" data-pagefind-ignore>
-        <summary>İçindekiler ({items.length} başlık)</summary>
-        <nav aria-label="İçindekiler">
+        <summary>{t.contentsCount(items.length)}</summary>
+        <nav aria-label={t.contents}>
           <ol>
             {items.map((heading) => (
               <li class={`depth-${heading.depth}`}>

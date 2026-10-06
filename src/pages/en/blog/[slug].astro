@@ -1,0 +1,12 @@
+---
+import BlogPostView from '../../../views/BlogPostView.astro';
+import { getPublishedPosts, type BlogPost } from '../../../lib/content/collections.ts';
+
+export async function getStaticPaths() {
+  return (await getPublishedPosts()).map((post) => ({ params: { slug: post.data.urlSlug }, props: { post } }));
+}
+interface Props { post: BlogPost }
+const { post } = Astro.props;
+---
+
+<BlogPostView locale="en" post={post} />

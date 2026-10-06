@@ -9,7 +9,7 @@ tags:
   - site
 cover: /images/blog/ornek-istek-akisi.webp
 coverAlt: Tarayıcıdan veritabanına giden bir isteğin dört adımını gösteren örnek şema
-published: true
+published: false
 ---
 
 > Bu bir **örnek yazıdır**. Kendi ilk yazını yayınladığında bu yazıyı Pages CMS'deki **Makaleler** bölümünden silebilir veya düzenleyebilirsin.

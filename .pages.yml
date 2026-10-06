@@ -10,33 +10,37 @@ media:
     label: Makale görselleri
     input: public/images/blog
     output: /images/blog
-    categories: [image]
+    categories:
+      - image
     rename: safe
   - name: note_images
     label: Not görselleri
     input: public/images/notes
     output: /images/notes
-    categories: [image]
+    categories:
+      - image
     rename: safe
   - name: project_images
     label: Proje görselleri
     input: public/images/projects
     output: /images/projects
-    categories: [image]
+    categories:
+      - image
     rename: safe
   - name: profile_images
     label: Profil fotoğrafı
     input: public/images/profile
     output: /images/profile
-    categories: [image]
+    categories:
+      - image
     rename: safe
   - name: cv_files
     label: CV dosyası
     input: public/cv
     output: /cv
-    extensions: [pdf]
+    extensions:
+      - pdf
     rename: safe
-
 content:
   - name: blog
     label: Makaleler
@@ -44,12 +48,19 @@ content:
     path: src/content/blog
     format: yaml-frontmatter
     filename:
-      template: '{fields.urlSlug}.md'
+      template: "{fields.urlSlug}.md"
       field: false
     view:
-      fields: [title, published, publishedAt, category]
+      fields:
+        - title
+        - published
+        - publishedAt
+        - category
+        - lang
       primary: title
-      sort: [publishedAt, title]
+      sort:
+        - publishedAt
+        - title
       default:
         sort: publishedAt
         order: desc
@@ -63,7 +74,7 @@ content:
         type: string
         required: true
         pattern:
-          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          regex: ^[a-z0-9]+(-[a-z0-9]+)*$
           message: Yalnızca küçük harf, rakam ve tire kullan. Örnek spring-boot-controller
         description: Örnek spring-boot-controller. Yazı /blog/spring-boot-controller/ adresinde açılır. Yayınlandıktan sonra değiştirme.
       - name: description
@@ -78,7 +89,7 @@ content:
       - name: updatedAt
         label: Son düzenleme tarihi
         type: date
-        default: ''
+        default: ""
         description: Yalnızca yazıda gerçekten önemli bir değişiklik yaptıysan doldur.
         options:
           format: yyyy-MM-dd
@@ -109,6 +120,17 @@ content:
         label: Kapak görselinin açıklaması
         type: string
         description: Görmeyen bir okura görseli anlatan kısa cümle. Kapak görseli varsa gerekli.
+      - name: lang
+        label: İçeriğin dili
+        type: select
+        default: tr
+        description: Yazı ya da notun özgün dili. Arayüz dili içerik dilinden bağımsızdır.
+        options:
+          values:
+            - name: tr
+              label: Türkçe
+            - name: en
+              label: English
       - name: published
         label: Yayında
         type: boolean
@@ -121,19 +143,24 @@ content:
           format: markdown
           media: blog_images
           switcher: true
-
   - name: notes
     label: Öğrenme Notları
     type: collection
     path: src/content/notes
     format: yaml-frontmatter
     filename:
-      template: '{fields.urlSlug}.md'
+      template: "{fields.urlSlug}.md"
       field: false
     view:
-      fields: [title, published, category]
+      fields:
+        - title
+        - published
+        - category
+        - lang
       primary: title
-      sort: [title, publishedAt]
+      sort:
+        - title
+        - publishedAt
     fields:
       - name: title
         label: Başlık
@@ -144,7 +171,7 @@ content:
         type: string
         required: true
         pattern:
-          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          regex: ^[a-z0-9]+(-[a-z0-9]+)*$
           message: Yalnızca küçük harf, rakam ve tire kullan. Örnek java-interface
         description: Örnek java-interface. Not /notlar/yerel/java-interface/ adresinde açılır. Yayınlandıktan sonra değiştirme.
       - name: description
@@ -172,13 +199,24 @@ content:
       - name: updatedAt
         label: Son düzenleme tarihi
         type: date
-        default: ''
+        default: ""
         options:
           format: yyyy-MM-dd
       - name: tags
         label: Etiketler
         type: string
         list: true
+      - name: lang
+        label: İçeriğin dili
+        type: select
+        default: tr
+        description: Yazı ya da notun özgün dili. Arayüz dili içerik dilinden bağımsızdır.
+        options:
+          values:
+            - name: tr
+              label: Türkçe
+            - name: en
+              label: English
       - name: published
         label: Yayında
         type: boolean
@@ -191,19 +229,24 @@ content:
           format: markdown
           media: note_images
           switcher: true
-
   - name: projects
     label: Projeler
     type: collection
     path: src/content/projects
     format: yaml-frontmatter
     filename:
-      template: '{fields.urlSlug}.md'
+      template: "{fields.urlSlug}.md"
       field: false
     view:
-      fields: [title, published, featured, status]
+      fields:
+        - title
+        - published
+        - featured
+        - status
       primary: title
-      sort: [order, title]
+      sort:
+        - order
+        - title
     fields:
       - name: title
         label: Proje adı
@@ -214,22 +257,85 @@ content:
         type: string
         required: true
         pattern:
-          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          regex: ^[a-z0-9]+(-[a-z0-9]+)*$
           message: Yalnızca küçük harf, rakam ve tire kullan. Örnek not-uygulamasi
         description: Proje /projeler/ADRES/ adresinde açılır.
+      - name: tagline
+        label: Tek satırlık proje tanımı
+        description: Bir dil boşsa diğer dildeki metin gösterilir.
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
+      - name: context
+        label: Yarışma, ödül veya destek bilgisi
+        description: Bir dil boşsa diğer dildeki metin gösterilir.
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: summary
         label: Kısa açıklama
-        type: text
+        type: object
         description: Proje kartında görünen bir iki cümle. Yayınlamak için gerekli.
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
+      - name: highlights
+        label: Projeye katkılarım
+        description: Her maddeyi ayrı ekle. Sitede Neler yaptım bölümünde gösterilir.
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+            list: true
+          - name: en
+            label: English
+            type: text
+            list: true
       - name: problem
         label: Çözdüğü problem
-        type: text
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: benefit
         label: Kullanıcıya sağladığı fayda
-        type: text
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: role
         label: Projedeki rolüm
-        type: string
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: technologies
         label: Teknolojiler
         type: string
@@ -246,6 +352,66 @@ content:
               label: Geliştiriliyor
             - name: arsiv
               label: Arşiv
+      - name: icon
+        label: Kapak yokken gösterilen simge
+        type: select
+        options:
+          placeholder: Simge seç (isteğe bağlı)
+          values:
+            - name: shield
+              label: Güvenlik
+            - name: sparkles
+              label: Yapay zekâ
+            - name: graduation
+              label: Eğitim
+            - name: trophy
+              label: Ödül
+            - name: campus
+              label: Kampüs
+            - name: construction
+              label: İnşaat
+            - name: document
+              label: Doküman
+            - name: server
+              label: Sunucu
+            - name: database
+              label: Veritabanı
+            - name: layers
+              label: Katmanlar
+            - name: code
+              label: Kod
+            - name: globe
+              label: Web
+            - name: cart
+              label: E-ticaret
+            - name: chart
+              label: Analitik
+            - name: mobile
+              label: Mobil
+            - name: bot
+              label: Bot
+      - name: color
+        label: Proje rengi
+        type: select
+        options:
+          placeholder: Renk seç (isteğe bağlı)
+          values:
+            - name: blue
+              label: Mavi
+            - name: purple
+              label: Mor
+            - name: teal
+              label: Turkuaz
+            - name: orange
+              label: Turuncu
+            - name: pink
+              label: Pembe
+            - name: green
+              label: Yeşil
+            - name: indigo
+              label: İndigo
+            - name: red
+              label: Kırmızı
       - name: cover
         label: Kapak görseli (ekran görüntüsü)
         type: image
@@ -253,52 +419,67 @@ content:
           media: project_images
       - name: coverAlt
         label: Kapak görselinin açıklaması
-        type: string
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: gallery
         label: Galeri
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: '{alt}'
+            summary: "{fields.alt.tr}"
         fields:
           - name: image
             label: Görsel
             type: image
             options:
               media: project_images
+            required: true
           - name: alt
             label: Görselin açıklaması
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
       - name: repoUrl
         label: GitHub bağlantısı
         type: string
         pattern:
-          regex: '^https?://'
+          regex: ^https?://
           message: Bağlantı https:// ile başlamalı.
       - name: demoUrl
         label: Çalışan demo adresi
         type: string
         description: Demo yoksa boş bırak; sitede çalışmayan düğme gösterilmez.
         pattern:
-          regex: '^https?://'
+          regex: ^https?://
           message: Bağlantı https:// ile başlamalı.
       - name: videoUrl
         label: Tanıtım videosu
         type: string
         pattern:
-          regex: '^https?://'
+          regex: ^https?://
           message: Bağlantı https:// ile başlamalı.
       - name: startedAt
         label: Başlangıç tarihi
         type: date
-        default: ''
+        default: ""
         options:
           format: yyyy-MM-dd
       - name: endedAt
         label: Bitiş tarihi
         type: date
-        default: ''
+        default: ""
         options:
           format: yyyy-MM-dd
       - name: featured
@@ -320,7 +501,6 @@ content:
           format: markdown
           media: project_images
           switcher: true
-
   - name: profile
     label: Profil ve İletişim
     type: file
@@ -333,24 +513,56 @@ content:
         required: true
       - name: title
         label: Unvan
-        type: string
+        type: object
         required: true
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: shortBio
         label: Kısa tanıtım (ana sayfa)
-        type: text
+        type: object
         required: true
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: bio
         label: Hakkımda metni
-        type: text
+        type: object
         required: true
         description: Paragrafları boş bir satırla ayır.
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: location
         label: Konum
-        type: string
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: email
         label: E-posta
         type: string
         description: Sitede herkese açık görünür.
+      - name: phone
+        label: Telefon
+        type: string
+        description: Ülke koduyla telefon numarası. Sitede arama bağlantısı olarak gösterilir.
       - name: avatar
         label: Profil fotoğrafı
         type: image
@@ -358,76 +570,217 @@ content:
           media: profile_images
       - name: avatarAlt
         label: Fotoğrafın açıklaması
-        type: string
+        type: object
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: cv
         label: CV (PDF)
         type: file
         description: Yalnızca herkese açık paylaşmak istediğin bilgileri içeren bir CV yükle.
         options:
           media: cv_files
-      - name: languages
-        label: Diller
-        type: string
-        list: true
       - name: education
         label: Eğitim
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: '{school}'
+            summary: "{fields.school.tr}"
         fields:
           - name: school
             label: Okul
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+            required: true
           - name: program
             label: Bölüm / program
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: location
+            label: Konum
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
           - name: period
             label: Dönem
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
       - name: experience
         label: Deneyim
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: '{role} · {organization}'
+            summary: "{fields.role.tr} · {fields.organization.tr}"
         fields:
           - name: role
             label: Görev
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+            required: true
           - name: organization
             label: Kurum
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+            required: true
+          - name: location
+            label: Konum
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
           - name: period
             label: Dönem
-            type: string
-          - name: description
-            label: Açıklama
-            type: text
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: highlights
+            label: Katkılarım ve sorumluluklarım
+            description: CV ile uyumlu maddeleri her dil için ayrı ekle.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+                list: true
+              - name: en
+                label: English
+                type: text
+                list: true
       - name: skills
         label: Yetenekler
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: '{group}'
+            summary: "{fields.group.tr}"
         fields:
           - name: group
             label: Grup adı
-            type: string
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+            required: true
           - name: items
             label: Yetenekler
             type: string
             list: true
+      - name: awards
+        label: Ödüller ve teknik yazarlık
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{fields.title.tr}"
+        fields:
+          - name: title
+            label: Başlık
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            required: true
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: detail
+            label: Ödül / görev
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: description
+            label: Açıklama
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: icon
+            label: Simge
+            type: select
+            options:
+              values:
+                - name: trophy
+                  label: Kupa
+                - name: award
+                  label: Ödül
+                - name: writing
+                  label: Yazarlık
       - name: links
         label: Bağlantılar
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: '{label}'
+            summary: "{label}"
         fields:
           - name: label
             label: Görünen ad
@@ -436,7 +789,7 @@ content:
             label: Adres
             type: string
             pattern:
-              regex: '^https?://'
+              regex: ^https?://
               message: Bağlantı https:// ile başlamalı.
           - name: kind
             label: Tür
@@ -461,13 +814,19 @@ content:
                   label: Diğer
       - name: siteDescription
         label: Site açıklaması (arama motorları için)
-        type: text
+        type: object
         required: true
+        fields:
+          - name: tr
+            label: Türkçe
+            type: text
+          - name: en
+            label: English
+            type: text
       - name: googleSiteVerification
         label: Google Search Console doğrulama kodu
         type: string
         description: Search Console'un verdiği HTML etiketindeki content değeri. Yoksa boş bırak.
-
   - name: series
     label: Çalışma Serileri
     type: file
@@ -480,22 +839,36 @@ content:
         list:
           collapsible:
             collapsed: true
-            summary: '{title}'
+            summary: "{fields.title.tr}"
         fields:
           - name: id
             label: Seri kimliği
             type: string
             required: true
             pattern:
-              regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+              regex: ^[a-z0-9]+(-[a-z0-9]+)*$
               message: Yalnızca küçük harf, rakam ve tire kullan.
           - name: title
             label: Seri adı
-            type: string
+            type: object
             required: true
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
           - name: description
             label: Açıklama
-            type: text
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
           - name: published
             label: Yayında
             type: boolean
@@ -506,23 +879,86 @@ content:
             list:
               collapsible:
                 collapsed: true
-                summary: '{title}'
+                summary: "{fields.title.tr}"
             fields:
               - name: title
                 label: Chapter adı
-                type: string
+                type: object
+                fields:
+                  - name: tr
+                    label: Türkçe
+                    type: text
+                  - name: en
+                    label: English
+                    type: text
+                required: true
               - name: parts
                 label: Part'lar (sırayla)
                 type: object
                 list:
                   collapsible:
                     collapsed: true
-                    summary: '{title} {ref}'
+                    summary: "{fields.title.tr} {fields.ref}"
                 fields:
                   - name: ref
                     label: İçeriğin site adresi
                     type: string
                     description: Örnek /blog/spring-boot-controller/ veya /notlar/yerel/java-interface/
+                    required: true
                   - name: title
                     label: Part başlığı (isteğe bağlı)
-                    type: string
+                    type: object
+                    fields:
+                      - name: tr
+                        label: Türkçe
+                        type: text
+                      - name: en
+                        label: English
+                        type: text
+  - name: taxonomy
+    label: İçerik kategorileri
+    type: file
+    path: src/data/taxonomy.json
+    format: json
+    fields:
+      - name: categories
+        label: Kategoriler
+        type: object
+        description: Kategori kimliği, Makaleler ve Öğrenme Notları kategori seçenekleriyle aynı olmalıdır.
+        list:
+          min: 1
+          collapsible:
+            collapsed: true
+            summary: "{fields.label.tr} ({fields.id})"
+        fields:
+          - name: id
+            label: Kategori kimliği
+            type: string
+            required: true
+            pattern:
+              regex: ^[a-z0-9]+(-[a-z0-9]+)*$
+              message: Yalnızca küçük harf, rakam ve tire kullan.
+            description: Yayınlanmış yazıların ve notların category değeriyle eşleşir. Kullanımdaki kimliği değiştirme.
+          - name: label
+            label: Görünen kategori adı
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            required: true
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text
+          - name: description
+            label: Kategori açıklaması
+            description: Bir dil boşsa diğer dildeki metin gösterilir.
+            type: object
+            fields:
+              - name: tr
+                label: Türkçe
+                type: text
+              - name: en
+                label: English
+                type: text

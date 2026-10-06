@@ -9,6 +9,8 @@
  * Telefon ve tablet düzeninde (900 px altı) sürükleme/boyutlandırma yoktur;
  * pencere sayfanın kendisidir.
  */
+import { localePaths } from '../content/urls.ts';
+import { pageLocale, strings } from '../i18n/client.ts';
 import { toggleTheme } from '../ui/appearance.ts';
 import { clampRect, isRect, moveRect, resizeRect, type Rect, type Size } from './bounds.ts';
 import { openSearch, WINDOW_COMMAND, WINDOWS_CHANGED, type WindowCommand, type WindowSummary } from './events.ts';
@@ -107,7 +109,8 @@ function applyGeometry(win: ManagedWindow): void {
   const zoom = win.el.querySelector<HTMLButtonElement>('[data-window-action="zoom"]');
   if (zoom) {
     zoom.setAttribute('aria-pressed', String(win.maximized));
-    zoom.setAttribute('aria-label', win.maximized ? 'Pencereyi önceki boyutuna döndür' : 'Pencereyi büyüt');
+    const t = strings().window;
+    zoom.setAttribute('aria-label', win.maximized ? t.unzoom : t.zoom);
   }
 }
 
@@ -332,7 +335,7 @@ function register(el: HTMLElement): ManagedWindow {
     } else if (action === 'back') {
       event.preventDefault();
       if (window.history.length > 1) window.history.back();
-      else window.location.assign('/');
+      else window.location.assign(localePaths(pageLocale()).home);
     } else if (action === 'forward') {
       event.preventDefault();
       window.history.forward();

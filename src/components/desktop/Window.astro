@@ -5,10 +5,14 @@
  * ürettiği HTML olarak kalır; davranışı pencere yöneticisi ekler.
  */
 import { BookOpen, ChevronLeft, ChevronRight, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
-import { SECTIONS, type IconName, type SectionId } from '../../lib/site/sections.ts';
+import { localePaths, localizePath } from '../../lib/content/urls.ts';
+import { languageHref, LANGUAGE_CODES, otherLocale, type Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+import { sectionsFor, type IconName, type SectionId } from '../../lib/site/sections.ts';
 import SectionIcon from '../icons/SectionIcon.tsx';
 
 interface Props {
+  locale: Locale;
   id: string;
   title: string;
   icon: IconName;
@@ -22,11 +26,16 @@ interface Props {
   /** Telefonda sol üstteki geri düğmesi. */
   backHref?: string;
   backLabel?: string;
+  alternatePath?: string;
 }
 
-const { id, title, icon, variant, section, closeHref, readingTools = false, backHref, backLabel } = Astro.props;
+const { locale, id, title, icon, variant, section, closeHref, readingTools = false, backHref, backLabel, alternatePath } = Astro.props;
+const t = useTranslations(locale);
 const showSidebar = variant === 'main';
 const pathname = Astro.url.pathname;
+const sections = sectionsFor(locale);
+const other = otherLocale(locale);
+const otherPath = alternatePath ?? localizePath(pathname, other);
 ---
 
 <div
@@ -40,37 +49,37 @@ const pathname = Astro.url.pathname;
   <div class="window__controls">
     {
       closeHref ? (
-        <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label="Pencereyi kapat ve masaüstüne dön">
+        <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label={t.window.closeToDesktop}>
           <X aria-hidden="true" strokeWidth={3} />
         </a>
       ) : (
-        <button type="button" class="traffic traffic--close" data-window-action="close" aria-label="Pencereyi kapat">
+        <button type="button" class="traffic traffic--close" data-window-action="close" aria-label={t.window.close}>
           <X aria-hidden="true" strokeWidth={3} />
         </button>
       )
     }
-    <button type="button" class="traffic traffic--minimize" data-window-action="minimize" aria-label="Pencereyi küçült">
+    <button type="button" class="traffic traffic--minimize" data-window-action="minimize" aria-label={t.window.minimize}>
       <Minus aria-hidden="true" strokeWidth={3} />
     </button>
-    <button type="button" class="traffic traffic--zoom" data-window-action="zoom" aria-label="Pencereyi büyüt" aria-pressed="false">
+    <button type="button" class="traffic traffic--zoom" data-window-action="zoom" aria-label={t.window.zoom} aria-pressed="false">
       <Plus aria-hidden="true" strokeWidth={3} />
     </button>
   </div>
 
   {
     showSidebar && (
-      <aside class="window__sidebar" aria-label="Kenar çubuğu">
+      <aside class="window__sidebar" aria-label={t.window.sidebar}>
         <div class="window__sidebar-head" data-window-handle />
-        <nav class="sidebar-section" aria-label="Favoriler">
-          <p class="sidebar-heading">Favoriler</p>
+        <nav class="sidebar-section" aria-label={t.window.favorites}>
+          <p class="sidebar-heading">{t.window.favorites}</p>
           <ul class="sidebar-list">
             <li>
-              <a class="sidebar-link" href="/" data-section-link>
+              <a class="sidebar-link" href={localePaths(locale).home} data-section-link>
                 <House aria-hidden="true" />
-                Masaüstü
+                {t.sections.home.label}
               </a>
             </li>
-            {SECTIONS.map((item) => (
+            {sections.map((item) => (
               <li>
                 <a
                   class="sidebar-link"
@@ -96,15 +105,15 @@ const pathname = Astro.url.pathname;
         backHref && (
           <a class="toolbar-back" href={backHref}>
             <ChevronLeft aria-hidden="true" />
-            <span>{backLabel ?? 'Geri'}</span>
+            <span>{backLabel ?? t.window.back}</span>
           </a>
         )
       }
       <div class="toolbar-capsule toolbar-nav js-only">
-        <button type="button" class="icon-button" data-window-action="back" aria-label="Geri git" title="Geri">
+        <button type="button" class="icon-button" data-window-action="back" aria-label={t.window.backLabel} title={t.window.back}>
           <ChevronLeft aria-hidden="true" />
         </button>
-        <button type="button" class="icon-button" data-window-action="forward" aria-label="İleri git" title="İleri">
+        <button type="button" class="icon-button" data-window-action="forward" aria-label={t.window.forwardLabel} title={t.window.forward}>
           <ChevronRight aria-hidden="true" />
         </button>
       </div>
@@ -113,10 +122,10 @@ const pathname = Astro.url.pathname;
       {
         readingTools && (
           <div class="toolbar-capsule js-only only-desktop">
-            <button type="button" class="icon-button" data-window-action="reading" aria-pressed="false" aria-label="Okuma modu" title="Okuma modu">
+            <button type="button" class="icon-button" data-window-action="reading" aria-pressed="false" aria-label={t.window.readingMode} title={t.window.readingMode}>
               <BookOpen aria-hidden="true" />
             </button>
-            <button type="button" class="icon-button" data-copy-link aria-label="Bağlantıyı kopyala" title="Bağlantıyı kopyala">
+            <button type="button" class="icon-button" data-copy-link aria-label={t.window.copyLink} title={t.window.copyLink}>
               <Link2 aria-hidden="true" />
             </button>
           </div>
@@ -125,21 +134,28 @@ const pathname = Astro.url.pathname;
       <div class="toolbar-capsule js-only only-compact">
         {
           readingTools && (
-            <button type="button" class="icon-button" data-copy-link aria-label="Bağlantıyı kopyala">
+            <button type="button" class="icon-button" data-copy-link aria-label={t.window.copyLink}>
               <Link2 aria-hidden="true" />
             </button>
           )
         }
-        <button type="button" class="icon-button" data-action="theme-toggle" aria-label="Açık veya koyu temaya geç">
+        {
+          otherPath !== pathname && (
+            <a class="icon-button lang-button" href={languageHref(otherPath, other)} hreflang={other} lang={other} data-lang-switch={other} aria-label={t.menubar.switchLanguage}>
+              {LANGUAGE_CODES[other]}
+            </a>
+          )
+        }
+        <button type="button" class="icon-button" data-action="theme-toggle" aria-label={t.window.toggleTheme}>
           <SunMoon aria-hidden="true" />
         </button>
-        <button type="button" class="icon-button" data-open-search aria-haspopup="dialog" aria-label="Sitede ara">
+        <button type="button" class="icon-button" data-open-search aria-haspopup="dialog" aria-label={t.menubar.search}>
           <Search aria-hidden="true" />
         </button>
       </div>
-      <button type="button" class="toolbar-search js-only only-desktop" data-open-search aria-haspopup="dialog" aria-label="Sitede ara">
+      <button type="button" class="toolbar-search js-only only-desktop" data-open-search aria-haspopup="dialog" aria-label={t.menubar.search}>
         <Search aria-hidden="true" />
-        <span>Ara</span>
+        <span>{t.window.search}</span>
         <kbd class="shortcut" aria-hidden="true"><span class="shortcut__mac">⌘</span><span class="shortcut__other">Ctrl</span>K</kbd>
       </button>
     </div>

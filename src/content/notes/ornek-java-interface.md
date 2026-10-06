@@ -7,7 +7,7 @@ publishedAt: 2026-10-06
 tags:
   - java
   - örnek
-published: true
+published: false
 ---
 
 > Bu bir **örnek nottur**. Pages CMS'deki **Öğrenme Notları** bölümünden düzenleyebilir veya silebilirsin. Yeni bir öğrenme konusu için yeni bir repo açman gerekmez; notu buradan eklemen yeterli.

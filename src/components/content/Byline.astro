@@ -2,8 +2,11 @@
 import { CalendarDays, Clock3, FolderOpen, RefreshCw } from 'lucide-react';
 import { formatDate, isoDate } from '../../lib/content/dates.ts';
 import { initials, profile } from '../../lib/content/site-data.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 
 interface Props {
+  locale: Locale;
   publishedAt?: Date | undefined;
   updatedAt?: Date | undefined;
   minutes: number;
@@ -11,7 +14,8 @@ interface Props {
 }
 
 // Tarihi bilinmeyen içerikte tarih uydurulmaz; satır hiç gösterilmez.
-const { publishedAt, updatedAt, minutes, folder } = Astro.props;
+const { locale, publishedAt, updatedAt, minutes, folder } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 <div class="byline" data-pagefind-ignore>
@@ -31,7 +35,7 @@ const { publishedAt, updatedAt, minutes, folder } = Astro.props;
         publishedAt && (
           <li>
             <CalendarDays aria-hidden="true" />
-            <time datetime={isoDate(publishedAt)}>{formatDate(publishedAt)}</time>
+            <time datetime={isoDate(publishedAt)}>{formatDate(publishedAt, locale)}</time>
           </li>
         )
       }
@@ -40,14 +44,14 @@ const { publishedAt, updatedAt, minutes, folder } = Astro.props;
           <li>
             <RefreshCw aria-hidden="true" />
             <span>
-              Güncellendi: <time datetime={isoDate(updatedAt)}>{formatDate(updatedAt)}</time>
+              {t.content.updated} <time datetime={isoDate(updatedAt)}>{formatDate(updatedAt, locale)}</time>
             </span>
           </li>
         )
       }
       <li>
         <Clock3 aria-hidden="true" />
-        <span>{minutes} dk okuma</span>
+        <span>{t.blog.readingTime(minutes)}</span>
       </li>
       {
         folder && (

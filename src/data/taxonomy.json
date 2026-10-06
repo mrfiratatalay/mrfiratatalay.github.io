@@ -2,23 +2,47 @@
   "categories": [
     {
       "id": "java",
-      "label": "Java",
-      "description": "Java dili, nesne yönelimli programlama ve temel kütüphaneler."
+      "label": {
+        "tr": "Java",
+        "en": "Java"
+      },
+      "description": {
+        "tr": "Java dili, nesne yönelimli programlama ve temel kütüphaneler.",
+        "en": "The Java language, object-oriented programming and core libraries."
+      }
     },
     {
       "id": "spring-boot",
-      "label": "Spring Boot",
-      "description": "Spring Framework ve Spring Boot ile backend geliştirme."
+      "label": {
+        "tr": "Spring Boot",
+        "en": "Spring Boot"
+      },
+      "description": {
+        "tr": "Spring Framework ve Spring Boot ile backend geliştirme.",
+        "en": "Backend development with Spring Framework and Spring Boot."
+      }
     },
     {
       "id": "docker",
-      "label": "Docker",
-      "description": "Konteynerler, imajlar ve geliştirme ortamları."
+      "label": {
+        "tr": "Docker",
+        "en": "Docker"
+      },
+      "description": {
+        "tr": "Konteynerler, imajlar ve geliştirme ortamları.",
+        "en": "Containers, images and development environments."
+      }
     },
     {
       "id": "genel",
-      "label": "Genel",
-      "description": "Diğer konular, duyurular ve kısa yazılar."
+      "label": {
+        "tr": "Genel",
+        "en": "General"
+      },
+      "description": {
+        "tr": "Diğer konular, duyurular ve kısa yazılar.",
+        "en": "Other topics, announcements and short posts."
+      }
     }
   ]
 }

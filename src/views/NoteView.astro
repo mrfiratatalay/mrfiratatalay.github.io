@@ -1,0 +1,82 @@
+---
+import { render } from 'astro:content';
+import { CodeXml, ExternalLink } from 'lucide-react';
+import Breadcrumbs from '../components/content/Breadcrumbs.astro';
+import Byline from '../components/content/Byline.astro';
+import Pager from '../components/content/Pager.astro';
+import SeriesBanner from '../components/content/SeriesBanner.astro';
+import Toc from '../components/content/Toc.astro';
+import ReadingLayout from '../layouts/ReadingLayout.astro';
+import { findSeriesContext, type NoteItem } from '../lib/content/collections.ts';
+import { categoryLabel, profile } from '../lib/content/site-data.ts';
+import { LOCAL_NOTE_SOURCE_ID, localePaths } from '../lib/content/urls.ts';
+import { LOCALE_TAGS, type Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+  note: NoteItem;
+  sourceLabel: string;
+  previous?: NoteItem | undefined;
+  next?: NoteItem | undefined;
+}
+
+const { locale, note, sourceLabel, previous, next } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const { Content, headings } = await render(note.entry);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const series = await findSeriesContext(note.url, locale);
+const label = categoryLabel(note.category, locale);
+const description = note.description ?? t.notes.fallbackDescription(sourceLabel);
+const url = paths.note(note.sourceId, note.slug);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: note.title,
+  description,
+  ...(note.publishedAt ? { datePublished: note.publishedAt.toISOString() } : {}),
+  ...(note.updatedAt ? { dateModified: note.updatedAt.toISOString() } : {}),
+  author: { '@type': 'Person', name: profile.name, url: new URL(paths.about, site).toString() },
+  mainEntityOfPage: new URL(url, site).toString(),
+  inLanguage: LOCALE_TAGS[note.lang],
+  ...(note.tags.length ? { keywords: note.tags.join(', ') } : {}),
+};
+---
+
+<ReadingLayout locale={locale} title={note.title} description={description} section="notes" windowTitle={sourceLabel} icon="notes" backHref={paths.noteSource(note.sourceId)} backLabel={sourceLabel} headings={headings} type="article" publishedTime={note.publishedAt} modifiedTime={note.updatedAt} tags={note.tags} jsonLd={jsonLd}>
+  <article class="article" data-pagefind-body data-pagefind-meta="type:note">
+    <Breadcrumbs locale={locale} items={[{ label: t.notes.title, href: paths.notes }, { label: sourceLabel, href: paths.noteSource(note.sourceId) }, { label: note.title }]} />
+    {series && <SeriesBanner locale={locale} context={series} />}
+    <header class="article-header">
+      <p class="article-kicker" data-pagefind-ignore>
+        {label && <a class="pill" href={`${paths.blog}?kategori=${note.category}`}>{label}</a>}
+        <span>{t.notes.kicker}</span>
+      </p>
+      <h1 class="article-title" lang={note.lang}>{note.title}</h1>
+      {note.description && note.sourceId === LOCAL_NOTE_SOURCE_ID && <p class="article-lead" lang={note.lang}>{note.description}</p>}
+      {note.lang !== locale && <p class="content-language-note" data-pagefind-ignore>{t.content.writtenIn[note.lang]}</p>}
+      <Byline locale={locale} publishedAt={note.publishedAt} updatedAt={note.updatedAt} minutes={note.readingMinutes} folder={note.folder || undefined} />
+    </header>
+    <Toc locale={locale} headings={headings} variant="inline" />
+    <div class="prose" lang={note.lang}><Content /></div>
+    {note.source && (
+      <p class="source-note" data-pagefind-ignore>
+        <span class="app-icon app-icon--link-github" style="--size: 32px; border-radius: 9px;" aria-hidden="true"><CodeXml /></span>
+        <span>{t.notes.fromRepository} <strong>{note.source.repository}</strong>.{' '}
+          <a href={note.source.url} rel="noopener">{t.notes.viewSource}<ExternalLink aria-hidden="true" size={13} /></a>
+        </span>
+      </p>
+    )}
+    {series ? (
+      <Pager locale={locale} heading={t.series.pagerHeading(series.series.title)} previous={series.previous} next={series.next} previousLabel={t.series.previous} nextLabel={t.series.next} />
+    ) : (
+      <Pager locale={locale} heading={t.notes.inCollection(sourceLabel)} previous={previous ? { title: previous.title, url: paths.note(previous.sourceId, previous.slug) } : undefined} next={next ? { title: next.title, url: paths.note(next.sourceId, next.slug) } : undefined} previousLabel={t.notes.previous} nextLabel={t.notes.next} />
+    )}
+  </article>
+</ReadingLayout>
+
+<style>
+  .content-language-note { margin: 14px 0; color: var(--label-2); font-size: 0.875rem; }
+  .source-note svg { vertical-align: middle; margin-inline-start: 4px; }
+</style>

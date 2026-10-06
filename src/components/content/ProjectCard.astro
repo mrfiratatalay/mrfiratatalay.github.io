@@ -1,31 +1,57 @@
 ---
 import type { ProjectEntry } from '../../lib/content/collections.ts';
-import { PROJECT_STATUSES } from '../../lib/content/schemas.ts';
-import { paths } from '../../lib/content/urls.ts';
+import { localePaths } from '../../lib/content/urls.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { text } from '../../lib/i18n/text.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import ProjectVisual from './ProjectVisual.astro';
 
 interface Props {
+  locale: Locale;
   project: ProjectEntry;
 }
 
-const { project } = Astro.props;
+const { locale, project } = Astro.props;
 const { data } = project;
+const t = useTranslations(locale).projects;
+const context = text(data.context, locale);
+const tagline = text(data.tagline, locale);
+const summary = text(data.summary, locale);
+const MAX_CHIPS = 5;
+const chips = data.technologies.slice(0, MAX_CHIPS);
+const hidden = data.technologies.length - chips.length;
 ---
 
-<article class="card">
-  <ProjectVisual title={data.title} slug={data.urlSlug} cover={data.cover} coverAlt={data.coverAlt} />
+<article class="card card--project">
+  <ProjectVisual
+    title={data.title}
+    slug={data.urlSlug}
+    cover={data.cover}
+    coverAlt={text(data.coverAlt, locale)}
+    icon={data.icon}
+    color={data.color}
+  />
   <div class="card__body">
-    {data.status && <p class="card__kicker"><span class="pill pill--neutral">{PROJECT_STATUSES[data.status]}</span></p>}
-    <h2 class="card__title">
-      <a href={paths.project(data.urlSlug)}>{data.title}</a>
-    </h2>
-    {data.summary && <p class="card__text">{data.summary}</p>}
     {
-      data.technologies.length > 0 && (
-        <ul class="chip-list" aria-label="Kullanılan teknolojiler">
-          {data.technologies.map((tech) => (
+      (context || data.status) && (
+        <p class="card__kicker">
+          {context && <span class="pill pill--award">{context}</span>}
+          {!context && data.status && <span class="pill pill--neutral">{t.status[data.status]}</span>}
+        </p>
+      )
+    }
+    <h2 class="card__title">
+      <a href={localePaths(locale).project(data.urlSlug)}>{data.title}</a>
+    </h2>
+    {tagline && <p class="card__tagline">{tagline}</p>}
+    {summary && <p class="card__text">{summary}</p>}
+    {
+      chips.length > 0 && (
+        <ul class="chip-list" aria-label={t.technologiesLabel}>
+          {chips.map((tech) => (
             <li class="chip">{tech}</li>
           ))}
+          {hidden > 0 && <li class="chip chip--more">+{hidden}</li>}
         </ul>
       )
     }

@@ -1,13 +1,22 @@
 ---
 /** Telefonda ana ekran: bölümler uygulama ikonları olarak görünür. */
-import { SECTIONS } from '../../lib/site/sections.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+import { sectionsFor } from '../../lib/site/sections.ts';
 import AppIcon from '../icons/AppIcon.tsx';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
 ---
 
-<nav class="home-apps" aria-label="Uygulamalar">
+<nav class="home-apps" aria-label={t.home.apps}>
   <ul>
     {
-      SECTIONS.map((section) => (
+      sectionsFor(locale).map((section) => (
         <li>
           <a class="home-app" href={section.href}>
             <AppIcon name={section.icon} />
@@ -19,7 +28,7 @@ import AppIcon from '../icons/AppIcon.tsx';
     <li class="js-only">
       <button type="button" class="home-app" data-open-search aria-haspopup="dialog">
         <AppIcon name="search" />
-        <span>Ara</span>
+        <span>{t.sections.search.short}</span>
       </button>
     </li>
   </ul>

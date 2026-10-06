@@ -1,85 +1,13 @@
 ---
-import Breadcrumbs from '../../../components/content/Breadcrumbs.astro';
-import CollectionsSidebar from '../../../components/content/CollectionsSidebar.astro';
-import Window from '../../../components/desktop/Window.astro';
-import FolderIcon from '../../../components/icons/FolderIcon.astro';
-import DesktopLayout from '../../../layouts/DesktopLayout.astro';
-import { getNoteSources, type NoteItem, type NoteSourceInfo } from '../../../lib/content/collections.ts';
-import { paths } from '../../../lib/content/urls.ts';
-import { folderColor } from '../../../lib/site/folder-colors.ts';
+import NoteSourceView from '../../../views/NoteSourceView.astro';
+import { getNoteSources, type NoteSourceInfo } from '../../../lib/content/collections.ts';
 
 export async function getStaticPaths() {
-  const sources = await getNoteSources();
+  const sources = await getNoteSources('tr');
   return sources.map((source, index) => ({ params: { sourceId: source.id }, props: { source, sources, index } }));
 }
-
-interface Props {
-  source: NoteSourceInfo;
-  sources: NoteSourceInfo[];
-  index: number;
-}
-
+interface Props { source: NoteSourceInfo; sources: NoteSourceInfo[]; index: number }
 const { source, sources, index } = Astro.props;
-
-// Notlar kaynak klasörlerine göre gruplanır (sıra: kaynak repodaki doğal sıra).
-const groups = new Map<string, NoteItem[]>();
-for (const note of source.notes) {
-  groups.set(note.folder, [...(groups.get(note.folder) ?? []), note]);
-}
-const description = source.description ?? `${source.label}: ${source.notes.length} öğrenme notu.`;
 ---
 
-<DesktopLayout title={source.label} description={description} section="notes">
-  <Window id="main" variant="main" title={source.label} icon="notes" section="notes" closeHref="/" backHref={paths.notes} backLabel="Notlar">
-    <CollectionsSidebar slot="sidebar" sources={sources} current={source.id} />
-
-    <Breadcrumbs items={[{ label: 'Öğrenme Notları', href: paths.notes }, { label: source.label }]} />
-    <header class="page-head" style="display: flex; align-items: center; gap: 18px;">
-      <FolderIcon color={folderColor(index)} icon="notes" size="large" />
-      <div>
-        <h1 class="page-title">{source.label}</h1>
-        <p class="page-lead" style="margin-top: 6px;">{description}</p>
-      </div>
-    </header>
-
-    {
-      [...groups].map(([folder, notes]) => (
-        <section class="list-view" aria-label={folder || source.label}>
-          {folder && (
-            <h2 class="list-view__group">
-              <FolderIcon color={folderColor(index)} />
-              <span class="list-view__path">
-                {folder.split('/').map((segment, position, all) =>
-                  position < all.length - 1 ? (
-                    <>
-                      <span class="list-view__parent">{segment}</span>
-                      <span class="list-view__sep" aria-hidden="true">›</span>
-                    </>
-                  ) : (
-                    <span class="list-view__leaf">{segment}</span>
-                  ),
-                )}
-              </span>
-            </h2>
-          )}
-          <ul class="list-rows">
-            {notes.map((note) => (
-              <li class="list-row">
-                <div class="list-row__name">
-                  <span class="doc-icon" aria-hidden="true" />
-                  <div style="min-width: 0;">
-                    <h3 class="list-row__title">
-                      <a href={note.url}>{note.title}</a>
-                    </h3>
-                    {note.description && <p class="list-row__summary">{note.description}</p>}
-                  </div>
-                </div>
-                <span class="list-row__time">{note.readingMinutes} dk</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))
-    }
-  </Window>
-</DesktopLayout>
+<NoteSourceView locale="tr" source={source} sources={sources} index={index} />

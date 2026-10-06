@@ -28,6 +28,11 @@ export const sourceSchema = z.object({
     }),
   label: z.string().min(1),
   description: z.string().optional(),
+  /** İngilizce arayüzde görünen ad ve açıklama; boşsa Türkçesi kullanılır. */
+  labelEn: z.string().optional(),
+  descriptionEn: z.string().optional(),
+  /** Notların yazıldığı dil. */
+  lang: z.enum(['tr', 'en']).default('tr'),
   repository: z.string().regex(REPOSITORY_PATTERN, { error: 'Repo "kullanici/repo" biçiminde olmalı.' }),
   branch: z.string().regex(BRANCH_PATTERN, { error: 'Branch adı geçersiz.' }),
   enabled: z.boolean(),
@@ -38,6 +43,16 @@ export const sourceSchema = z.object({
   order: z.number().default(100),
   /** Dosya taşındığında eski adresi korumak veya çakışmayı çözmek için: { "kök-içi/yol.md": "adres/parcasi" } */
   addressMap: z.record(z.string(), z.string()).default({}),
+  /** Kaynak metni değiştirmeden, dosya adına bağlı başlık ve kategori bilgisi. */
+  noteMetadata: z.record(z.string(), z.object({
+    title: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    category: z.string().regex(SLUG_PATTERN).optional(),
+    tags: z.array(z.string()).optional(),
+    resources: z.array(z.object({ label: z.string().min(1), path: repoRelativePath })).default([]),
+  })).default({}),
+  /** Konu klasöründeki TEKRAR görsellerini ve PDF'lerini ana notun sonuna ekler. */
+  includeReviewAssets: z.boolean().default(false),
 });
 
 const limitsSchema = z.object({
@@ -98,6 +113,11 @@ export function loadNoteSourcesConfig(configPath: string, categoryIds: ReadonlyS
     for (const [file, slug] of Object.entries(source.addressMap)) {
       if (!isValidNoteSlug(slug)) {
         problems.push(`"${source.id}": addressMap içindeki "${file}" için verilen "${slug}" adresi geçersiz.`);
+      }
+    }
+    for (const [file, metadata] of Object.entries(source.noteMetadata)) {
+      if (metadata.category && !categoryIds.has(metadata.category)) {
+        problems.push(`"${source.id}": "${file}" için "${metadata.category}" kategorisi bulunamadı.`);
       }
     }
   }

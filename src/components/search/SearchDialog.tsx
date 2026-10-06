@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import { OPEN_SEARCH, openSearch } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
 
@@ -9,7 +11,7 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabi
  * Odak içeri taşınır, Tab dolaşımı pencere içinde kalır, Escape kapatır ve
  * kapanınca odak aramayı açan düğmeye döner.
  */
-export default function SearchDialog() {
+export default function SearchDialog({ locale }: { locale: Locale }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
@@ -87,14 +89,14 @@ export default function SearchDialog() {
     <dialog
       ref={dialogRef}
       className="spotlight"
-      aria-label="Spotlight araması"
+      aria-label={useTranslations(locale).search.dialog}
       onClose={onClose}
       onKeyDown={onKeyDown}
       onClick={onBackdropClick}
     >
       {open && (
         <div className="spotlight__inner">
-          <SearchPanel autoFocus onNavigate={close} onClose={close} />
+          <SearchPanel locale={locale} autoFocus onNavigate={close} onClose={close} />
         </div>
       )}
     </dialog>

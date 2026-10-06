@@ -1,0 +1,44 @@
+---
+import type { NoteItem } from '../lib/content/collections.ts';
+import { formatDate, isoDate } from '../lib/content/dates.ts';
+import { categoryLabel } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import CategoryGlyph, { categoryTint } from '../components/icons/CategoryGlyph.tsx';
+
+interface Props {
+  locale: Locale;
+  note: NoteItem;
+  sourceLabel: string;
+  featured?: boolean;
+}
+
+const { locale, note, sourceLabel, featured = false } = Astro.props;
+const t = useTranslations(locale);
+const label = categoryLabel(note.category, locale);
+---
+
+<article class:list={['card', { 'card--featured': featured }]}>
+  <div class="card__media" style={`--tint: ${categoryTint(note.category ?? 'genel')}`}>
+    <span class="card__art" aria-hidden="true">
+      <span class="card__tile card__glyph"><CategoryGlyph category={note.category ?? 'genel'} /></span>
+    </span>
+  </div>
+  <div class="card__body">
+    <p class="card__kicker">
+      {label && <span class="pill">{label}</span>}
+      <span class="pill pill--neutral">{t.notes.kicker}</span>
+      {note.lang !== locale && <span class="pill pill--neutral">{t.content.languageName[note.lang]}</span>}
+    </p>
+    <h2 class="card__title" lang={note.lang}>
+      <a href={localePaths(locale).note(note.sourceId, note.slug)}>{note.title}</a>
+    </h2>
+    {note.description && <p class="card__text" lang={note.lang}>{note.description}</p>}
+    <ul class="card__meta">
+      <li>{sourceLabel}</li>
+      {note.publishedAt && <li><time datetime={isoDate(note.publishedAt)}>{formatDate(note.publishedAt, locale)}</time></li>}
+      <li>{t.blog.readingTime(note.readingMinutes)}</li>
+    </ul>
+  </div>
+</article>

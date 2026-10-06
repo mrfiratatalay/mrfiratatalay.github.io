@@ -1,10 +1,14 @@
 ---
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
+
 interface Link {
   title: string;
   url: string;
 }
 
 interface Props {
+  locale: Locale;
   heading: string;
   previous?: Link | undefined;
   next?: Link | undefined;
@@ -12,7 +16,8 @@ interface Props {
   nextLabel?: string;
 }
 
-const { heading, previous, next, previousLabel = 'Önceki', nextLabel = 'Sonraki' } = Astro.props;
+const t = useTranslations(Astro.props.locale).content;
+const { heading, previous, next, previousLabel = t.previous, nextLabel = t.next } = Astro.props;
 ---
 
 {

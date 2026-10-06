@@ -1,0 +1,12 @@
+{
+  "mrfiratatalay/java-spring#main": {
+    "path": "content-sources/java-spring",
+    "commit": "snapshot-f2aeab9dc87bfa1b",
+    "sourceCommit": "0b302b980e3a84b3f6fc3e9345998eb75545575c",
+    "mirror": {
+      "repository": "mrfiratatalay/mrfiratatalay.github.io",
+      "root": "content-sources/java-spring",
+      "ref": "main"
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "concurrency": 2,
   "limits": {
     "maxMarkdownBytes": 2097152,
-    "maxAssetBytes": 4194304,
+    "maxAssetBytes": 8388608,
     "maxImageWidth": 1600,
     "timeoutSeconds": 120,
     "retries": 2
@@ -10,29 +10,122 @@
   "sources": [
     {
       "id": "java-notlari",
-      "label": "Java Notlarım",
-      "description": "Java ve Spring Boot öğrenirken tuttuğum haftalık notlar.",
+      "label": "Java ve Spring Boot Notlarım",
+      "description": "Java ve Spring Boot için haftalık konu notlarım, kod örneklerim ve görsel özetlerim.",
       "repository": "mrfiratatalay/java-spring",
       "branch": "main",
-      "enabled": false,
+      "enabled": true,
       "category": "java",
       "root": "JAVA/FIRAT ATALAY",
-      "include": ["00-WEEK/**/*.md"],
-      "exclude": ["**/TEKRAR/**"],
-      "order": 10
+      "include": [
+        "*-WEEK/**/*.md"
+      ],
+      "exclude": [
+        "**/TEKRAR/**"
+      ],
+      "order": 10,
+      "lang": "tr",
+      "includeReviewAssets": true,
+      "labelEn": "Java & Spring Boot Notes",
+      "descriptionEn": "My weekly notes, code examples and visual summaries on Java and Spring Boot.",
+      "noteMetadata": {
+        "00-WEEK/00/00.md": {
+          "title": "Spring Framework ve Spring Boot: Temeller",
+          "description": "Java, Spring Framework ve Spring Boot arasındaki ilişki; Bean, ApplicationContext, dependency injection, autoconfiguration, starter, configuration properties ve bağımlılık yönetimi.",
+          "category": "spring-boot",
+          "tags": [
+            "java",
+            "spring",
+            "spring-boot"
+          ]
+        },
+        "00-WEEK/01/01.md": {
+          "title": "Spring Boot ile Video Uygulaması: HTML, Form, JSON API ve React",
+          "description": "Spring Initializr’dan çalışan video uygulamasına: controller, Mustache, servis, form gönderimi, JSON API, React, API sürümleme, RestClient ve null güvenliği.",
+          "category": "spring-boot",
+          "tags": [
+            "java",
+            "spring-boot",
+            "rest-api",
+            "react"
+          ],
+          "resources": [
+            {
+              "label": "Chapter 2 — Spring Boot video uygulaması",
+              "path": "JAVA/FIRAT ATALAY/CODING/chapter2"
+            },
+            {
+              "label": "Chapter 2.1 — Form ve JSON API devamı",
+              "path": "JAVA/FIRAT ATALAY/CODING/chapter2.1"
+            }
+          ]
+        },
+        "00-WEEK/01/JAVA-HATIRLATMA.md": {
+          "title": "Java Hatırlatma: Dil Temelleri ve Spring Boot Bağlantıları",
+          "description": "Java sınıfları, nesneler, tipler, metotlar ve koleksiyonları; Spring Boot uygulamasındaki kod örnekleri üzerinden tekrar ettiğim notlar.",
+          "category": "java",
+          "tags": [
+            "java",
+            "oop",
+            "spring-boot"
+          ]
+        }
+      }
     },
     {
       "id": "docker-notlari",
-      "label": "Docker Notlarım",
-      "description": "Docker öğrenirken tuttuğum haftalık notlar.",
+      "label": "Docker Çalışma Notlarım",
+      "description": "Container temelleri ile Java ve Spring Boot tekrarlarını içeren Docker çalışma klasörüm.",
       "repository": "mrfiratatalay/java-spring",
       "branch": "main",
-      "enabled": false,
+      "enabled": true,
       "category": "docker",
       "root": "DOCKER/FIRAT ATALAY",
-      "include": ["00-WEEK/**/*.md"],
-      "exclude": ["**/TEKRAR/**"],
-      "order": 20
+      "include": [
+        "*-WEEK/**/*.md"
+      ],
+      "exclude": [
+        "**/TEKRAR/**"
+      ],
+      "order": 20,
+      "lang": "tr",
+      "includeReviewAssets": true,
+      "labelEn": "Docker Study Notes",
+      "descriptionEn": "My Docker learning folder, including container fundamentals and supporting Java/Spring Boot notes.",
+      "noteMetadata": {
+        "00-WEEK/00/00.md": {
+          "title": "Docker ve Container Temelleri",
+          "description": "Fiziksel sunucular, sanal makineler, container modeli, kernel paylaşımı, Docker, Linux/Windows/macOS, Wasm, AI ve Kubernetes bağlantısı.",
+          "category": "docker",
+          "tags": [
+            "docker",
+            "container",
+            "kernel",
+            "kubernetes"
+          ]
+        },
+        "00-WEEK/01/01.md": {
+          "title": "Spring Boot ile Video Uygulaması: HTML, Form, JSON API ve React",
+          "description": "Spring Initializr’dan çalışan video uygulamasına: controller, Mustache, servis, form gönderimi, JSON API, React, API sürümleme, RestClient ve null güvenliği.",
+          "category": "spring-boot",
+          "tags": [
+            "java",
+            "spring-boot",
+            "rest-api",
+            "react"
+          ]
+        },
+        "00-WEEK/01/JAVA-HATIRLATMA.md": {
+          "title": "Java Hatırlatma: Dil Temelleri ve Spring Boot Bağlantıları",
+          "description": "Java sınıfları, nesneler, tipler, metotlar ve koleksiyonları; Spring Boot uygulamasındaki kod örnekleri üzerinden tekrar ettiğim notlar.",
+          "category": "java",
+          "tags": [
+            "java",
+            "oop",
+            "spring-boot"
+          ]
+        }
+      }
     }
   ]
 }

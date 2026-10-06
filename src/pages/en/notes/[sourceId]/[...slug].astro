@@ -1,0 +1,16 @@
+---
+import NoteView from '../../../../views/NoteView.astro';
+import { getNoteSources, type NoteItem } from '../../../../lib/content/collections.ts';
+
+export async function getStaticPaths() {
+  const sources = await getNoteSources('en');
+  return sources.flatMap((source) => source.notes.map((note, index) => ({
+    params: { sourceId: note.sourceId, slug: note.slug },
+    props: { note, sourceLabel: source.label, previous: source.notes[index - 1], next: source.notes[index + 1] },
+  })));
+}
+interface Props { note: NoteItem; sourceLabel: string; previous?: NoteItem | undefined; next?: NoteItem | undefined }
+const { note, sourceLabel, previous, next } = Astro.props;
+---
+
+<NoteView locale="en" note={note} sourceLabel={sourceLabel} previous={previous} next={next} />

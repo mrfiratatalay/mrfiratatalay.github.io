@@ -1,0 +1,218 @@
+---
+import { render } from 'astro:content';
+import { CircleCheck, CirclePlay, CodeXml, ExternalLink } from 'lucide-react';
+import Breadcrumbs from '../components/content/Breadcrumbs.astro';
+import Pager from '../components/content/Pager.astro';
+import ProjectVisual from '../components/content/ProjectVisual.astro';
+import ReadingLayout from '../layouts/ReadingLayout.astro';
+import type { ProjectEntry } from '../lib/content/collections.ts';
+import { formatDate } from '../lib/content/dates.ts';
+import { publicImageSize } from '../lib/content/images.ts';
+import { profile } from '../lib/content/site-data.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import { LOCALE_TAGS, type Locale } from '../lib/i18n/locales.ts';
+import { list, text } from '../lib/i18n/text.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import '../styles/profile.css';
+
+interface Props {
+  locale: Locale;
+  project: ProjectEntry;
+  previous?: ProjectEntry | undefined;
+  next?: ProjectEntry | undefined;
+}
+
+const { locale, project, previous, next } = Astro.props;
+const { data } = project;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const { Content, headings } = await render(project);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const gallery = await Promise.all(data.gallery.map(async (item) => ({ ...item, size: await publicImageSize(item.image) })));
+const period = [data.startedAt, data.endedAt]
+  .filter((date): date is Date => Boolean(date))
+  .map((date) => formatDate(date, locale))
+  .join(' – ');
+const tagline = text(data.tagline, locale);
+const context = text(data.context, locale);
+const summary = text(data.summary, locale);
+const highlights = list(data.highlights, locale);
+const role = text(data.role, locale);
+const problem = text(data.problem, locale);
+const benefit = text(data.benefit, locale);
+const description = summary || tagline || t.projects.fallbackDescription(data.title);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: data.title,
+  ...(tagline ? { alternativeHeadline: tagline } : {}),
+  description,
+  url: new URL(paths.project(data.urlSlug), site).toString(),
+  author: { '@type': 'Person', name: profile.name },
+  keywords: data.technologies.join(', '),
+  ...(data.repoUrl ? { codeRepository: data.repoUrl } : {}),
+  ...(data.cover ? { image: new URL(data.cover, site).toString() } : {}),
+  inLanguage: LOCALE_TAGS[locale],
+};
+---
+
+<ReadingLayout
+  locale={locale}
+  title={tagline ? `${data.title}: ${tagline}` : data.title}
+  description={description}
+  section="projects"
+  windowTitle={t.projects.title}
+  icon="projects"
+  backHref={paths.projects}
+  backLabel={t.sections.projects.short}
+  headings={headings}
+  image={data.cover}
+  imageAlt={text(data.coverAlt, locale)}
+  jsonLd={jsonLd}
+>
+  <article class="article" data-pagefind-body data-pagefind-meta="type:project">
+    <Breadcrumbs locale={locale} items={[{ label: t.projects.title, href: paths.projects }, { label: data.title }]} />
+
+    <div class="project-hero" data-pagefind-ignore>
+      <ProjectVisual
+        title={data.title}
+        slug={data.urlSlug}
+        cover={data.cover}
+        coverAlt={text(data.coverAlt, locale)}
+        icon={data.icon}
+        color={data.color}
+        eager
+      />
+    </div>
+
+    <header class="article-header">
+      <p class="article-kicker" data-pagefind-ignore>
+        {context && <span class="pill pill--award">{context}</span>}
+        {data.status && <span class="pill pill--neutral">{t.projects.status[data.status]}</span>}
+        <span>{t.projects.kicker}</span>
+      </p>
+      <h1 class="article-title">{data.title}</h1>
+      {tagline && <p class="article-tagline">{tagline}</p>}
+      {summary && <p class="article-lead">{summary}</p>}
+    </header>
+
+    {
+      (data.repoUrl || data.demoUrl || data.videoUrl) && (
+        <div class="action-row" data-pagefind-ignore>
+          {data.demoUrl && (
+            <a class="button button--primary" href={data.demoUrl} rel="noopener">
+              <ExternalLink aria-hidden="true" />
+              {t.projects.liveDemo}
+            </a>
+          )}
+          {data.repoUrl && (
+            <a class:list={['button', { 'button--primary': !data.demoUrl }]} href={data.repoUrl} rel="noopener">
+              <CodeXml aria-hidden="true" />
+              {t.projects.sourceCode}
+            </a>
+          )}
+          {data.videoUrl && (
+            <a class="button" href={data.videoUrl} rel="noopener">
+              <CirclePlay aria-hidden="true" />
+              {t.projects.video}
+            </a>
+          )}
+        </div>
+      )
+    }
+
+    {
+      (data.technologies.length > 0 || role || period) && (
+        <ul class="project-facts">
+          {data.technologies.length > 0 && (
+            <li>
+              <span class="label">{t.projects.technologies}</span>
+              <ul class="chip-list">
+                {data.technologies.map((tech) => (
+                  <li class="chip">{tech}</li>
+                ))}
+              </ul>
+            </li>
+          )}
+          {role && (
+            <li>
+              <span class="label">{t.projects.role}</span>
+              {role}
+            </li>
+          )}
+          {period && (
+            <li>
+              <span class="label">{t.projects.date}</span>
+              {period}
+            </li>
+          )}
+        </ul>
+      )
+    }
+
+    {
+      highlights.length > 0 && (
+        <section class="highlights" aria-labelledby="neler-yaptim">
+          <h2 class="section-title" id="neler-yaptim">
+            {t.projects.highlights}
+          </h2>
+          <ul class="highlights__list">
+            {highlights.map((highlight) => (
+              <li>
+                <CircleCheck aria-hidden="true" />
+                <span>{highlight}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class="prose">
+      {
+        problem && (
+          <>
+            <h2>{t.projects.problem}</h2>
+            <p>{problem}</p>
+          </>
+        )
+      }
+      {
+        benefit && (
+          <>
+            <h2>{t.projects.benefit}</h2>
+            <p>{benefit}</p>
+          </>
+        )
+      }
+      <Content />
+    </div>
+
+    {
+      gallery.length > 0 && (
+        <ul class="gallery" aria-label={t.projects.gallery}>
+          {gallery.map((item) => (
+            <li>
+              <img
+                src={item.image}
+                alt={text(item.alt, locale)}
+                width={item.size?.width}
+                height={item.size?.height}
+                loading="lazy"
+                decoding="async"
+              />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <Pager
+      locale={locale}
+      heading={t.projects.others}
+      previous={previous ? { title: previous.data.title, url: paths.project(previous.data.urlSlug) } : undefined}
+      next={next ? { title: next.data.title, url: paths.project(next.data.urlSlug) } : undefined}
+    />
+  </article>
+</ReadingLayout>

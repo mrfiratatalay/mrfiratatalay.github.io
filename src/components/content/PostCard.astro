@@ -4,18 +4,23 @@ import { formatDate, isoDate } from '../../lib/content/dates.ts';
 import { publicImageSize } from '../../lib/content/images.ts';
 import { readingMinutes } from '../../lib/content/rules.ts';
 import { categoryLabel } from '../../lib/content/site-data.ts';
-import { paths } from '../../lib/content/urls.ts';
+import { localePaths } from '../../lib/content/urls.ts';
+import { DEFAULT_LOCALE, type Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import CategoryGlyph, { categoryTint } from '../icons/CategoryGlyph.tsx';
 
 interface Props {
+  locale: Locale;
   post: BlogPost;
   featured?: boolean;
 }
 
-const { post, featured = false } = Astro.props;
+const { locale, post, featured = false } = Astro.props;
 const { data } = post;
+const t = useTranslations(locale);
 const size = await publicImageSize(data.cover);
-const label = categoryLabel(data.category);
+const label = categoryLabel(data.category, locale);
+const contentLang = data.lang ?? DEFAULT_LOCALE;
 ---
 
 <article class:list={['card', { 'card--featured': featured }]}>
@@ -40,14 +45,21 @@ const label = categoryLabel(data.category);
     }
   </div>
   <div class="card__body">
-    {label && <p class="card__kicker"><span class="pill">{label}</span></p>}
-    <h2 class="card__title">
-      <a href={paths.blogPost(data.urlSlug)}>{data.title}</a>
+    {
+      (label || contentLang !== locale) && (
+        <p class="card__kicker">
+          {label && <span class="pill">{label}</span>}
+          {contentLang !== locale && <span class="pill pill--neutral">{t.content.languageName[contentLang]}</span>}
+        </p>
+      )
+    }
+    <h2 class="card__title" lang={contentLang}>
+      <a href={localePaths(locale).blogPost(data.urlSlug)}>{data.title}</a>
     </h2>
-    {data.description && <p class="card__text">{data.description}</p>}
+    {data.description && <p class="card__text" lang={contentLang}>{data.description}</p>}
     <ul class="card__meta">
-      <li><time datetime={isoDate(data.publishedAt)}>{formatDate(data.publishedAt)}</time></li>
-      <li>{readingMinutes(post.body ?? '')} dk okuma</li>
+      <li><time datetime={isoDate(data.publishedAt)}>{formatDate(data.publishedAt, locale)}</time></li>
+      <li>{t.blog.readingTime(readingMinutes(post.body ?? ''))}</li>
     </ul>
   </div>
 </article>

@@ -5,20 +5,28 @@
  */
 import { X } from 'lucide-react';
 import { initials, profile } from '../../lib/content/site-data.ts';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import AppIcon from '../icons/AppIcon.tsx';
+
+interface Props {
+  locale: Locale;
+}
+
+const t = useTranslations(Astro.props.locale).notification;
 ---
 
 <div class="notification glass glass-edge" data-notification role="status">
-  <button type="button" class="notification__close" data-notification-close aria-label="Bildirimi kapat">
+  <button type="button" class="notification__close" data-notification-close aria-label={t.close}>
     <X aria-hidden="true" strokeWidth={2.6} />
   </button>
   <AppIcon name="monogram" text={initials(profile.name)} />
   <div>
     <p class="notification__title">
       {profile.name}
-      <span class="notification__time">şimdi</span>
+      <span class="notification__time">{t.now}</span>
     </p>
-    <p class="notification__text">Hoş geldin! Bir klasöre veya dock'taki bir simgeye tıklayarak içerikleri açabilirsin.</p>
+    <p class="notification__text">{t.text}</p>
   </div>
 </div>
 

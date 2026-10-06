@@ -1,0 +1,49 @@
+---
+import { ChevronRight, Library } from 'lucide-react';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getPublishedSeries } from '../lib/content/collections.ts';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const seriesList = await getPublishedSeries(locale);
+---
+
+<DesktopLayout locale={locale} title={t.series.title} description={t.series.description} section="series">
+  <Window locale={locale} id="main" variant="main" title={t.series.title} icon="series" section="series" closeHref={paths.home} backHref={paths.home} backLabel={t.sections.home.label}>
+    <nav slot="sidebar" class="sidebar-section" aria-label={t.series.list}>
+      <p class="sidebar-heading">{t.series.list}</p>
+      <ul class="sidebar-list">{seriesList.map((series) => <li><a class="sidebar-link" href={`#${series.id}`}><Library aria-hidden="true" />{series.title}</a></li>)}</ul>
+    </nav>
+    <header class="page-head">
+      <p class="page-head__eyebrow"><AppIcon name="series" />{t.series.title}</p>
+      <h1 class="page-title">{t.series.heading}</h1>
+      <p class="page-lead">{t.series.lead}</p>
+    </header>
+    {seriesList.length === 0 ? <p class="empty-state">{t.series.empty}</p> : seriesList.map((series) => {
+      let number = 0;
+      const parts = series.chapters.reduce((sum, chapter) => sum + chapter.parts.length, 0);
+      return <section class="series-block" id={series.id} aria-labelledby={`${series.id}-title`}>
+        <div class="series-block__head"><AppIcon name="series" /><div><h2 id={`${series.id}-title`}>{series.title}</h2><p>{t.series.counts(series.chapters.length, parts)}</p></div></div>
+        {series.description && <p class="muted" style="margin: 0 0 6px;">{series.description}</p>}
+        {series.chapters.map((chapter) => <div>
+          <h3 class="chapter-title">{chapter.title}</h3>
+          <ol class="group">{chapter.parts.map((part) => {
+            number += 1;
+            return <li><a class="group__row" href={part.url}>
+              <span class="part-number">{number}</span>
+              <span class="group__text"><span class="group__title">{part.title}</span><span class="group__subtitle">{t.series.kinds[part.kind]}</span></span>
+              <ChevronRight className="group__chevron" aria-hidden="true" />
+            </a></li>;
+          })}</ol>
+        </div>)}
+      </section>;
+    })}
+  </Window>
+</DesktopLayout>

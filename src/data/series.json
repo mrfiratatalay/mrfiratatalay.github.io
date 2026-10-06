@@ -1,16 +1,79 @@
 {
   "series": [
     {
-      "id": "ornek-seri-siteyi-taniyalim",
-      "title": "Örnek seri: Siteyi tanıyalım",
-      "description": "Çalışma serilerinin nasıl göründüğünü gösteren örnek kayıt. Kendi serini eklediğinde bu kaydı silebilirsin.",
+      "id": "java-spring-boot",
+      "title": {
+        "tr": "Java ve Spring Boot Yolculuğum",
+        "en": "My Java and Spring Boot Journey"
+      },
+      "description": {
+        "tr": "Spring temellerinden video uygulamasına uzanan notlarım ve Java tekrarlarım.",
+        "en": "My notes from Spring fundamentals to a video application, with Java refreshers."
+      },
       "published": true,
       "chapters": [
         {
-          "title": "Chapter 1: İlk adımlar",
+          "title": {
+            "tr": "Bölüm 1: Spring Temelleri",
+            "en": "Chapter 1: Spring Fundamentals"
+          },
           "parts": [
-            { "ref": "/blog/ornek-yazi-nasil-gorunur/", "title": "Part 1: Bir makale nasıl görünür?" },
-            { "ref": "/notlar/yerel/ornek-java-interface/", "title": "Part 2: Kısa bir öğrenme notu" }
+            {
+              "ref": "/notlar/java-notlari/00-week/00/00/"
+            }
+          ]
+        },
+        {
+          "title": {
+            "tr": "Bölüm 2: Uygulama ve Java Tekrarı",
+            "en": "Chapter 2: Application and Java Refresher"
+          },
+          "parts": [
+            {
+              "ref": "/notlar/java-notlari/00-week/01/01/"
+            },
+            {
+              "ref": "/notlar/java-notlari/00-week/01/java-hatirlatma/"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "docker",
+      "title": {
+        "tr": "Docker Çalışma Yolculuğum",
+        "en": "My Docker Study Journey"
+      },
+      "description": {
+        "tr": "Docker klasörümdeki container temelleri, uygulama notları ve Java tekrarları.",
+        "en": "Container fundamentals, application notes and Java refreshers from my Docker folder."
+      },
+      "published": true,
+      "chapters": [
+        {
+          "title": {
+            "tr": "Bölüm 1: Container Temelleri",
+            "en": "Chapter 1: Container Fundamentals"
+          },
+          "parts": [
+            {
+              "ref": "/notlar/docker-notlari/00-week/00/00/"
+            }
+          ]
+        },
+        {
+          "title": {
+            "tr": "Bölüm 2: Uygulama ve Java Tekrarı",
+            "en": "Chapter 2: Application and Java Refresher"
+          },
+          "parts": [
+            {
+              "ref": "/notlar/docker-notlari/00-week/01/01/"
+            },
+            {
+              "ref": "/notlar/docker-notlari/00-week/01/java-hatirlatma/"
+            }
           ]
         }
       ]

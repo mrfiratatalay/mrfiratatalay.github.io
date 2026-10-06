@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import type { Locale } from '../../lib/i18n/locales.ts';
+import { useTranslations } from '../../lib/i18n/ui.ts';
 import type { IconName, SectionId } from '../../lib/site/sections.ts';
 import {
   currentWindows,
@@ -19,6 +21,7 @@ export interface DockItem {
 }
 
 interface Props {
+  locale: Locale;
   items: DockItem[];
   current: SectionId;
   pathname: string;
@@ -32,7 +35,8 @@ const RADIUS = 170;
  * ikonlar büyür; küçültülen pencereler sağ tarafta minyatür olarak görünür.
  * Telefonda yüzen bir sekme çubuğuna dönüşür.
  */
-export default function Dock({ items, current, pathname }: Props) {
+export default function Dock({ locale, items, current, pathname }: Props) {
+  const t = useTranslations(locale);
   const [windows, setWindows] = useState<WindowSummary[]>([]);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -98,7 +102,7 @@ export default function Dock({ items, current, pathname }: Props) {
   const parked = windows.filter((win) => win.minimized || win.closed);
 
   return (
-    <nav className="dock glass glass-edge" aria-label="Dock">
+    <nav className="dock glass glass-edge" aria-label={t.dock.label}>
       <ul className="dock__list" ref={listRef}>
         {items.map((item) => (
           <li key={item.id} className={item.desktopOnly ? 'dock__item dock__item--desktop-only' : 'dock__item'}>
@@ -126,7 +130,7 @@ export default function Dock({ items, current, pathname }: Props) {
             onClick={(event) => openSearch(event.currentTarget)}
           >
             <AppIcon name="search" />
-            <span className="dock__label">Ara</span>
+            <span className="dock__label">{t.sections.search.label}</span>
             <span className="dock__dot" aria-hidden="true" />
           </button>
         </li>
@@ -136,7 +140,7 @@ export default function Dock({ items, current, pathname }: Props) {
               type="button"
               className="dock__app"
               data-restore-window={win.id}
-              aria-label={`${win.title} penceresini geri aç`}
+              aria-label={t.dock.restore(win.title)}
               onClick={() => sendWindowCommand({ id: win.id, action: 'restore' })}
             >
               <span className="dock__window-thumb" aria-hidden="true">
