@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
-import { OPEN_SEARCH } from '../../lib/window-manager/events.ts';
+import { OPEN_SEARCH, openSearch } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -25,6 +25,32 @@ export default function SearchDialog() {
     };
     window.addEventListener(OPEN_SEARCH, onOpen);
     return () => window.removeEventListener(OPEN_SEARCH, onOpen);
+  }, []);
+
+  // ⌘K / Ctrl+K Spotlight'ı açar ve kapatır; yazı alanı dışında "/" de açar.
+  // Arama sayfasında ise yeni pencere açmak yerine sayfadaki arama alanına odaklanır.
+  useEffect(() => {
+    const onShortcut = (event: globalThis.KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const typing = !!target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+      const commandK = (event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'k';
+      const slash = event.key === '/' && !typing && !event.metaKey && !event.ctrlKey && !event.altKey;
+      if (!commandK && !slash) return;
+      event.preventDefault();
+      if (dialogRef.current?.open) {
+        if (commandK) dialogRef.current.close();
+        return;
+      }
+      const pageInput = document.querySelector<HTMLInputElement>('.search-page input[type="search"]');
+      if (pageInput) {
+        pageInput.focus();
+        pageInput.select();
+        return;
+      }
+      openSearch(document.activeElement as HTMLElement | null);
+    };
+    window.addEventListener('keydown', onShortcut);
+    return () => window.removeEventListener('keydown', onShortcut);
   }, []);
 
   const close = () => dialogRef.current?.close();
