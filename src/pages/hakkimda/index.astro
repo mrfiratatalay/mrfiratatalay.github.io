@@ -1,0 +1,176 @@
+---
+import { Download, GraduationCap, Languages, Mail, MapPin } from 'lucide-react';
+import Window from '../../components/desktop/Window.astro';
+import LinkIcon from '../../components/icons/LinkIcon.tsx';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { initials, profile } from '../../lib/content/site-data.ts';
+import { paths } from '../../lib/content/urls.ts';
+
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const paragraphs = profile.bio.split(/\n\s*\n/).map((text) => text.trim()).filter(Boolean);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: new URL(paths.about, site).toString(),
+  inLanguage: 'tr-TR',
+  mainEntity: {
+    '@type': 'Person',
+    name: profile.name,
+    jobTitle: profile.title,
+    description: profile.shortBio,
+    ...(profile.avatar ? { image: new URL(profile.avatar, site).toString() } : {}),
+    sameAs: profile.links.map((link) => link.url),
+  },
+};
+---
+
+<DesktopLayout
+  title="Hakkımda"
+  description={`${profile.name}: ${profile.shortBio}`}
+  section="about"
+  type="profile"
+  image={profile.avatar}
+  imageAlt={profile.avatarAlt}
+  jsonLd={jsonLd}
+>
+  <Window id="main" variant="main" title="Hakkımda" icon="about" closeHref="/">
+    <div class="article">
+      <div class="profile-head">
+        {
+          profile.avatar ? (
+            <img class="avatar" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="108" height="108" />
+          ) : (
+            <span class="avatar avatar--initials" aria-hidden="true">
+              {initials(profile.name)}
+            </span>
+          )
+        }
+        <div>
+          <h1 class="page-title">{profile.name}</h1>
+          <p class="page-lead">{profile.title}</p>
+          {
+            profile.location && (
+              <p class="muted" style="margin: 6px 0 0; display: flex; align-items: center; gap: 6px;">
+                <MapPin aria-hidden="true" size={16} />
+                {profile.location}
+              </p>
+            )
+          }
+        </div>
+      </div>
+
+      <div class="prose">
+        {paragraphs.map((text) => <p>{text}</p>)}
+      </div>
+
+      <div class="action-row">
+        {
+          profile.email && (
+            <a class="button button--primary" href={`mailto:${profile.email}`}>
+              <Mail aria-hidden="true" />
+              E-posta gönder
+            </a>
+          )
+        }
+        {
+          profile.cv && (
+            <a class="button" href={profile.cv} download>
+              <Download aria-hidden="true" />
+              CV'yi indir
+            </a>
+          )
+        }
+      </div>
+
+      {
+        profile.links.length > 0 && (
+          <ul class="link-list" aria-label="Bağlantılar">
+            {profile.links.map((link) => (
+              <li>
+                <a class="button" href={link.url} rel="me noopener">
+                  <LinkIcon kind={link.kind} />
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        profile.experience.length > 0 && (
+          <section aria-labelledby="deneyim">
+            <h2 class="section-title" id="deneyim">
+              Deneyim
+            </h2>
+            <ol class="timeline">
+              {profile.experience.map((item) => (
+                <li>
+                  <h3>
+                    {item.role} · {item.organization}
+                  </h3>
+                  {item.period && <span class="period">{item.period}</span>}
+                  {item.description && <p>{item.description}</p>}
+                </li>
+              ))}
+            </ol>
+          </section>
+        )
+      }
+
+      {
+        (profile.education.length > 0 || profile.languages.length > 0) && (
+          <section aria-labelledby="egitim">
+            <h2 class="section-title" id="egitim">
+              Eğitim ve diller
+            </h2>
+            <dl class="facts">
+              {profile.education.map((item) => (
+                <div>
+                  <dt>
+                    <GraduationCap aria-hidden="true" size={14} /> Eğitim
+                  </dt>
+                  <dd>
+                    <strong>{item.school}</strong>
+                    {item.program && <br />}
+                    {item.program}
+                    {item.period && <span class="muted"> · {item.period}</span>}
+                  </dd>
+                </div>
+              ))}
+              {profile.languages.length > 0 && (
+                <div>
+                  <dt>
+                    <Languages aria-hidden="true" size={14} /> Diller
+                  </dt>
+                  <dd>{profile.languages.join(', ')}</dd>
+                </div>
+              )}
+            </dl>
+          </section>
+        )
+      }
+
+      {
+        profile.skills.length > 0 && (
+          <section aria-labelledby="yetenekler">
+            <h2 class="section-title" id="yetenekler">
+              Yetenekler
+            </h2>
+            {profile.skills.map((group) => (
+              <div style="margin-bottom: 14px;">
+                <h3 style="margin: 0 0 8px; font-size: 15px;">{group.group}</h3>
+                <ul class="chip-list">
+                  {group.items.map((skill) => (
+                    <li class="chip">{skill}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </section>
+        )
+      }
+    </div>
+  </Window>
+</DesktopLayout>

@@ -1,0 +1,30 @@
+---
+import ProjectCard from '../../components/content/ProjectCard.astro';
+import Window from '../../components/desktop/Window.astro';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { getPublishedProjects } from '../../lib/content/collections.ts';
+
+const projects = await getPublishedProjects();
+---
+
+<DesktopLayout title="Projelerim" description="Geliştirdiğim projeler, kullandığım teknolojiler ve kaynak kodları." section="projects">
+  <Window id="main" variant="main" title="Projelerim" icon="projects" closeHref="/">
+    <header class="page-header page-header--wide">
+      <h1 class="page-title">Projelerim</h1>
+      <p class="page-lead">Geliştirdiğim projeler. Ayrıntılar, kaynak kod ve varsa tanıtım videosu proje sayfasında.</p>
+    </header>
+    {
+      projects.length > 0 ? (
+        <ul class="project-grid">
+          {projects.map((project) => (
+            <li>
+              <ProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty-state">Henüz yayınlanmış proje yok.</p>
+      )
+    }
+  </Window>
+</DesktopLayout>

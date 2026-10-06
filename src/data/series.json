@@ -1,0 +1,19 @@
+{
+  "series": [
+    {
+      "id": "ornek-seri-siteyi-taniyalim",
+      "title": "Örnek seri: Siteyi tanıyalım",
+      "description": "Çalışma serilerinin nasıl göründüğünü gösteren örnek kayıt. Kendi serini eklediğinde bu kaydı silebilirsin.",
+      "published": true,
+      "chapters": [
+        {
+          "title": "Chapter 1: İlk adımlar",
+          "parts": [
+            { "ref": "/blog/ornek-yazi-nasil-gorunur/", "title": "Part 1: Bir makale nasıl görünür?" },
+            { "ref": "/notlar/yerel/ornek-java-interface/", "title": "Part 2: Kısa bir öğrenme notu" }
+          ]
+        }
+      ]
+    }
+  ]
+}

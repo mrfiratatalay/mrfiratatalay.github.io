@@ -1,0 +1,528 @@
+# Pages CMS ayarı: https://app.pagescms.org
+# Editörde görünen bölümler ve alanlar. Kaydedilen her değişiklik bu depoya
+# commit olarak gider; GitHub Actions siteyi yeniden hazırlayıp yayınlar.
+#
+# Not: Kategori seçenekleri src/data/taxonomy.json ile aynı olmalıdır.
+# İçerik kontrolü (npm run validate:content) iki listeyi karşılaştırır.
+
+media:
+  - name: blog_images
+    label: Makale görselleri
+    input: public/images/blog
+    output: /images/blog
+    categories: [image]
+    rename: safe
+  - name: note_images
+    label: Not görselleri
+    input: public/images/notes
+    output: /images/notes
+    categories: [image]
+    rename: safe
+  - name: project_images
+    label: Proje görselleri
+    input: public/images/projects
+    output: /images/projects
+    categories: [image]
+    rename: safe
+  - name: profile_images
+    label: Profil fotoğrafı
+    input: public/images/profile
+    output: /images/profile
+    categories: [image]
+    rename: safe
+  - name: cv_files
+    label: CV dosyası
+    input: public/cv
+    output: /cv
+    extensions: [pdf]
+    rename: safe
+
+content:
+  - name: blog
+    label: Makaleler
+    type: collection
+    path: src/content/blog
+    format: yaml-frontmatter
+    filename:
+      template: '{fields.urlSlug}.md'
+      field: false
+    view:
+      fields: [title, published, publishedAt, category]
+      primary: title
+      sort: [publishedAt, title]
+      default:
+        sort: publishedAt
+        order: desc
+    fields:
+      - name: title
+        label: Başlık
+        type: string
+        required: true
+      - name: urlSlug
+        label: Yazı adresi
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          message: Yalnızca küçük harf, rakam ve tire kullan. Örnek spring-boot-controller
+        description: Örnek spring-boot-controller. Yazı /blog/spring-boot-controller/ adresinde açılır. Yayınlandıktan sonra değiştirme.
+      - name: description
+        label: Kısa açıklama
+        type: text
+        description: Listelerde, aramada ve paylaşımda görünen bir iki cümle. Yayınlamak için gerekli.
+      - name: publishedAt
+        label: Yayın tarihi
+        type: date
+        options:
+          format: yyyy-MM-dd
+      - name: updatedAt
+        label: Son düzenleme tarihi
+        type: date
+        default: ''
+        description: Yalnızca yazıda gerçekten önemli bir değişiklik yaptıysan doldur.
+        options:
+          format: yyyy-MM-dd
+      - name: category
+        label: Kategori
+        type: select
+        options:
+          placeholder: Kategori seç
+          values:
+            - name: java
+              label: Java
+            - name: spring-boot
+              label: Spring Boot
+            - name: docker
+              label: Docker
+            - name: genel
+              label: Genel
+      - name: tags
+        label: Etiketler
+        type: string
+        list: true
+      - name: cover
+        label: Kapak görseli
+        type: image
+        options:
+          media: blog_images
+      - name: coverAlt
+        label: Kapak görselinin açıklaması
+        type: string
+        description: Görmeyen bir okura görseli anlatan kısa cümle. Kapak görseli varsa gerekli.
+      - name: published
+        label: Yayında
+        type: boolean
+        default: false
+        description: Kapalıysa taslak. Açıp kaydedince yayınlama işlemi başlar.
+      - name: body
+        label: Yazının içeriği
+        type: rich-text
+        options:
+          format: markdown
+          media: blog_images
+          switcher: true
+
+  - name: notes
+    label: Öğrenme Notları
+    type: collection
+    path: src/content/notes
+    format: yaml-frontmatter
+    filename:
+      template: '{fields.urlSlug}.md'
+      field: false
+    view:
+      fields: [title, published, category]
+      primary: title
+      sort: [title, publishedAt]
+    fields:
+      - name: title
+        label: Başlık
+        type: string
+        required: true
+      - name: urlSlug
+        label: Not adresi
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          message: Yalnızca küçük harf, rakam ve tire kullan. Örnek java-interface
+        description: Örnek java-interface. Not /notlar/yerel/java-interface/ adresinde açılır. Yayınlandıktan sonra değiştirme.
+      - name: description
+        label: Kısa açıklama
+        type: text
+      - name: category
+        label: Kategori
+        type: select
+        options:
+          placeholder: Kategori seç
+          values:
+            - name: java
+              label: Java
+            - name: spring-boot
+              label: Spring Boot
+            - name: docker
+              label: Docker
+            - name: genel
+              label: Genel
+      - name: publishedAt
+        label: Tarih
+        type: date
+        options:
+          format: yyyy-MM-dd
+      - name: updatedAt
+        label: Son düzenleme tarihi
+        type: date
+        default: ''
+        options:
+          format: yyyy-MM-dd
+      - name: tags
+        label: Etiketler
+        type: string
+        list: true
+      - name: published
+        label: Yayında
+        type: boolean
+        default: false
+        description: Kapalıysa taslak.
+      - name: body
+        label: Notun içeriği
+        type: rich-text
+        options:
+          format: markdown
+          media: note_images
+          switcher: true
+
+  - name: projects
+    label: Projeler
+    type: collection
+    path: src/content/projects
+    format: yaml-frontmatter
+    filename:
+      template: '{fields.urlSlug}.md'
+      field: false
+    view:
+      fields: [title, published, featured, status]
+      primary: title
+      sort: [order, title]
+    fields:
+      - name: title
+        label: Proje adı
+        type: string
+        required: true
+      - name: urlSlug
+        label: Proje adresi
+        type: string
+        required: true
+        pattern:
+          regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          message: Yalnızca küçük harf, rakam ve tire kullan. Örnek not-uygulamasi
+        description: Proje /projeler/ADRES/ adresinde açılır.
+      - name: summary
+        label: Kısa açıklama
+        type: text
+        description: Proje kartında görünen bir iki cümle. Yayınlamak için gerekli.
+      - name: problem
+        label: Çözdüğü problem
+        type: text
+      - name: benefit
+        label: Kullanıcıya sağladığı fayda
+        type: text
+      - name: role
+        label: Projedeki rolüm
+        type: string
+      - name: technologies
+        label: Teknolojiler
+        type: string
+        list: true
+      - name: status
+        label: Durum
+        type: select
+        options:
+          placeholder: Durum seç (isteğe bağlı)
+          values:
+            - name: tamamlandi
+              label: Tamamlandı
+            - name: gelistiriliyor
+              label: Geliştiriliyor
+            - name: arsiv
+              label: Arşiv
+      - name: cover
+        label: Kapak görseli (ekran görüntüsü)
+        type: image
+        options:
+          media: project_images
+      - name: coverAlt
+        label: Kapak görselinin açıklaması
+        type: string
+      - name: gallery
+        label: Galeri
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{alt}'
+        fields:
+          - name: image
+            label: Görsel
+            type: image
+            options:
+              media: project_images
+          - name: alt
+            label: Görselin açıklaması
+            type: string
+      - name: repoUrl
+        label: GitHub bağlantısı
+        type: string
+        pattern:
+          regex: '^https?://'
+          message: Bağlantı https:// ile başlamalı.
+      - name: demoUrl
+        label: Çalışan demo adresi
+        type: string
+        description: Demo yoksa boş bırak; sitede çalışmayan düğme gösterilmez.
+        pattern:
+          regex: '^https?://'
+          message: Bağlantı https:// ile başlamalı.
+      - name: videoUrl
+        label: Tanıtım videosu
+        type: string
+        pattern:
+          regex: '^https?://'
+          message: Bağlantı https:// ile başlamalı.
+      - name: startedAt
+        label: Başlangıç tarihi
+        type: date
+        default: ''
+        options:
+          format: yyyy-MM-dd
+      - name: endedAt
+        label: Bitiş tarihi
+        type: date
+        default: ''
+        options:
+          format: yyyy-MM-dd
+      - name: featured
+        label: Öne çıkar
+        type: boolean
+        default: false
+      - name: order
+        label: Sıra
+        type: number
+        description: Küçük sayı önce gösterilir.
+      - name: published
+        label: Yayında
+        type: boolean
+        default: false
+      - name: body
+        label: Ayrıntılı açıklama
+        type: rich-text
+        options:
+          format: markdown
+          media: project_images
+          switcher: true
+
+  - name: profile
+    label: Profil ve İletişim
+    type: file
+    path: src/data/profile.json
+    format: json
+    fields:
+      - name: name
+        label: Ad soyad
+        type: string
+        required: true
+      - name: title
+        label: Unvan
+        type: string
+        required: true
+      - name: shortBio
+        label: Kısa tanıtım (ana sayfa)
+        type: text
+        required: true
+      - name: bio
+        label: Hakkımda metni
+        type: text
+        required: true
+        description: Paragrafları boş bir satırla ayır.
+      - name: location
+        label: Konum
+        type: string
+      - name: email
+        label: E-posta
+        type: string
+        description: Sitede herkese açık görünür.
+      - name: avatar
+        label: Profil fotoğrafı
+        type: image
+        options:
+          media: profile_images
+      - name: avatarAlt
+        label: Fotoğrafın açıklaması
+        type: string
+      - name: cv
+        label: CV (PDF)
+        type: file
+        description: Yalnızca herkese açık paylaşmak istediğin bilgileri içeren bir CV yükle.
+        options:
+          media: cv_files
+      - name: languages
+        label: Diller
+        type: string
+        list: true
+      - name: education
+        label: Eğitim
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{school}'
+        fields:
+          - name: school
+            label: Okul
+            type: string
+          - name: program
+            label: Bölüm / program
+            type: string
+          - name: period
+            label: Dönem
+            type: string
+      - name: experience
+        label: Deneyim
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{role} · {organization}'
+        fields:
+          - name: role
+            label: Görev
+            type: string
+          - name: organization
+            label: Kurum
+            type: string
+          - name: period
+            label: Dönem
+            type: string
+          - name: description
+            label: Açıklama
+            type: text
+      - name: skills
+        label: Yetenekler
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{group}'
+        fields:
+          - name: group
+            label: Grup adı
+            type: string
+          - name: items
+            label: Yetenekler
+            type: string
+            list: true
+      - name: links
+        label: Bağlantılar
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{label}'
+        fields:
+          - name: label
+            label: Görünen ad
+            type: string
+          - name: url
+            label: Adres
+            type: string
+            pattern:
+              regex: '^https?://'
+              message: Bağlantı https:// ile başlamalı.
+          - name: kind
+            label: Tür
+            type: select
+            options:
+              values:
+                - name: github
+                  label: GitHub
+                - name: linkedin
+                  label: LinkedIn
+                - name: medium
+                  label: Medium
+                - name: youtube
+                  label: YouTube
+                - name: x
+                  label: X
+                - name: instagram
+                  label: Instagram
+                - name: website
+                  label: Web sitesi
+                - name: diger
+                  label: Diğer
+      - name: siteDescription
+        label: Site açıklaması (arama motorları için)
+        type: text
+        required: true
+      - name: googleSiteVerification
+        label: Google Search Console doğrulama kodu
+        type: string
+        description: Search Console'un verdiği HTML etiketindeki content değeri. Yoksa boş bırak.
+
+  - name: series
+    label: Çalışma Serileri
+    type: file
+    path: src/data/series.json
+    format: json
+    fields:
+      - name: series
+        label: Seriler
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: '{title}'
+        fields:
+          - name: id
+            label: Seri kimliği
+            type: string
+            required: true
+            pattern:
+              regex: '^[a-z0-9]+(-[a-z0-9]+)*$'
+              message: Yalnızca küçük harf, rakam ve tire kullan.
+          - name: title
+            label: Seri adı
+            type: string
+            required: true
+          - name: description
+            label: Açıklama
+            type: text
+          - name: published
+            label: Yayında
+            type: boolean
+            default: false
+          - name: chapters
+            label: Chapter'lar
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: '{title}'
+            fields:
+              - name: title
+                label: Chapter adı
+                type: string
+              - name: parts
+                label: Part'lar (sırayla)
+                type: object
+                list:
+                  collapsible:
+                    collapsed: true
+                    summary: '{title} {ref}'
+                fields:
+                  - name: ref
+                    label: İçeriğin site adresi
+                    type: string
+                    description: Örnek /blog/spring-boot-controller/ veya /notlar/yerel/java-interface/
+                  - name: title
+                    label: Part başlığı (isteğe bağlı)
+                    type: string

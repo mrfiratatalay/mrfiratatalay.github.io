@@ -1,0 +1,41 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { hasToc, tocItems } from '../../lib/content/toc.ts';
+
+interface Props {
+  headings: MarkdownHeading[];
+  variant: 'sidebar' | 'inline';
+}
+
+const { headings, variant } = Astro.props;
+const items = tocItems(headings);
+---
+
+{
+  hasToc(headings) &&
+    (variant === 'sidebar' ? (
+      <nav class="toc" data-toc aria-label="İçindekiler" data-pagefind-ignore>
+        <p class="toc-title">İçindekiler</p>
+        <ol>
+          {items.map((heading) => (
+            <li class={`toc__depth-${heading.depth}`}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    ) : (
+      <details class="toc-inline" data-pagefind-ignore>
+        <summary>İçindekiler ({items.length} başlık)</summary>
+        <nav class="toc" aria-label="İçindekiler (kısa liste)">
+          <ol>
+            {items.map((heading) => (
+              <li class={`toc__depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </details>
+    ))
+}

@@ -1,0 +1,59 @@
+---
+/** Özgün klasör çizimi; üzerinde bölümün ikonu yer alır. Dekoratiftir. */
+import type { IconName } from '../../lib/site/sections.ts';
+import SectionIcon from '../icons/SectionIcon.tsx';
+
+interface Props {
+  icon: IconName;
+  class?: string;
+}
+
+const { icon, class: className } = Astro.props;
+---
+
+<span class:list={['folder-art', className]} aria-hidden="true">
+  <svg viewBox="0 0 64 52" focusable="false">
+    <path class="folder-art__back" d="M4 9.5A5.5 5.5 0 0 1 9.5 4h13.2c1.5 0 2.9.6 3.9 1.6L30.9 10H54.5A5.5 5.5 0 0 1 60 15.5V20H4z"></path>
+    <rect class="folder-art__front" x="3" y="14" width="58" height="35" rx="6"></rect>
+    <rect class="folder-art__shine" x="3" y="14" width="58" height="6" rx="3"></rect>
+  </svg>
+  <span class="folder-art__glyph"><SectionIcon name={icon} size={17} strokeWidth={2.1} /></span>
+</span>
+
+<style>
+  .folder-art {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 50px;
+    filter: drop-shadow(0 4px 6px rgb(2 6 23 / 0.2));
+  }
+
+  .folder-art svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .folder-art__back {
+    fill: light-dark(#5b9cf0, #3f7fd9);
+  }
+
+  .folder-art__front {
+    fill: light-dark(#86bdfb, #5d9cf2);
+  }
+
+  .folder-art__shine {
+    fill: rgb(255 255 255 / 0.28);
+  }
+
+  .folder-art__glyph {
+    position: absolute;
+    left: 50%;
+    top: 62%;
+    display: grid;
+    place-items: center;
+    color: light-dark(rgb(23 77 160 / 0.78), rgb(12 42 92 / 0.85));
+    transform: translate(-50%, -50%);
+  }
+</style>

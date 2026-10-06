@@ -1,0 +1,35 @@
+{
+  "concurrency": 2,
+  "limits": {
+    "maxMarkdownBytes": 2097152,
+    "maxAssetBytes": 4194304,
+    "maxImageWidth": 1600,
+    "timeoutSeconds": 30,
+    "retries": 0
+  },
+  "sources": [
+    {
+      "id": "ornek-java",
+      "label": "Örnek Java Notları",
+      "description": "Geliştirme ve testler için hazırlanmış örnek not reposu.",
+      "repository": "ornek-kullanici/java-notlari",
+      "branch": "main",
+      "enabled": true,
+      "category": "java",
+      "include": ["notes/**/*.md"],
+      "exclude": ["notes/taslaklar/**"],
+      "order": 10
+    },
+    {
+      "id": "ornek-docker",
+      "label": "Örnek Docker Notları",
+      "description": "Chapter ve part düzenindeki örnek not reposu.",
+      "repository": "ornek-kullanici/docker-notlari",
+      "branch": "main",
+      "enabled": true,
+      "category": "docker",
+      "include": ["chapters/**/*.md"],
+      "order": 20
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "id": "java",
+      "label": "Java",
+      "description": "Java dili, nesne yönelimli programlama ve temel kütüphaneler."
+    },
+    {
+      "id": "spring-boot",
+      "label": "Spring Boot",
+      "description": "Spring Framework ve Spring Boot ile backend geliştirme."
+    },
+    {
+      "id": "docker",
+      "label": "Docker",
+      "description": "Konteynerler, imajlar ve geliştirme ortamları."
+    },
+    {
+      "id": "genel",
+      "label": "Genel",
+      "description": "Diğer konular, duyurular ve kısa yazılar."
+    }
+  ]
+}

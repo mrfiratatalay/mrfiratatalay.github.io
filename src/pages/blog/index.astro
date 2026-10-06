@@ -1,0 +1,140 @@
+---
+import { Newspaper, Rss } from 'lucide-react';
+import Window from '../../components/desktop/Window.astro';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { getPublishedPosts } from '../../lib/content/collections.ts';
+import { formatDate, isoDate } from '../../lib/content/dates.ts';
+import { readingMinutes } from '../../lib/content/rules.ts';
+import { categoryLabel, taxonomy } from '../../lib/content/site-data.ts';
+import { paths } from '../../lib/content/urls.ts';
+
+const posts = await getPublishedPosts();
+const categories = taxonomy.categories
+  .map((category) => ({ ...category, count: posts.filter((post) => post.data.category === category.id).length }))
+  .filter((category) => category.count > 0);
+---
+
+<DesktopLayout title="Blog" description="Makaleler: öğrendiklerim, denediklerim ve yazılım üzerine notlar." section="blog">
+  <Window id="main" variant="main" title="Blog" icon="blog" closeHref="/" sidebarLabel="Kategoriler">
+    <nav slot="sidebar" class="sidebar-nav" aria-label="Kategoriler">
+      <h2>Kategoriler</h2>
+      <ul>
+        <li>
+          <a href={paths.blog} data-category-filter="" aria-current="page">
+            <Newspaper aria-hidden="true" />
+            Tüm yazılar <span class="count">{posts.length}</span>
+          </a>
+        </li>
+        {
+          categories.map((category) => (
+            <li>
+              <a href={`${paths.blog}?kategori=${category.id}`} data-category-filter={category.id}>
+                <Newspaper aria-hidden="true" />
+                {category.label} <span class="count">{category.count}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <h2>Takip et</h2>
+      <ul>
+        <li>
+          <a href={paths.rss}>
+            <Rss aria-hidden="true" />
+            RSS akışı
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <header class="page-header page-header--wide">
+      <h1 class="page-title">Blog</h1>
+      <p class="page-lead">Öğrendiklerimi, denediklerimi ve projelerimden çıkan dersleri burada yazıyorum.</p>
+    </header>
+
+    {
+      categories.length > 1 && (
+        <ul class="filter-bar filter-bar--compact" aria-label="Kategori filtresi">
+          <li>
+            <a href={paths.blog} data-category-filter="" aria-pressed="true">
+              Tümü
+            </a>
+          </li>
+          {categories.map((category) => (
+            <li>
+              <a href={`${paths.blog}?kategori=${category.id}`} data-category-filter={category.id} aria-pressed="false">
+                {category.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      posts.length === 0 ? (
+        <p class="empty-state">Henüz yayınlanmış yazı yok.</p>
+      ) : (
+        <ul class="entry-list" data-post-list>
+          {posts.map((post) => (
+            <li class="entry" data-category={post.data.category}>
+              <span class="entry__icon" aria-hidden="true">
+                <Newspaper />
+              </span>
+              <h2 class="entry__title">
+                <a href={paths.blogPost(post.data.urlSlug)}>{post.data.title}</a>
+              </h2>
+              {post.data.description && <p class="entry__summary">{post.data.description}</p>}
+              <ul class="entry__meta">
+                <li>
+                  <time datetime={isoDate(post.data.publishedAt)}>{formatDate(post.data.publishedAt)}</time>
+                </li>
+                <li>{categoryLabel(post.data.category)}</li>
+                <li>{readingMinutes(post.body ?? '')} dk okuma</li>
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <p class="muted" data-filter-empty hidden>Bu kategoride henüz yazı yok.</p>
+  </Window>
+</DesktopLayout>
+
+<script>
+  // Kategori filtresi: JavaScript kapalıyken bütün yazılar listelenir.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-category-filter]')];
+  const items = [...document.querySelectorAll<HTMLElement>('[data-post-list] > [data-category]')];
+  const empty = document.querySelector<HTMLElement>('[data-filter-empty]');
+
+  function apply(category: string) {
+    let visible = 0;
+    for (const item of items) {
+      const show = !category || item.dataset.category === category;
+      item.hidden = !show;
+      if (show) visible += 1;
+    }
+    if (empty) empty.hidden = visible > 0;
+    for (const link of links) {
+      const active = (link.dataset.categoryFilter ?? '') === category;
+      if (link.closest('.filter-bar')) link.setAttribute('aria-pressed', String(active));
+      else if (active) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    }
+  }
+
+  for (const link of links) {
+    link.addEventListener('click', (event) => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey) return;
+      event.preventDefault();
+      const category = link.dataset.categoryFilter ?? '';
+      const url = new URL(window.location.href);
+      if (category) url.searchParams.set('kategori', category);
+      else url.searchParams.delete('kategori');
+      window.history.replaceState(null, '', url);
+      apply(category);
+    });
+  }
+
+  apply(new URLSearchParams(window.location.search).get('kategori') ?? '');
+</script>

@@ -1,0 +1,27 @@
+---
+import { SECTIONS, type SectionId } from '../../lib/site/sections.ts';
+import FolderArt from './FolderArt.astro';
+
+interface Props {
+  current: SectionId;
+  /** Ana sayfada telefonda da ızgara olarak gösterilir. */
+  home?: boolean;
+}
+
+const { current, home = false } = Astro.props;
+---
+
+<nav class:list={['desktop-icons', { 'desktop-icons--home': home }]} aria-label="Masaüstü klasörleri">
+  <ul>
+    {
+      SECTIONS.map((section) => (
+        <li>
+          <a class="desktop-icon" href={section.href} data-section-link aria-current={current === section.id ? 'true' : undefined}>
+            <FolderArt icon={section.icon} class="desktop-icon__art" />
+            <span class="desktop-icon__label">{section.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>

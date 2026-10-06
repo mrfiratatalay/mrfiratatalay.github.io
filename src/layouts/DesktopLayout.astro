@@ -1,0 +1,91 @@
+---
+/**
+ * Bütün sayfalarda ortak Mac çerçevesi: menü çubuğu, masaüstü klasörleri,
+ * pencere(ler) ve dock. Sayfa içeriği ilk HTML yanıtında hazır gelir.
+ */
+import '../styles/index.css';
+import BaseHead, { type SeoProps } from '../components/BaseHead.astro';
+import DesktopIcons from '../components/desktop/DesktopIcons.astro';
+import Dock, { type DockItem } from '../components/desktop/Dock.tsx';
+import MenuBar from '../components/desktop/MenuBar.astro';
+import SearchDialog from '../components/search/SearchDialog.tsx';
+import { HOME_SECTION, SECTIONS, type SectionId } from '../lib/site/sections.ts';
+
+type Props = SeoProps & {
+  section: SectionId;
+  /** Ana sayfa: klasörler telefonda da görünür ve kısa yardım metni eklenir. */
+  home?: boolean;
+};
+
+const { section, home = false, ...seo } = Astro.props;
+const pathname = Astro.url.pathname;
+const dockItems: DockItem[] = [
+  { id: HOME_SECTION.id, label: HOME_SECTION.shortLabel, href: HOME_SECTION.href, icon: HOME_SECTION.icon, desktopOnly: true },
+  ...SECTIONS.map((item) => ({ id: item.id, label: item.shortLabel, href: item.href, icon: item.icon })),
+];
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <BaseHead {...seo} isHome={home} />
+    <script is:inline>
+      // Sayfa çizilmeden önce: tema, okuma modu ve pencere konumu (aynı sekmede hatırlanır).
+      (() => {
+        const root = document.documentElement;
+        root.classList.add('js');
+        let theme = null;
+        try {
+          theme = localStorage.getItem('tema');
+        } catch (error) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.dataset.theme = theme;
+        try {
+          if (sessionStorage.getItem('okuma-modu') === '1') root.setAttribute('data-reading', '');
+          if (!matchMedia('(min-width: 900px)').matches) return;
+          const areaWidth = innerWidth;
+          const areaHeight = innerHeight - 32 - 92;
+          for (const id of ['main', 'intro']) {
+            const raw = sessionStorage.getItem('pencere:' + id);
+            if (!raw) continue;
+            const g = JSON.parse(raw);
+            if (![g.x, g.y, g.width, g.height].every(Number.isFinite)) continue;
+            if (g.maximized) root.setAttribute('data-' + id + '-maximized', '');
+            const w = Math.min(g.width, areaWidth);
+            const h = Math.min(g.height, areaHeight);
+            const x = Math.min(Math.max(g.x, Math.min(0, 120 - w)), Math.max(0, areaWidth - 120));
+            const y = Math.min(Math.max(g.y, 0), Math.max(0, areaHeight - 44));
+            root.style.setProperty('--' + id + '-x', x + 'px');
+            root.style.setProperty('--' + id + '-y', y + 'px');
+            root.style.setProperty('--' + id + '-w', w + 'px');
+            root.style.setProperty('--' + id + '-h', h + 'px');
+          }
+        } catch (error) {}
+      })();
+    </script>
+  </head>
+  <body data-section={section}>
+    <a class="skip-link" href="#icerik">İçeriğe geç</a>
+    <div class="desktop">
+      <MenuBar current={section} pathname={pathname} />
+      <div class="workspace" data-workspace>
+        {home && <p class="desktop-hint">Bir klasöre tıklayarak içerikleri açabilirsin.</p>}
+        <DesktopIcons current={section} home={home} />
+        <slot />
+      </div>
+      <div class="dock-bar">
+        <Dock client:load items={dockItems} current={section} pathname={pathname} />
+      </div>
+    </div>
+    <SearchDialog client:load />
+    <script>
+      import { initReadingEnhancements } from '../lib/ui/enhancements.ts';
+      import { initDesktop } from '../lib/window-manager/controller.ts';
+
+      initDesktop();
+      initReadingEnhancements();
+    </script>
+  </body>
+</html>

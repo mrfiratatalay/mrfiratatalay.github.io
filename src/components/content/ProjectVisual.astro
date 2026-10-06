@@ -1,0 +1,56 @@
+---
+/**
+ * Proje kapağı. Gerçek ekran görüntüsü yoksa sahte görsel yerine projenin adının
+ * baş harflerini taşıyan sade bir renk alanı gösterilir.
+ */
+import { publicImageSize } from '../../lib/content/images.ts';
+
+interface Props {
+  title: string;
+  slug: string;
+  cover?: string | undefined;
+  coverAlt?: string | undefined;
+  eager?: boolean;
+}
+
+const { title, slug, cover, coverAlt, eager = false } = Astro.props;
+
+const TINTS = [
+  'linear-gradient(140deg, #3b82f6, #1e3a8a)',
+  'linear-gradient(140deg, #8b5cf6, #4c1d95)',
+  'linear-gradient(140deg, #14b8a6, #115e59)',
+  'linear-gradient(140deg, #f97316, #9a3412)',
+  'linear-gradient(140deg, #ec4899, #9d174d)',
+  'linear-gradient(140deg, #22c55e, #166534)',
+  'linear-gradient(140deg, #0ea5e9, #075985)',
+];
+// FNV-1a: aynı proje her zaman aynı rengi alır, renkler projelere dengeli dağılır.
+let hash = 0x811c9dc5;
+for (const char of slug) {
+  hash ^= char.charCodeAt(0);
+  hash = Math.imul(hash, 0x01000193) >>> 0;
+}
+const tint = TINTS[hash % TINTS.length];
+const words = title.split(/\s+/).filter((word) => /[\p{L}\p{N}]/u.test(word));
+const mark = (words.length > 1 ? (words[0]?.charAt(0) ?? '') + (words[1]?.charAt(0) ?? '') : title.slice(0, 2)).toLocaleUpperCase('tr');
+const size = await publicImageSize(cover);
+---
+
+<div class="project-visual" style={`--project-tint: ${tint}`}>
+  {
+    cover ? (
+      <img
+        src={cover}
+        alt={coverAlt ?? ''}
+        width={size?.width}
+        height={size?.height}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+      />
+    ) : (
+      <span class="project-visual__mark" aria-hidden="true">
+        {mark}
+      </span>
+    )
+  }
+</div>

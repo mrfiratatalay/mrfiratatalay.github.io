@@ -1,0 +1,57 @@
+---
+import Window from '../../components/desktop/Window.astro';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { getPublishedSeries } from '../../lib/content/collections.ts';
+
+const seriesList = await getPublishedSeries();
+---
+
+<DesktopLayout title="Çalışmalarım" description="Chapter ve part sırasıyla ilerleyen çalışma serileri." section="series">
+  <Window id="main" variant="main" title="Çalışmalarım" icon="series" closeHref="/" sidebarLabel="Seriler">
+    <nav slot="sidebar" class="sidebar-nav" aria-label="Seriler">
+      <h2>Seriler</h2>
+      <ul>
+        {
+          seriesList.map((series) => (
+            <li>
+              <a href={`#${series.id}`}>{series.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <header class="page-header page-header--wide">
+      <h1 class="page-title">Çalışmalarım</h1>
+      <p class="page-lead">Uzun konuları chapter ve part sırasıyla takip edebileceğin seriler. Her part, ilgili yazının veya notun kendi sayfasını açar.</p>
+    </header>
+
+    {
+      seriesList.length === 0 ? (
+        <p class="empty-state">Henüz yayınlanmış çalışma serisi yok.</p>
+      ) : (
+        seriesList.map((series) => (
+          <section class="series-card" id={series.id} aria-labelledby={`${series.id}-baslik`}>
+            <h2 id={`${series.id}-baslik`}>{series.title}</h2>
+            {series.description && <p class="muted" style="margin: 0;">{series.description}</p>}
+            {series.chapters.map((chapter) => (
+              <div class="chapter">
+                <h3>{chapter.title}</h3>
+                <ol class="part-list">
+                  {chapter.parts.map((part) => (
+                    <li>
+                      <a href={part.url}>
+                        <span>{part.title}</span>
+                        <span class="chip">{part.kind}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </section>
+        ))
+      )
+    }
+  </Window>
+</DesktopLayout>

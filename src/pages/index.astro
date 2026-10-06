@@ -1,0 +1,93 @@
+---
+import Window from '../components/desktop/Window.astro';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { getPublishedNotes, getPublishedPosts } from '../lib/content/collections.ts';
+import { formatDate } from '../lib/content/dates.ts';
+import { initials, profile } from '../lib/content/site-data.ts';
+import { paths } from '../lib/content/urls.ts';
+
+const posts = (await getPublishedPosts()).slice(0, 3);
+const notes = (await getPublishedNotes()).slice(0, 3);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: profile.name,
+  url: site.toString(),
+  inLanguage: 'tr-TR',
+  description: profile.siteDescription,
+  author: {
+    '@type': 'Person',
+    name: profile.name,
+    url: new URL(paths.about, site).toString(),
+    sameAs: profile.links.map((link) => link.url),
+  },
+};
+---
+
+<DesktopLayout title={profile.name} description={profile.siteDescription} section="home" home jsonLd={jsonLd}>
+  <Window id="intro" variant="intro" title="Hoş geldin" icon="home">
+    <div class="intro">
+      <div class="intro__head">
+        {
+          profile.avatar ? (
+            <img class="avatar avatar--small" src={profile.avatar} alt={profile.avatarAlt ?? ''} width="76" height="76" />
+          ) : (
+            <span class="avatar avatar--small avatar--initials" aria-hidden="true">
+              {initials(profile.name)}
+            </span>
+          )
+        }
+        <div>
+          <h1 class="intro__name">{profile.name}</h1>
+          <p class="intro__title">{profile.title}</p>
+        </div>
+      </div>
+      <p class="intro__bio">{profile.shortBio}</p>
+      <div class="action-row">
+        <a class="button button--primary" href={paths.about}>Hakkımda</a>
+        <a class="button" href={paths.projects}>Projelerim</a>
+        <a class="button" href={paths.blog}>Blog</a>
+      </div>
+      {
+        posts.length > 0 && (
+          <section aria-labelledby="son-yazilar">
+            <h2 class="section-title" id="son-yazilar">
+              Son yazılar
+            </h2>
+            <ul class="mini-list">
+              {posts.map((post) => (
+                <li>
+                  <a href={paths.blogPost(post.data.urlSlug)}>
+                    <span>{post.data.title}</span>
+                    <span>{formatDate(post.data.publishedAt)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        notes.length > 0 && (
+          <section aria-labelledby="notlardan">
+            <h2 class="section-title" id="notlardan">
+              Öğrenme notlarından
+            </h2>
+            <ul class="mini-list">
+              {notes.map((note) => (
+                <li>
+                  <a href={note.url}>
+                    <span>{note.title}</span>
+                    <span>{note.readingMinutes} dk</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+    </div>
+  </Window>
+</DesktopLayout>

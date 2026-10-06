@@ -1,0 +1,346 @@
+/*
+ * Pencereler. Telefonda pencere sayfanın kendisidir (sürükleme ve boyutlandırma yok).
+ * 900 px ve üzerinde pencereler çalışma alanında konumlanır; konumu ve boyutu
+ * --<id>-x/y/w/h değişkenleriyle pencere yöneticisi belirler.
+ */
+.window {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 1080px;
+  margin: 0 auto;
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow-window);
+  overflow: clip;
+}
+
+.window + .window {
+  margin-top: 12px;
+}
+
+.window--main,
+.window--intro {
+  view-transition-name: main-window;
+}
+
+.window__titlebar {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--titlebar);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.window__controls {
+  display: flex;
+  align-items: center;
+  justify-self: start;
+}
+
+.window__title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.window__title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.window__title svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.window__tools {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 2px;
+}
+
+/* Trafik ışıkları: 24 px dokunma alanı, 13 px görünür daire */
+.traffic {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: rgb(0 0 0 / 0.62);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.traffic::before {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--traffic-color);
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.22);
+}
+
+.traffic svg {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  opacity: 0;
+  transition: opacity var(--dur-fast);
+}
+
+.window__controls:hover .traffic svg,
+.traffic:focus-visible svg {
+  opacity: 1;
+}
+
+.traffic--close {
+  --traffic-color: var(--traffic-close);
+}
+
+.traffic--minimize {
+  --traffic-color: var(--traffic-minimize);
+}
+
+.traffic--zoom {
+  --traffic-color: var(--traffic-zoom);
+}
+
+/* Telefonda yalnızca kapatma düğmesi büyük ve belirgin görünür. */
+.traffic--minimize,
+.traffic--zoom,
+.window__resize {
+  display: none;
+}
+
+.traffic--close {
+  width: 36px;
+  height: 36px;
+}
+
+.traffic--close::before {
+  width: 22px;
+  height: 22px;
+}
+
+.traffic--close svg {
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+}
+
+.window__frame {
+  display: block;
+}
+
+.window__sidebar {
+  display: none;
+}
+
+.window__content {
+  min-width: 0;
+}
+
+.window__content:focus {
+  outline: none;
+}
+
+.window__inner {
+  padding: 22px 18px 40px;
+}
+
+.window__pulse {
+  animation: window-pulse 420ms var(--ease-out);
+}
+
+@keyframes window-pulse {
+  40% {
+    transform: scale(1.012);
+  }
+}
+
+@media (min-width: 600px) {
+  .window__inner {
+    padding: 28px 32px 48px;
+  }
+}
+
+/* Masaüstü düzeni */
+@media (min-width: 900px) {
+  .window {
+    position: absolute;
+    margin: 0;
+    max-width: none;
+    border-radius: var(--radius-window);
+    box-shadow: var(--shadow-window-inactive);
+    transition: box-shadow var(--dur);
+  }
+
+  .window + .window {
+    margin-top: 0;
+  }
+
+  .window.is-active {
+    box-shadow: var(--shadow-window);
+  }
+
+  .window__titlebar {
+    min-height: 44px;
+    padding: 0 10px 0 12px;
+    background: var(--titlebar-inactive);
+    touch-action: none;
+  }
+
+  .window.is-active .window__titlebar {
+    background: var(--titlebar);
+  }
+
+  .window:not(.is-active) .window__title {
+    color: var(--text-subtle);
+  }
+
+  .window__title {
+    font-size: 13.5px;
+  }
+
+  .traffic--minimize,
+  .traffic--zoom {
+    display: grid;
+  }
+
+  .traffic--close {
+    width: 24px;
+    height: 24px;
+  }
+
+  .traffic--close::before {
+    width: 13px;
+    height: 13px;
+  }
+
+  .traffic--close svg {
+    width: 9px;
+    height: 9px;
+    opacity: 0;
+  }
+
+  .window__controls:hover .traffic--close svg,
+  .traffic--close:focus-visible svg {
+    opacity: 1;
+  }
+
+  .window:not(.is-active) .window__controls:not(:hover) .traffic::before {
+    background: light-dark(#d5d8dd, #4a505a);
+  }
+
+  html:not(.js) .traffic--minimize,
+  html:not(.js) .traffic--zoom {
+    visibility: hidden;
+  }
+
+  .window__frame {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .window__sidebar {
+    display: block;
+    flex: none;
+    width: 236px;
+    padding: 14px 10px 24px;
+    border-right: 1px solid var(--border);
+    background: var(--surface-sunken);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .window__content {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-padding-top: 20px;
+  }
+
+  .window__inner {
+    padding: 34px clamp(24px, 4vw, 56px) 64px;
+  }
+
+  .window__resize {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    touch-action: none;
+  }
+
+  html:not(.js) .window__resize {
+    display: none;
+  }
+
+  /* Ana içerik penceresi: çalışma alanında, klasör sütununa yer bırakarak ortalanır. */
+  .window--main {
+    --default-w: min(1100px, calc(100% - 2 * var(--gutter) - var(--icons-column)));
+    left: var(--main-x, max(var(--gutter), calc((100% - var(--icons-column) - var(--default-w)) / 2)));
+    top: var(--main-y, 12px);
+    width: var(--main-w, var(--default-w));
+    height: var(--main-h, calc(100% - 24px));
+    z-index: 20;
+  }
+
+  /* Ana sayfadaki tanıtım penceresi */
+  .window--intro {
+    --default-w: min(600px, calc(100% - 2 * var(--gutter) - var(--icons-column)));
+    left: var(--intro-x, clamp(var(--gutter), 10%, 180px));
+    top: var(--intro-y, clamp(16px, 8%, 72px));
+    width: var(--intro-w, var(--default-w));
+    height: var(--intro-h, auto);
+    max-height: calc(100% - var(--intro-y, clamp(16px, 8%, 72px)) - 16px);
+    z-index: 20;
+  }
+
+  .window[data-maximized],
+  :root[data-main-maximized] .window--main,
+  :root[data-intro-maximized] .window--intro,
+  :root[data-reading] .window--main {
+    top: 8px;
+    left: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    max-height: none;
+  }
+
+  .window[data-maximized] .window__resize,
+  :root[data-reading] .window--main .window__resize {
+    display: none;
+  }
+
+  :root[data-reading] .window--main .window__sidebar {
+    display: none;
+  }
+}

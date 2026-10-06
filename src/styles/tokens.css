@@ -1,0 +1,137 @@
+/*
+ * Tasarım değişkenleri. Renkler light-dark() ile tek yerde tanımlanır:
+ * ilk değer açık tema, ikinci değer koyu tema içindir.
+ * Ana renk (lacivert/mavi ailesi) --accent ile değiştirilebilir.
+ */
+:root {
+  color-scheme: light dark;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Renkler */
+  --accent: light-dark(#1d4ed8, #6ea8ff);
+  --accent-strong: light-dark(#1e3a8a, #a5c8ff);
+  --accent-soft: light-dark(rgb(29 78 216 / 0.1), rgb(110 168 255 / 0.16));
+  --on-accent: light-dark(#ffffff, #07122b);
+  --text: light-dark(#0f172a, #e6eaf2);
+  --text-muted: light-dark(#475569, #aab3c5);
+  --text-subtle: light-dark(#5b6678, #8f99ad);
+  --surface: light-dark(#ffffff, #161a22);
+  --surface-raised: light-dark(#f8fafc, #1c212b);
+  --surface-sunken: light-dark(#f2f5f9, #11151c);
+  --surface-hover: light-dark(#eef2f8, #232935);
+  --border: light-dark(rgb(15 23 42 / 0.12), rgb(255 255 255 / 0.1));
+  --border-strong: light-dark(rgb(15 23 42 / 0.22), rgb(255 255 255 / 0.2));
+  --titlebar: light-dark(#f4f5f8, #1f242e);
+  --titlebar-inactive: light-dark(#fafbfc, #1a1e26);
+  --glass: light-dark(rgb(255 255 255 / 0.56), rgb(22 26 35 / 0.58));
+  --glass-strong: light-dark(rgb(255 255 255 / 0.8), rgb(22 26 35 / 0.84));
+  --glass-border: light-dark(rgb(255 255 255 / 0.65), rgb(255 255 255 / 0.12));
+  --glass-highlight: light-dark(rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.08));
+  --code-bg: light-dark(#f6f8fa, #0d1117);
+  --mark-bg: light-dark(#fde68a, #6b4a06);
+  --danger: light-dark(#b42318, #ffa39e);
+  --success: light-dark(#157f3b, #7ee2a8);
+  --focus: light-dark(#1d4ed8, #8ab8ff);
+
+  --traffic-close: #ff5f57;
+  --traffic-minimize: #febc2e;
+  --traffic-zoom: #28c840;
+
+  --wallpaper-base: light-dark(#dfe7fb, #0a1128);
+  --wallpaper:
+    radial-gradient(110% 85% at 8% 0%, light-dark(#b9cdfd, #1e3a8a) 0%, transparent 58%),
+    radial-gradient(85% 75% at 100% 100%, light-dark(#e3d4ff, #4a1d8f) 0%, transparent 62%),
+    radial-gradient(70% 60% at 88% 8%, light-dark(#c6ecfb, #0c5a73) 0%, transparent 55%),
+    linear-gradient(165deg, light-dark(#eef2ff, #0b1533) 0%, light-dark(#d8e3fb, #090f22) 100%);
+
+  /* Ölçüler (ürün önerisidir; resmî macOS ölçüleri değildir) */
+  --menubar-h: 32px;
+  --dock-icon: 46px;
+  --dock-reserved: 92px;
+  --gutter: 16px;
+  --icons-column: 132px;
+  --radius-window: 16px;
+  --radius-dock: 22px;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --reading-width: 70ch;
+
+  --shadow-window: 0 28px 70px rgb(2 6 23 / 0.3), 0 8px 22px rgb(2 6 23 / 0.16), 0 0 0 1px var(--border);
+  --shadow-window-inactive: 0 14px 36px rgb(2 6 23 / 0.18), 0 0 0 1px var(--border);
+  --shadow-card: 0 1px 2px rgb(2 6 23 / 0.06), 0 0 0 1px var(--border);
+  --shadow-pop: 0 18px 50px rgb(2 6 23 / 0.28), 0 0 0 1px var(--border);
+  --blur: 22px;
+
+  /* Hareket */
+  --dur-fast: 120ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms;
+    --dur: 0ms;
+    --dur-slow: 0ms;
+  }
+}
+
+/* Saydamlığı azaltmak isteyenler ve zayıf cihazlar için cam efekti sadeleşir. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass: var(--surface-raised);
+    --glass-strong: var(--surface-raised);
+    --blur: 0px;
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --glass: var(--glass-strong);
+  }
+}
+
+/* light-dark() desteklemeyen eski tarayıcılar açık temayı kullanır. */
+@supports not (color: light-dark(#fff, #000)) {
+  :root {
+    --accent: #1d4ed8;
+    --accent-strong: #1e3a8a;
+    --accent-soft: rgb(29 78 216 / 0.1);
+    --on-accent: #ffffff;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --text-subtle: #5b6678;
+    --surface: #ffffff;
+    --surface-raised: #f8fafc;
+    --surface-sunken: #f2f5f9;
+    --surface-hover: #eef2f8;
+    --border: rgb(15 23 42 / 0.12);
+    --border-strong: rgb(15 23 42 / 0.22);
+    --titlebar: #f4f5f8;
+    --titlebar-inactive: #fafbfc;
+    --glass: rgb(255 255 255 / 0.85);
+    --glass-strong: rgb(255 255 255 / 0.9);
+    --glass-border: rgb(255 255 255 / 0.65);
+    --glass-highlight: rgb(255 255 255 / 0.75);
+    --code-bg: #f6f8fa;
+    --mark-bg: #fde68a;
+    --danger: #b42318;
+    --success: #157f3b;
+    --focus: #1d4ed8;
+    --wallpaper-base: #dfe7fb;
+    --wallpaper: linear-gradient(165deg, #eef2ff 0%, #d8e3fb 100%);
+  }
+}

@@ -1,0 +1,116 @@
+---
+import { render } from 'astro:content';
+import { ExternalLink } from 'lucide-react';
+import ArticleMeta from '../../../components/content/ArticleMeta.astro';
+import Breadcrumbs from '../../../components/content/Breadcrumbs.astro';
+import Pager from '../../../components/content/Pager.astro';
+import SeriesBanner from '../../../components/content/SeriesBanner.astro';
+import Toc from '../../../components/content/Toc.astro';
+import ReadingLayout from '../../../layouts/ReadingLayout.astro';
+import { findSeriesContext, getNoteSources, type NoteItem } from '../../../lib/content/collections.ts';
+import { categoryLabel, profile } from '../../../lib/content/site-data.ts';
+import { LOCAL_NOTE_SOURCE_ID, paths } from '../../../lib/content/urls.ts';
+
+export async function getStaticPaths() {
+  const sources = await getNoteSources();
+  return sources.flatMap((source) =>
+    source.notes.map((note, index) => ({
+      params: { sourceId: note.sourceId, slug: note.slug },
+      props: {
+        note,
+        sourceLabel: source.label,
+        previous: source.notes[index - 1],
+        next: source.notes[index + 1],
+      },
+    })),
+  );
+}
+
+interface Props {
+  note: NoteItem;
+  sourceLabel: string;
+  previous?: NoteItem | undefined;
+  next?: NoteItem | undefined;
+}
+
+const { note, sourceLabel, previous, next } = Astro.props;
+const { Content, headings } = await render(note.entry);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const series = await findSeriesContext(note.url);
+const label = categoryLabel(note.category);
+const description = note.description ?? `${sourceLabel} koleksiyonundan bir öğrenme notu.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: note.title,
+  description,
+  ...(note.publishedAt ? { datePublished: note.publishedAt.toISOString() } : {}),
+  ...(note.updatedAt ? { dateModified: note.updatedAt.toISOString() } : {}),
+  author: { '@type': 'Person', name: profile.name, url: new URL(paths.about, site).toString() },
+  mainEntityOfPage: new URL(note.url, site).toString(),
+  inLanguage: 'tr-TR',
+};
+---
+
+<ReadingLayout
+  title={note.title}
+  description={description}
+  section="notes"
+  windowTitle="Öğrenme Notları"
+  icon="notes"
+  headings={headings}
+  type="article"
+  publishedTime={note.publishedAt}
+  modifiedTime={note.updatedAt}
+  tags={note.tags}
+  jsonLd={jsonLd}
+>
+  <article class="article" data-pagefind-body data-pagefind-meta="type:Not">
+    <Breadcrumbs
+      items={[
+        { label: 'Öğrenme Notları', href: paths.notes },
+        { label: sourceLabel, href: paths.noteSource(note.sourceId) },
+        { label: note.title },
+      ]}
+    />
+    {series && <SeriesBanner context={series} />}
+    <header class="article-header">
+      <p class="article-kicker" data-pagefind-ignore>
+        {label && <span class="badge">{label}</span>}
+        <span>Öğrenme notu · {sourceLabel}</span>
+      </p>
+      <h1 class="article-title">{note.title}</h1>
+      {/* İçe aktarılan notun açıklaması ilk paragrafından çıkarıldığı için tekrar gösterilmez. */}
+      {note.description && note.sourceId === LOCAL_NOTE_SOURCE_ID && <p class="article-lead">{note.description}</p>}
+      <ArticleMeta publishedAt={note.publishedAt} updatedAt={note.updatedAt} minutes={note.readingMinutes} folder={note.folder || undefined} />
+    </header>
+    <Toc headings={headings} variant="inline" />
+    <div class="prose">
+      <Content />
+    </div>
+    {
+      note.source && (
+        <p class="source-note" data-pagefind-ignore>
+          Bu not <strong>{note.source.repository}</strong> reposundan alınmıştır.{' '}
+          <a href={note.source.url} rel="noopener">
+            Kaynak dosyayı GitHub'da görüntüle <ExternalLink aria-hidden="true" size={14} />
+          </a>
+        </p>
+      )
+    }
+    {
+      series ? (
+        <Pager heading={`${series.series.title} serisi`} previous={series.previous} next={series.next} previousLabel="Önceki part" nextLabel="Sonraki part" />
+      ) : (
+        <Pager
+          heading={`${sourceLabel} içinde`}
+          previous={previous ? { title: previous.title, url: previous.url } : undefined}
+          next={next ? { title: next.title, url: next.url } : undefined}
+          previousLabel="Önceki not"
+          nextLabel="Sonraki not"
+        />
+      )
+    }
+  </article>
+</ReadingLayout>

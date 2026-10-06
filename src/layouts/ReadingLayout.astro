@@ -1,0 +1,38 @@
+---
+/**
+ * Okuma penceresi: makale, not ve proje sayfaları. Pencere doğrudan açık gelir;
+ * Google'dan gelen ziyaretçi masaüstünde klasör aramadan yazıyı görür.
+ */
+import type { MarkdownHeading } from 'astro';
+import type { SeoProps } from '../components/BaseHead.astro';
+import Toc from '../components/content/Toc.astro';
+import Window from '../components/desktop/Window.astro';
+import { hasToc } from '../lib/content/toc.ts';
+import type { IconName, SectionId } from '../lib/site/sections.ts';
+import DesktopLayout from './DesktopLayout.astro';
+
+type Props = SeoProps & {
+  section: SectionId;
+  windowTitle: string;
+  icon: IconName;
+  headings?: MarkdownHeading[];
+};
+
+const { section, windowTitle, icon, headings = [], ...seo } = Astro.props;
+const showToc = hasToc(headings);
+---
+
+<DesktopLayout {...seo} section={section}>
+  <Window
+    id="main"
+    variant="main"
+    title={windowTitle}
+    icon={icon}
+    closeHref="/"
+    readingTools
+    sidebarLabel={showToc ? 'İçindekiler' : undefined}
+  >
+    {showToc && <Toc slot="sidebar" headings={headings} variant="sidebar" />}
+    <slot />
+  </Window>
+</DesktopLayout>

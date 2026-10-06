@@ -1,0 +1,15 @@
+---
+import type { SeriesContext } from '../../lib/content/collections.ts';
+import { paths } from '../../lib/content/urls.ts';
+
+interface Props {
+  context: SeriesContext;
+}
+
+const { context } = Astro.props;
+---
+
+<p class="series-context" data-pagefind-ignore>
+  <a href={`${paths.series}#${context.series.id}`}>{context.series.title}</a>
+  serisi · {context.chapterTitle} · {context.position}/{context.total}
+</p>

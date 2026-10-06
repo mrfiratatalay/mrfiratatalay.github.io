@@ -1,0 +1,65 @@
+---
+import { Mail, MapPin } from 'lucide-react';
+import Window from '../../components/desktop/Window.astro';
+import LinkIcon from '../../components/icons/LinkIcon.tsx';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { profile } from '../../lib/content/site-data.ts';
+---
+
+<DesktopLayout title="İletişim" description={`${profile.name} ile iletişim: e-posta ve sosyal bağlantılar.`} section="contact">
+  <Window id="main" variant="main" title="İletişim" icon="contact" closeHref="/">
+    <div class="article">
+      <header class="page-header">
+        <h1 class="page-title">İletişim</h1>
+        <p class="page-lead">İş, freelance veya işbirliği için bana e-postayla ulaşabilir ya da aşağıdaki hesaplardan yazabilirsin.</p>
+      </header>
+
+      {
+        profile.email ? (
+          <div class="action-row">
+            <a class="button button--primary" href={`mailto:${profile.email}`}>
+              <Mail aria-hidden="true" />
+              {profile.email}
+            </a>
+          </div>
+        ) : (
+          <p class="empty-state">E-posta adresi henüz eklenmedi.</p>
+        )
+      }
+
+      {
+        profile.links.length > 0 && (
+          <section aria-labelledby="hesaplar">
+            <h2 class="section-title" id="hesaplar">
+              Hesaplar
+            </h2>
+            <ul class="entry-list">
+              {profile.links.map((link) => (
+                <li class="entry">
+                  <span class="entry__icon" aria-hidden="true">
+                    <LinkIcon kind={link.kind} />
+                  </span>
+                  <h3 class="entry__title">
+                    <a href={link.url} rel="me noopener">
+                      {link.label}
+                    </a>
+                  </h3>
+                  <p class="entry__summary">{link.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      {
+        profile.location && (
+          <p class="muted" style="display: flex; align-items: center; gap: 6px; margin-top: 24px;">
+            <MapPin aria-hidden="true" size={16} />
+            {profile.location}
+          </p>
+        )
+      }
+    </div>
+  </Window>
+</DesktopLayout>

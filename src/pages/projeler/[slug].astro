@@ -1,0 +1,167 @@
+---
+import { render } from 'astro:content';
+import { CirclePlay, CodeXml, ExternalLink } from 'lucide-react';
+import Breadcrumbs from '../../components/content/Breadcrumbs.astro';
+import Pager from '../../components/content/Pager.astro';
+import ProjectVisual from '../../components/content/ProjectVisual.astro';
+import ReadingLayout from '../../layouts/ReadingLayout.astro';
+import { getPublishedProjects, type ProjectEntry } from '../../lib/content/collections.ts';
+import { formatDate } from '../../lib/content/dates.ts';
+import { publicImageSize } from '../../lib/content/images.ts';
+import { PROJECT_STATUSES } from '../../lib/content/schemas.ts';
+import { profile } from '../../lib/content/site-data.ts';
+import { paths } from '../../lib/content/urls.ts';
+
+export async function getStaticPaths() {
+  const projects = await getPublishedProjects();
+  return projects.map((project, index) => ({
+    params: { slug: project.data.urlSlug },
+    props: { project, previous: projects[index - 1], next: projects[index + 1] },
+  }));
+}
+
+interface Props {
+  project: ProjectEntry;
+  previous?: ProjectEntry | undefined;
+  next?: ProjectEntry | undefined;
+}
+
+const { project, previous, next } = Astro.props;
+const { data } = project;
+const { Content, headings } = await render(project);
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const gallery = await Promise.all(data.gallery.map(async (item) => ({ ...item, size: await publicImageSize(item.image) })));
+const period = [data.startedAt, data.endedAt].filter((date): date is Date => Boolean(date)).map(formatDate).join(' – ');
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: data.title,
+  description: data.summary,
+  url: new URL(paths.project(data.urlSlug), site).toString(),
+  author: { '@type': 'Person', name: profile.name },
+  ...(data.repoUrl ? { codeRepository: data.repoUrl } : {}),
+  ...(data.cover ? { image: new URL(data.cover, site).toString() } : {}),
+  inLanguage: 'tr-TR',
+};
+---
+
+<ReadingLayout
+  title={data.title}
+  description={data.summary ?? `${data.title} projesi`}
+  section="projects"
+  windowTitle="Projelerim"
+  icon="projects"
+  headings={headings}
+  image={data.cover}
+  imageAlt={data.coverAlt}
+  jsonLd={jsonLd}
+>
+  <article class="article" data-pagefind-body data-pagefind-meta="type:Proje">
+    <Breadcrumbs items={[{ label: 'Projelerim', href: paths.projects }, { label: data.title }]} />
+    <header class="article-header">
+      <p class="article-kicker" data-pagefind-ignore>
+        {data.status && <span class="badge">{PROJECT_STATUSES[data.status]}</span>}
+        <span>Proje</span>
+      </p>
+      <h1 class="article-title">{data.title}</h1>
+      {data.summary && <p class="article-lead">{data.summary}</p>}
+    </header>
+
+    <figure class="article-cover">
+      <ProjectVisual title={data.title} slug={data.urlSlug} cover={data.cover} coverAlt={data.coverAlt} eager />
+    </figure>
+
+    {
+      (data.repoUrl || data.demoUrl || data.videoUrl) && (
+        <div class="action-row" data-pagefind-ignore>
+          {data.demoUrl && (
+            <a class="button button--primary" href={data.demoUrl} rel="noopener">
+              <ExternalLink aria-hidden="true" />
+              Canlı demoyu aç
+            </a>
+          )}
+          {data.repoUrl && (
+            <a class="button" href={data.repoUrl} rel="noopener">
+              <CodeXml aria-hidden="true" />
+              Kaynak kod (GitHub)
+            </a>
+          )}
+          {data.videoUrl && (
+            <a class="button" href={data.videoUrl} rel="noopener">
+              <CirclePlay aria-hidden="true" />
+              Tanıtım videosu
+            </a>
+          )}
+        </div>
+      )
+    }
+
+    {
+      (data.technologies.length > 0 || data.role || period) && (
+        <ul class="project-facts">
+          {data.technologies.length > 0 && (
+            <li>
+              <span class="label">Teknolojiler</span>
+              <ul class="chip-list" style="margin-top: 8px;">
+                {data.technologies.map((tech) => (
+                  <li class="chip">{tech}</li>
+                ))}
+              </ul>
+            </li>
+          )}
+          {data.role && (
+            <li>
+              <span class="label">Projedeki rolüm</span>
+              <p style="margin: 6px 0 0;">{data.role}</p>
+            </li>
+          )}
+          {period && (
+            <li>
+              <span class="label">Tarih</span>
+              <p style="margin: 6px 0 0;">{period}</p>
+            </li>
+          )}
+        </ul>
+      )
+    }
+
+    <div class="prose">
+      {
+        data.problem && (
+          <>
+            <h2>Çözdüğü problem</h2>
+            <p>{data.problem}</p>
+          </>
+        )
+      }
+      {
+        data.benefit && (
+          <>
+            <h2>Kullanıcıya sağladığı fayda</h2>
+            <p>{data.benefit}</p>
+          </>
+        )
+      }
+      <Content />
+    </div>
+
+    {
+      gallery.length > 0 && (
+        <ul class="gallery" aria-label="Proje görselleri">
+          {gallery.map((item) => (
+            <li>
+              <img src={item.image} alt={item.alt ?? ''} width={item.size?.width} height={item.size?.height} loading="lazy" decoding="async" />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <Pager
+      heading="Diğer projeler"
+      previous={previous ? { title: previous.data.title, url: paths.project(previous.data.urlSlug) } : undefined}
+      next={next ? { title: next.data.title, url: paths.project(next.data.urlSlug) } : undefined}
+    />
+  </article>
+</ReadingLayout>

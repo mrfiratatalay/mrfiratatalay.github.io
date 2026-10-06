@@ -1,0 +1,59 @@
+# Site değişikliği gelince, elle (Run workflow), günde bir kez ve not repolarından
+# "notes-updated" olayı gelince: notlar alınır, içerik kontrol edilir, testler
+# çalışır, site ve arama dizini hazırlanır ve başarılı sonuç yayınlanır.
+# Herhangi bir adım başarısız olursa yayınlama yapılmaz; son başarılı sürüm açık kalır.
+#
+# Action sürümleri 6 Ekim 2026'da resmî depolardan doğrulanan commit kimliklerine
+# sabitlenmiştir (bkz. KAYNAK_VE_SURUM_KAYDI.md).
+name: Kisisel siteyi hazirla ve yayinla
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    # UTC 03:17 = Türkiye saatiyle 06:17. GitHub yoğunlukta gecikebilir.
+    - cron: '17 3 * * *'
+  repository_dispatch:
+    types:
+      - notes-updated
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: personal-pages-production
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Icerikleri ve siteyi hazirla
+    runs-on: ubuntu-latest
+    steps:
+      - name: Site dosyalarini al
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Notlari al, kontrol et, test et ve siteyi hazirla
+        uses: withastro/action@3eafd002e65cc31b4f0eae0bb05450d521562247 # v6.1.3
+        with:
+          node-version: 24
+          # Eski önbellek yeni çıktıya karışmasın diye Astro önbelleği kullanılmaz.
+          cache: false
+          build-cmd: npm test && npm run check && npm run build
+
+  publish:
+    name: GitHub Pages'e yayinla
+    needs: prepare
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages_result.outputs.page_url }}
+    steps:
+      - name: Hazir siteyi Pages'e gonder
+        id: pages_result
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

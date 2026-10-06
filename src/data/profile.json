@@ -1,0 +1,63 @@
+{
+  "name": "Fırat Atalay",
+  "title": "Frontend Geliştirici",
+  "shortBio": "Modern web uygulamaları geliştiren bir Frontend Geliştiriciyim. Yeni teknolojiler öğrenmeye hevesliyim ve her gün kendimi geliştiriyorum.",
+  "bio": "Modern web uygulamaları geliştiren bir Frontend Geliştiriciyim. Kararlı ve disiplinli biriyim; her gün kendimi geliştirmeye çalışıyorum.\n\nYeni teknolojiler öğrenmeye hevesliyim. Freelance, tam zamanlı veya yarı zamanlı fırsatlara açığım.",
+  "location": "Türkiye",
+  "email": "firatatalay.cs@gmail.com",
+  "avatar": "/images/profile/firat-atalay.webp",
+  "avatarAlt": "Fırat Atalay'ın portre fotoğrafı",
+  "cv": "",
+  "languages": ["Türkçe", "İngilizce", "İspanyolca"],
+  "education": [
+    {
+      "school": "Recep Tayyip Erdoğan Üniversitesi",
+      "program": "Bilgisayar Mühendisliği (Lisans)",
+      "period": "Eylül 2021 –"
+    }
+  ],
+  "experience": [
+    {
+      "role": "Web Sitesi Yöneticisi ve Geliştiricisi",
+      "organization": "Teknofest Topluluğu",
+      "period": "Devam ediyor",
+      "description": "Üniversitemizin Teknofest topluluğunun web sitesini geliştirmek ve yönetmekten sorumluyum; topluluğun dijital görünürlüğünü güçlendirip sorunsuz bir kullanıcı deneyimi sağlamaya çalışıyorum."
+    },
+    {
+      "role": "Frontend ve Backend Teknoloji Yazarı",
+      "organization": "Huawei Student Developers (HSD) Türkiye",
+      "period": "Ocak 2024 – Devam ediyor",
+      "description": "HSD'nin Medium programına gönüllü yazar olarak seçildim. Frontend ve backend teknolojileri, framework'ler ve yazılım geliştirme pratikleri üzerine eğitici içerikler yazıyorum."
+    },
+    {
+      "role": "Frontend Teknoloji Uzmanı ve Yazar",
+      "organization": "Stackademic",
+      "period": "Ocak 2023 – Devam ediyor",
+      "description": "In Plain English editörünün davetiyle Stackademic için JavaScript ve React üzerine eğitici makaleler yazıyorum."
+    },
+    {
+      "role": "Frontend Geliştirici",
+      "organization": "Freelance",
+      "period": "Aralık 2020 – Devam ediyor",
+      "description": "JavaScript, TypeScript, React, Redux, HTML5, CSS3, Sass ve Bootstrap ile ihtiyaca göre özelleştirilmiş, kullanıcı dostu web uygulamaları geliştiriyorum."
+    }
+  ],
+  "skills": [
+    {
+      "group": "Diller",
+      "items": ["JavaScript", "TypeScript", "Java", "C#", "C/C++", "SQL", "HTML", "CSS"]
+    },
+    {
+      "group": "Teknolojiler",
+      "items": ["React", "Next.js", "Remix", "React Native", "Node.js", "Tailwind CSS", "Sass", "MySQL", "MongoDB", "Git"]
+    }
+  ],
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/mrfiratatalay", "kind": "github" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/firat-atalayy/", "kind": "linkedin" },
+    { "label": "Medium", "url": "https://medium.com/@firatatalay", "kind": "medium" },
+    { "label": "YouTube", "url": "https://www.youtube.com/@mrfiratatalay", "kind": "youtube" }
+  ],
+  "siteDescription": "Fırat Atalay'ın kişisel sitesi: projeler, blog yazıları ve öğrenme notları.",
+  "googleSiteVerification": ""
+}

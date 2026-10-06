@@ -1,0 +1,33 @@
+---
+import type { ProjectEntry } from '../../lib/content/collections.ts';
+import { PROJECT_STATUSES } from '../../lib/content/schemas.ts';
+import { paths } from '../../lib/content/urls.ts';
+import ProjectVisual from './ProjectVisual.astro';
+
+interface Props {
+  project: ProjectEntry;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+---
+
+<article class="project-card">
+  <ProjectVisual title={data.title} slug={data.urlSlug} cover={data.cover} coverAlt={data.coverAlt} />
+  <div class="project-card__body">
+    {data.status && <span class="badge">{PROJECT_STATUSES[data.status]}</span>}
+    <h2 class="project-card__title">
+      <a href={paths.project(data.urlSlug)}>{data.title}</a>
+    </h2>
+    {data.summary && <p class="project-card__summary">{data.summary}</p>}
+    {
+      data.technologies.length > 0 && (
+        <ul class="chip-list" aria-label="Kullanılan teknolojiler">
+          {data.technologies.map((tech) => (
+            <li class="chip">{tech}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>

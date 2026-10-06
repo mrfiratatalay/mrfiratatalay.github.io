@@ -1,0 +1,39 @@
+---
+import { initials, profile } from '../../lib/content/site-data.ts';
+import { SECTIONS, type SectionId } from '../../lib/site/sections.ts';
+import MenuBarExtras from './MenuBarExtras.tsx';
+
+interface Props {
+  current: SectionId;
+  pathname: string;
+}
+
+const { current, pathname } = Astro.props;
+---
+
+<header class="menubar">
+  <div class="menubar__left">
+    <a class="menubar__brand" href="/" data-section-link aria-label={`${profile.name} — masaüstüne dön`}>
+      <span class="menubar__logo" aria-hidden="true">{initials(profile.name)}</span>
+      <span>{profile.name}</span>
+    </a>
+    <nav class="menubar__nav" aria-label="Ana menü">
+      <ul>
+        {
+          SECTIONS.map((section) => (
+            <li>
+              <a
+                href={section.href}
+                data-section-link
+                aria-current={pathname === section.href ? 'page' : current === section.id ? 'true' : undefined}
+              >
+                {section.shortLabel}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+  <MenuBarExtras client:load />
+</header>

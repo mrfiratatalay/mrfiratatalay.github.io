@@ -1,0 +1,61 @@
+---
+import { FolderOpen } from 'lucide-react';
+import FolderArt from '../../components/desktop/FolderArt.astro';
+import Window from '../../components/desktop/Window.astro';
+import DesktopLayout from '../../layouts/DesktopLayout.astro';
+import { getNoteSources } from '../../lib/content/collections.ts';
+import { categoryLabel } from '../../lib/content/site-data.ts';
+import { paths } from '../../lib/content/urls.ts';
+
+const sources = await getNoteSources();
+const total = sources.reduce((sum, source) => sum + source.notes.length, 0);
+---
+
+<DesktopLayout title="Öğrenme Notları" description="Java, Spring Boot, Docker ve diğer konularda tuttuğum öğrenme notları." section="notes">
+  <Window id="main" variant="main" title="Öğrenme Notları" icon="notes" closeHref="/" sidebarLabel="Not koleksiyonları">
+    <nav slot="sidebar" class="sidebar-nav" aria-label="Not koleksiyonları">
+      <h2>Koleksiyonlar</h2>
+      <ul>
+        {
+          sources.map((source) => (
+            <li>
+              <a href={paths.noteSource(source.id)}>
+                <FolderOpen aria-hidden="true" />
+                {source.label}
+                <span class="count">{source.notes.length}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <header class="page-header page-header--wide">
+      <h1 class="page-title">Öğrenme Notları</h1>
+      <p class="page-lead">
+        {total > 0 ? `${sources.length} koleksiyonda ${total} not. Bir klasörü açarak bölümleri görebilirsin.` : 'Henüz yayınlanmış not yok.'}
+      </p>
+    </header>
+
+    {
+      sources.length > 0 ? (
+        <ul class="folder-grid">
+          {sources.map((source) => (
+            <li>
+              <a class="folder-card" href={paths.noteSource(source.id)}>
+                <FolderArt icon="notes" class="folder-card__art" />
+                <h2 class="folder-card__title">{source.label}</h2>
+                <p class="folder-card__meta">
+                  {source.notes.length} not{source.category ? ` · ${categoryLabel(source.category)}` : ''}
+                </p>
+                {source.description && <p class="folder-card__desc">{source.description}</p>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty-state">Notlar eklendiğinde burada klasörler halinde görünecek.</p>
+      )
+    }
+  </Window>
+</DesktopLayout>

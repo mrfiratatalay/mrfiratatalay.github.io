@@ -1,0 +1,96 @@
+---
+/**
+ * Pencere çerçevesi. İçerik Astro'nun ürettiği HTML olarak kalır; düğmelerin
+ * davranışını pencere yöneticisi (src/lib/window-manager) ekler.
+ */
+import { BookOpen, Link2, Minus, Plus, X } from 'lucide-react';
+import type { IconName } from '../../lib/site/sections.ts';
+import SectionIcon from '../icons/SectionIcon.tsx';
+
+interface Props {
+  id: string;
+  title: string;
+  icon: IconName;
+  variant: 'main' | 'intro';
+  /** Ana içerik penceresinde kırmızı düğme masaüstüne giden gerçek bir bağlantıdır. */
+  closeHref?: string;
+  /** Okuma modu ve bağlantı kopyalama düğmeleri. */
+  readingTools?: boolean;
+  /** Kenar çubuğunun erişilebilir adı; verilmezse kenar çubuğu çizilmez. */
+  sidebarLabel?: string;
+}
+
+const { id, title, icon, variant, closeHref, readingTools = false, sidebarLabel } = Astro.props;
+const hasSidebar = Boolean(sidebarLabel) && Astro.slots.has('sidebar');
+---
+
+<div
+  class:list={['window', `window--${variant}`]}
+  data-window-id={id}
+  data-window-title={title}
+  data-window-icon={icon}
+  data-window-main
+  tabindex="-1"
+>
+  <div class="window__titlebar" data-window-handle>
+    <div class="window__controls">
+      {
+        closeHref ? (
+          <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label="Pencereyi kapat ve masaüstüne dön">
+            <X aria-hidden="true" strokeWidth={3} />
+          </a>
+        ) : (
+          <button type="button" class="traffic traffic--close" data-window-action="close" aria-label="Pencereyi kapat">
+            <X aria-hidden="true" strokeWidth={3} />
+          </button>
+        )
+      }
+      <button type="button" class="traffic traffic--minimize" data-window-action="minimize" aria-label="Pencereyi küçült">
+        <Minus aria-hidden="true" strokeWidth={3} />
+      </button>
+      <button type="button" class="traffic traffic--zoom" data-window-action="zoom" aria-label="Pencereyi büyüt" aria-pressed="false">
+        <Plus aria-hidden="true" strokeWidth={3} />
+      </button>
+    </div>
+    <p class="window__title">
+      <SectionIcon name={icon} />
+      <span>{title}</span>
+    </p>
+    <div class="window__tools">
+      {
+        readingTools && (
+          <>
+            <button type="button" class="icon-button js-only" data-window-action="reading" aria-pressed="false" aria-label="Okuma modu" title="Okuma modu">
+              <BookOpen aria-hidden="true" />
+            </button>
+            <button type="button" class="icon-button js-only" data-copy-link aria-label="Bağlantıyı kopyala" title="Bağlantıyı kopyala">
+              <Link2 aria-hidden="true" />
+            </button>
+          </>
+        )
+      }
+      <slot name="tools" />
+    </div>
+  </div>
+  <div class="window__frame">
+    {
+      hasSidebar && (
+        <aside class="window__sidebar" aria-label={sidebarLabel}>
+          <slot name="sidebar" />
+        </aside>
+      )
+    }
+    <main id="icerik" class="window__content" tabindex="-1">
+      <div class="window__inner">
+        <slot />
+      </div>
+    </main>
+  </div>
+  <div class="window__resize" data-window-resize aria-hidden="true"></div>
+</div>
+
+<style>
+  :global(html:not(.js)) .js-only {
+    display: none;
+  }
+</style>

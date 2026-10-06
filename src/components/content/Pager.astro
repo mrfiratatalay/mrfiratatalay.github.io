@@ -1,0 +1,36 @@
+---
+interface Link {
+  title: string;
+  url: string;
+}
+
+interface Props {
+  heading: string;
+  previous?: Link | undefined;
+  next?: Link | undefined;
+  previousLabel?: string;
+  nextLabel?: string;
+}
+
+const { heading, previous, next, previousLabel = 'Önceki', nextLabel = 'Sonraki' } = Astro.props;
+---
+
+{
+  (previous || next) && (
+    <nav class="pager" aria-label={heading} data-pagefind-ignore>
+      <p class="pager__title">{heading}</p>
+      {previous && (
+        <a href={previous.url} rel="prev">
+          <span class="pager__dir">← {previousLabel}</span>
+          <span class="pager__name">{previous.title}</span>
+        </a>
+      )}
+      {next && (
+        <a class="pager__next" href={next.url} rel="next">
+          <span class="pager__dir">{nextLabel} →</span>
+          <span class="pager__name">{next.title}</span>
+        </a>
+      )}
+    </nav>
+  )
+}

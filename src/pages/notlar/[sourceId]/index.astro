@@ -1,0 +1,83 @@
+---
+import { FileText, FolderOpen } from 'lucide-react';
+import Breadcrumbs from '../../../components/content/Breadcrumbs.astro';
+import Window from '../../../components/desktop/Window.astro';
+import DesktopLayout from '../../../layouts/DesktopLayout.astro';
+import { getNoteSources, type NoteItem, type NoteSourceInfo } from '../../../lib/content/collections.ts';
+import { paths } from '../../../lib/content/urls.ts';
+
+export async function getStaticPaths() {
+  const sources = await getNoteSources();
+  return sources.map((source) => ({ params: { sourceId: source.id }, props: { source, sources } }));
+}
+
+interface Props {
+  source: NoteSourceInfo;
+  sources: NoteSourceInfo[];
+}
+
+const { source, sources } = Astro.props;
+
+// Notlar kaynak klasörlerine göre gruplanır (sıra: kaynak repodaki doğal sıra).
+const groups = new Map<string, NoteItem[]>();
+for (const note of source.notes) {
+  groups.set(note.folder, [...(groups.get(note.folder) ?? []), note]);
+}
+const description = source.description ?? `${source.label}: ${source.notes.length} öğrenme notu.`;
+---
+
+<DesktopLayout title={source.label} description={description} section="notes">
+  <Window id="main" variant="main" title="Öğrenme Notları" icon="notes" closeHref="/" sidebarLabel="Not koleksiyonları">
+    <nav slot="sidebar" class="sidebar-nav" aria-label="Not koleksiyonları">
+      <h2>Koleksiyonlar</h2>
+      <ul>
+        {
+          sources.map((item) => (
+            <li>
+              <a href={paths.noteSource(item.id)} aria-current={item.id === source.id ? 'page' : undefined}>
+                <FolderOpen aria-hidden="true" />
+                {item.label}
+                <span class="count">{item.notes.length}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <Breadcrumbs items={[{ label: 'Öğrenme Notları', href: paths.notes }, { label: source.label }]} />
+    <header class="page-header page-header--wide">
+      <h1 class="page-title">{source.label}</h1>
+      <p class="page-lead">{description}</p>
+    </header>
+
+    {
+      [...groups].map(([folder, notes]) => (
+        <section class="folder-group" aria-label={folder || source.label}>
+          {folder && (
+            <h2 class="folder-group__title">
+              <FolderOpen aria-hidden="true" />
+              {folder}
+            </h2>
+          )}
+          <ul class="entry-list">
+            {notes.map((note) => (
+              <li class="entry">
+                <span class="entry__icon" aria-hidden="true">
+                  <FileText />
+                </span>
+                <h3 class="entry__title">
+                  <a href={note.url}>{note.title}</a>
+                </h3>
+                {note.description && <p class="entry__summary">{note.description}</p>}
+                <ul class="entry__meta">
+                  <li>{note.readingMinutes} dk okuma</li>
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </Window>
+</DesktopLayout>

@@ -1,0 +1,76 @@
+---
+/**
+ * Her sayfanın <head> alanı: başlık, açıklama, canonical, paylaşım (Open Graph)
+ * ve yapılandırılmış veri. Kullanıcıdan HTML etiketi yazması istenmez.
+ */
+import { profile } from '../lib/content/site-data.ts';
+import { paths } from '../lib/content/urls.ts';
+
+export interface SeoProps {
+  title: string;
+  description: string;
+  image?: string | undefined;
+  imageAlt?: string | undefined;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: Date | undefined;
+  modifiedTime?: Date | undefined;
+  tags?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | undefined;
+  isHome?: boolean;
+}
+
+const {
+  title,
+  description,
+  image = '/og-default.png',
+  imageAlt = `${profile.name} · Projeler, blog ve öğrenme notları`,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  tags = [],
+  noindex = false,
+  jsonLd,
+  isHome = false,
+} = Astro.props as SeoProps;
+
+const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
+const canonical = new URL(Astro.url.pathname, site).toString();
+const fullTitle = isHome ? `${profile.name} · Projeler, blog ve öğrenme notları` : `${title} · ${profile.name}`;
+const imageUrl = new URL(image, site).toString();
+const structuredData = jsonLd ? JSON.stringify(jsonLd).replace(/</g, '\\u003c') : null;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, follow" />}
+<meta name="author" content={profile.name} />
+<meta name="generator" content={Astro.generator} />
+<meta name="color-scheme" content="light dark" />
+<meta name="theme-color" content="#e4ebfb" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0b1533" media="(prefers-color-scheme: dark)" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="alternate" type="application/rss+xml" title={`${profile.name} · Blog`} href={new URL(paths.rss, site)} />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<meta property="og:type" content={type} />
+<meta property="og:locale" content="tr_TR" />
+<meta property="og:site_name" content={profile.name} />
+<meta property="og:title" content={isHome ? fullTitle : title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+{tags.map((tag) => <meta property="article:tag" content={tag} />)}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={isHome ? fullTitle : title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+{profile.googleSiteVerification && <meta name="google-site-verification" content={profile.googleSiteVerification} />}
+{structuredData && <script type="application/ld+json" set:html={structuredData} />}

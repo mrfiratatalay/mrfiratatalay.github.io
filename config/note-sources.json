@@ -1,0 +1,38 @@
+{
+  "concurrency": 2,
+  "limits": {
+    "maxMarkdownBytes": 2097152,
+    "maxAssetBytes": 4194304,
+    "maxImageWidth": 1600,
+    "timeoutSeconds": 120,
+    "retries": 2
+  },
+  "sources": [
+    {
+      "id": "java-notlari",
+      "label": "Java Notlarım",
+      "description": "Java ve Spring Boot öğrenirken tuttuğum haftalık notlar.",
+      "repository": "mrfiratatalay/java-spring",
+      "branch": "main",
+      "enabled": false,
+      "category": "java",
+      "root": "JAVA/FIRAT ATALAY",
+      "include": ["00-WEEK/**/*.md"],
+      "exclude": ["**/TEKRAR/**"],
+      "order": 10
+    },
+    {
+      "id": "docker-notlari",
+      "label": "Docker Notlarım",
+      "description": "Docker öğrenirken tuttuğum haftalık notlar.",
+      "repository": "mrfiratatalay/java-spring",
+      "branch": "main",
+      "enabled": false,
+      "category": "docker",
+      "root": "DOCKER/FIRAT ATALAY",
+      "include": ["00-WEEK/**/*.md"],
+      "exclude": ["**/TEKRAR/**"],
+      "order": 20
+    }
+  ]
+}

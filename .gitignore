@@ -1,0 +1,30 @@
+# Build çıktısı
+dist/
+# Astro'nun ürettiği tipler
+.astro/
+
+# Bağımlılıklar
+node_modules/
+
+# İçe aktarılan notlar ve görseller (her build'de kaynak repolardan yeniden üretilir)
+generated/
+public/imported-assets/
+
+# Test çıktıları
+test-results/
+playwright-report/
+blob-report/
+
+# Loglar
+npm-debug.log*
+
+# Gizli yerel ayarlar
+.env
+.env.*
+
+# İşletim sistemi ve editör dosyaları
+.DS_Store
+.idea/
+
+# Eski siteden alınan geçici dosyalar
+.legacy-tmp/
