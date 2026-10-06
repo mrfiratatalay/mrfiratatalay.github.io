@@ -5,12 +5,12 @@
     "en": "Backend Software Engineer"
   },
   "shortBio": {
-    "tr": "Backend odaklı bir Bilgisayar Mühendisliği mezunuyum. ASP.NET Core, Entity Framework Core, PostgreSQL ve Docker ile REST API'ler, kimlik doğrulama ve yetkilendirme akışları, multi-tenant uygulamalar ve veritabanı tabanlı sistemler geliştiriyorum.",
-    "en": "Backend-focused Computer Engineering graduate. I build REST APIs, authentication and authorization flows, multi-tenant applications and database-backed systems with ASP.NET Core, Entity Framework Core, PostgreSQL and Docker."
+    "tr": "Java/Spring Boot ve C#/ASP.NET Core ekosistemlerinde backend geliştiren bir Bilgisayar Mühendisliği mezunuyum. Her iki alanda da uygulama geliştirme deneyimim var; ikisine eşit önem veriyor, REST API'ler ve güvenilir backend uygulamaları geliştirirken projeler ve teknik çalışmalarla kendimi sürekli geliştiriyorum.",
+    "en": "I'm a Computer Engineering graduate focused on backend development with Java/Spring Boot and C#/ASP.NET Core. I have hands-on experience in both ecosystems and give them equal priority, building REST APIs and reliable backend applications while continually developing my skills through projects and technical study."
   },
   "bio": {
-    "tr": "Backend odaklı bir Bilgisayar Mühendisliği mezunuyum. Uzun dönem ve yaz stajları, yarı zamanlı çalışma ve takım projeleri sayesinde gerçek yazılım ürünlerinin geliştirilmesine katkı sağladım. ASP.NET Core, Entity Framework Core, PostgreSQL ve Docker kullanarak REST API'ler, kimlik doğrulama ve yetkilendirme akışları, multi-tenant uygulamalar ve veritabanı tabanlı sistemler geliştirdim.\n\nGörev yönetimi, branch, pull request ve code review süreçlerini içeren ekip çalışmasında deneyimliyim; React, TypeScript ve Vue.js ile full-stack geliştirme deneyimim de var. Uzun vadeli kariyerimi backend yazılım mühendisliğinde kurmaya ve güvenilir, sürdürülebilir, iyi yapılandırılmış yazılım sistemlerine katkı sağlamaya odaklanıyorum.",
-    "en": "I'm a backend-focused Computer Engineering graduate with hands-on experience contributing to real-world software products through long-term and summer internships, part-time work and team-based projects. I've built REST APIs, authentication and authorization flows, multi-tenant applications and database-backed systems using ASP.NET Core, Entity Framework Core, PostgreSQL and Docker.\n\nI'm experienced in collaborative development workflows involving task management, branching, pull requests and code reviews, and I also have full-stack experience with React, TypeScript and Vue.js. I'm focused on building a long-term career in backend software engineering and contributing to reliable, maintainable and well-structured software systems."
+    "tr": "Backend odaklı bir Bilgisayar Mühendisliği mezunuyum. Java ve Spring Boot ile C# ve ASP.NET Core, backend geliştirme çalışmalarımın iki ana odağını oluşturuyor. Her iki ekosistemde de uygulama geliştirme deneyimim var; ikisine eşit önem veriyor ve projeler, teknik çalışmalar ve sürekli öğrenmeyle bilgi birikimimi derinleştiriyorum.\n\nUzun dönem ve yaz stajları, yarı zamanlı çalışma ve takım projeleri sayesinde gerçek yazılım ürünlerinin geliştirilmesine katkı sağladım. REST API'ler, kimlik doğrulama ve yetkilendirme akışları, multi-tenant uygulamalar ve veritabanı tabanlı sistemler geliştirdim. Veri erişimi ve uygulama altyapısında Entity Framework Core, PostgreSQL ve Docker ile çalıştım.\n\nGörev yönetimi, branch, pull request ve code review süreçlerini içeren ekip çalışmasında deneyimliyim; React, TypeScript ve Vue.js ile full-stack geliştirme deneyimim de var. Kariyerimi Java/Spring Boot ve .NET ekosistemlerinde güvenilir, sürdürülebilir ve iyi yapılandırılmış backend sistemleri geliştirerek ilerletmeye odaklanıyorum.",
+    "en": "I'm a backend-focused Computer Engineering graduate with hands-on experience in Java/Spring Boot and C#/ASP.NET Core. These are the two main ecosystems I work with, and I give both equal priority in my development as a backend engineer. I continue to deepen my skills in both through practical projects, technical study and ongoing learning.\n\nThrough long-term and summer internships, part-time work and team projects, I've contributed to real-world software products. I've built REST APIs, authentication and authorization flows, multi-tenant applications and database-backed systems, working with Entity Framework Core, PostgreSQL and Docker for data access and application infrastructure.\n\nI'm experienced in collaborative workflows involving task management, branching, pull requests and code reviews, and I also have full-stack experience with React, TypeScript and Vue.js. I'm focused on growing my career across the Java/Spring Boot and .NET ecosystems by building reliable, maintainable and well-structured backend systems."
   },
   "location": {
     "tr": "Konya, Türkiye",
@@ -127,14 +127,14 @@
         "en": "Backend"
       },
       "items": [
+        "Java",
+        "Spring Boot",
         "C#",
         "ASP.NET Core",
         "Entity Framework Core (EF Core)",
         "RESTful APIs",
         "Python",
-        "FastAPI",
-        "Java",
-        "Spring Boot"
+        "FastAPI"
       ]
     },
     {
@@ -262,8 +262,8 @@
     }
   ],
   "siteDescription": {
-    "tr": "Fırat Atalay'ın kişisel sitesi: backend projeleri, blog yazıları ve öğrenme notları.",
-    "en": "Fırat Atalay's personal site: backend projects, blog posts and learning notes."
+    "tr": "Fırat Atalay — Java/Spring Boot ve C#/ASP.NET Core ile backend geliştirme, projeler, blog yazıları ve öğrenme notları.",
+    "en": "Fırat Atalay — backend development with Java/Spring Boot and C#/ASP.NET Core, projects, blog posts and learning notes."
   },
   "googleSiteVerification": ""
 }
