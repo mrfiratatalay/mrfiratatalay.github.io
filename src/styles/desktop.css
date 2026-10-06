@@ -648,6 +648,24 @@
     overflow: hidden;
   }
 
+  /* Tam ekran yalnızca bu sayfadaki görünür pencere için geçerlidir.
+     Küçültme/kapatma sonrası dock ve menü CSS ile kendiliğinden geri gelir. */
+  :root:is(
+    :has(.window[data-maximized]:not([hidden])),
+    [data-main-maximized]:has(.window--main:not([hidden])),
+    [data-intro-maximized]:has(.window--intro:not([hidden]))
+  ) .desktop {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  :root:is(
+    :has(.window[data-maximized]:not([hidden])),
+    [data-main-maximized]:has(.window--main:not([hidden])),
+    [data-intro-maximized]:has(.window--intro:not([hidden]))
+  ) :is(.menubar, .dock-bar, .desktop-icons, .widgets, .notification) {
+    display: none;
+  }
+
   .workspace {
     min-height: 0;
     overflow: hidden;

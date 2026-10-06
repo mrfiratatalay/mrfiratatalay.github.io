@@ -110,7 +110,9 @@ function applyGeometry(win: ManagedWindow): void {
   if (zoom) {
     zoom.setAttribute('aria-pressed', String(win.maximized));
     const t = strings().window;
-    zoom.setAttribute('aria-label', win.maximized ? t.unzoom : t.zoom);
+    const label = win.maximized ? t.unzoom : t.zoom;
+    zoom.setAttribute('aria-label', label);
+    zoom.title = label;
   }
 }
 
@@ -140,7 +142,9 @@ function focusWindow(win: ManagedWindow): void {
 }
 
 function dockTarget(win: ManagedWindow): Element | null {
-  return document.querySelector(`[data-dock-section="${win.icon}"]`) ?? document.querySelector('.dock');
+  const target = document.querySelector(`[data-dock-section="${win.icon}"]`) ?? document.querySelector('.dock');
+  // Tam ekranda gizlenen dock'a doğru sıfır koordinatlı animasyon yapma.
+  return target?.getClientRects().length ? target : null;
 }
 
 function animateToward(el: HTMLElement, target: Element | null, direction: 'out' | 'in'): Promise<void> {
@@ -390,6 +394,15 @@ export function initDesktop(): void {
   else window.addEventListener('resize', onResize);
 
   document.addEventListener('click', onSectionLinkClick);
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || !isDesktop()) return;
+    if (document.querySelector('dialog[open]')) return;
+    const expanded = [...windows.values()].filter((win) => win.maximized && !win.minimized && !win.closed);
+    const win = expanded.find((item) => item.el.classList.contains('is-active')) ?? expanded[0];
+    if (!win) return;
+    event.preventDefault();
+    toggleZoom(win);
+  });
   document.addEventListener('click', (event) => {
     const target = (event.target as Element | null)?.closest<HTMLElement>('[data-open-search], [data-action="theme-toggle"]');
     if (!target) return;

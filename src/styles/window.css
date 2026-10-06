@@ -454,13 +454,29 @@
 
   .window[data-maximized],
   :root[data-main-maximized] .window--main,
-  :root[data-intro-maximized] .window--intro,
-  :root[data-reading] .window--main {
+  :root[data-intro-maximized] .window--intro {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  :root[data-reading] .window--main:not([data-maximized]) {
     top: 8px;
     left: 8px;
     width: calc(100% - 16px);
     height: calc(100% - 16px);
     max-height: none;
+  }
+
+  /* İlk çizimde saklanan tam ekran durumu da okuma modundan önce gelir. */
+  :root[data-main-maximized][data-reading] .window--main {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 
   .window[data-maximized] .window__resize,
