@@ -53,6 +53,7 @@ export const sourceSchema = z.object({
   })).default({}),
   /** Konu klasöründeki TEKRAR görsellerini ve PDF'lerini ana notun sonuna ekler. */
   includeReviewAssets: z.boolean().default(false),
+  normalizeSectionHeadings: z.boolean().default(false),
 });
 
 const limitsSchema = z.object({

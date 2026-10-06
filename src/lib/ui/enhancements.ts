@@ -4,7 +4,7 @@
  * JavaScript kapalıyken içerik yine tamamen okunabilir.
  */
 
-import { strings } from '../i18n/client.ts';
+import { pageLocale, strings } from '../i18n/client.ts';
 
 let toastTimer = 0;
 
@@ -79,6 +79,36 @@ function initCodeCopy(): void {
   });
 }
 
+/** Markdown hattının ürettiği arayüz etiketleri içerikten bağımsız olarak çevrilir. */
+function localizeMarkdownLabels(): void {
+  const locale = pageLocale();
+  const t = strings().runtime;
+  for (const block of document.querySelectorAll<HTMLElement>('.code-block')) {
+    const language = block.dataset.language?.toLowerCase() ?? '';
+    const label = block.querySelector<HTMLElement>('.code-block__lang');
+    const caption = block.querySelector<HTMLElement>('.code-block__bar');
+    if (caption) caption.lang = locale;
+    if (label && ['', 'plaintext', 'plain'].includes(language)) label.textContent = t.code;
+    else if (label && ['text', 'txt'].includes(language)) label.textContent = t.text;
+  }
+  for (const notice of document.querySelectorAll<HTMLElement>('.missing-image')) {
+    const alt = (notice.textContent ?? '').replace(/^Görsel bulunamadı(?::\s*)?/, '').trim();
+    notice.textContent = t.missingImage(alt);
+    notice.lang = locale;
+  }
+  for (const heading of document.querySelectorAll<HTMLElement>('.prose #footnote-label')) {
+    heading.textContent = t.footnotes;
+    heading.lang = locale;
+  }
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-toc] a[href="#footnote-label"], .toc-inline a[href="#footnote-label"]')) {
+    link.textContent = t.footnotes;
+  }
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('.prose [data-footnote-backref], .prose .data-footnote-backref')) {
+    link.setAttribute('aria-label', t.footnoteBack);
+    link.lang = locale;
+  }
+}
+
 function initCopyLink(): void {
   document.addEventListener('click', async (event) => {
     const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-copy-link]');
@@ -125,6 +155,7 @@ function initTocHighlight(): void {
 }
 
 export function initReadingEnhancements(): void {
+  localizeMarkdownLabels();
   initCodeCopy();
   initCopyLink();
   initTocHighlight();

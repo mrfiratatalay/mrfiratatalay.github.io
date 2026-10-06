@@ -16,7 +16,7 @@ export function formatReportText(report: ImportReport): string {
   for (const source of report.sources) {
     lines.push(
       `  • ${source.id} — ${source.repository}@${source.branch} (${source.commit.slice(0, 12)}${source.fetchNote ? `, ${source.fetchNote}` : ''}): ` +
-        `${source.noteCount} not, ${source.assetCount} görsel, ${source.skipped.length} atlanan dosya, ${source.warnings.length} uyarı`,
+        `${source.noteCount} not, ${source.assetCount} ek dosya, ${source.skipped.length} atlanan dosya, ${source.warnings.length} uyarı`,
     );
     for (const skipped of source.skipped.slice(0, MAX_LISTED)) lines.push(`      atlandı: ${skipped.path} — ${skipped.reason}`);
     if (source.skipped.length > MAX_LISTED) lines.push(`      … ve ${source.skipped.length - MAX_LISTED} dosya daha`);
@@ -38,7 +38,7 @@ export function formatReportMarkdown(report: ImportReport): string {
     lines.push('Etkin not kaynağı yok.');
     return lines.join('\n');
   }
-  lines.push('| Kaynak | Repo | Commit | Not | Görsel | Atlanan | Uyarı |', '| --- | --- | --- | --- | --- | --- | --- |');
+  lines.push('| Kaynak | Repo | Commit | Not | Ek dosya | Atlanan | Uyarı |', '| --- | --- | --- | --- | --- | --- | --- |');
   for (const source of report.sources) {
     lines.push(
       `| ${escapeCell(source.id)} | ${escapeCell(`${source.repository}@${source.branch}`)} | \`${source.commit.slice(0, 12)}\` | ${source.noteCount} | ${source.assetCount} | ${source.skipped.length} | ${source.warnings.length} |`,

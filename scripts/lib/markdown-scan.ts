@@ -152,6 +152,31 @@ function parseMdast(markdown: string): Root {
   return fromMarkdown(markdown, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
 }
 
+/** Başlıksız eski notlardaki bölüm ayırıcılarını başlık yapar; kod ve yazı korunur. */
+export function promoteSectionHeadings(markdown: string): string {
+  const tree = parseMdast(markdown);
+  if (tree.children.some((node) => node.type === 'heading')) return markdown;
+  const replacements: Array<{ start: number; end: number; value: string }> = [];
+  for (const [index, node] of tree.children.entries()) {
+    if (node.type !== 'paragraph' || node.children.length !== 1 || node.children[0]?.type !== 'strong') continue;
+    const start = node.position?.start.offset;
+    const end = node.position?.end.offset;
+    if (start === undefined || end === undefined) continue;
+    const raw = markdown.slice(start, end).trim();
+    const match = /^\*\*(.+)\*\*$/.exec(raw);
+    if (!match?.[1]) continue;
+    const heading = match[1];
+    const namedSection = /^(?:📘\s*)?(?:part|chapter|bölüm)\s+\d+(?:\/\d+)?\s*[—–:-]/i.test(toString(node)) || /^\d+[.)]\s/.test(toString(node));
+    if (!namedSection && tree.children[index - 1]?.type !== 'thematicBreak') continue;
+    replacements.push({ start, end, value: `## ${heading}` });
+  }
+  let result = markdown;
+  for (const replacement of replacements.reverse()) {
+    result = result.slice(0, replacement.start) + replacement.value + result.slice(replacement.end);
+  }
+  return result;
+}
+
 function isIgnorableLeadingNode(node: RootContent): boolean {
   return node.type === 'html' && /^<!--[\s\S]*-->$/.test(node.value.trim());
 }

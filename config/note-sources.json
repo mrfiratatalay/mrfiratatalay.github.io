@@ -70,7 +70,8 @@
             "spring-boot"
           ]
         }
-      }
+      },
+      "normalizeSectionHeadings": true
     },
     {
       "id": "docker-notlari",
@@ -125,7 +126,8 @@
             "spring-boot"
           ]
         }
-      }
+      },
+      "normalizeSectionHeadings": true
     }
   ]
 }

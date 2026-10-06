@@ -72,25 +72,24 @@ Makaleler bölümünde yazıyı bul, değiştir, kaydet. Başlığı değiştirm
 
 ## 7. Proje ve profil nasıl düzenlenir?
 
-- **Projeler:** Ad, kısa açıklama, teknolojiler, GitHub bağlantısı, varsa demo ve video. Gerçek bir ekran görüntüsü yüklersen kartta o görünür; yoksa projenin baş harfleri görünür. Demo yoksa demo alanını boş bırak; sitede çalışmayan düğme gösterilmez.
-- **Profil ve İletişim:** Ad, unvan, tanıtım metni, e-posta, fotoğraf, deneyim, eğitim, yetenekler ve bağlantılar.
-- **CV:** Yalnızca herkese açık paylaşmak istediğin bilgileri içeren bir PDF yükle. (Eski CV'nde referans kişinin telefon numarası olduğu için siteye konmadı.)
+- **Projeler:** CV'deki yedi projenin tanımı, katkılar, teknolojiler ve bağlantılar. Türkçe ve İngilizce alanları ayrı doldurabilirsin.
+- **Profil ve İletişim:** İki dilde unvan, tanıtım, konum, deneyim, eğitim, beceriler ve ödüller; e-posta, telefon, fotoğraf ve sosyal bağlantılar.
+- **CV:** Güncel PDF `/cv/firat-atalay.pdf` adresinde. Yeni PDF'yi CV dosyaları alanından yükleyip profil bağlantısını güncelleyebilirsin.
 
-## 8. Eski notlar ne zaman güncellenir?
+## 8. Java ve Docker notları nasıl güncellenir?
 
-Bağlı not repolarındaki notlar site her hazırlandığında yeniden alınır:
+Blog, `BACKEND-ASKIM/JAVA/FIRAT ATALAY` ve `BACKEND-ASKIM/DOCKER/FIRAT ATALAY` klasörlerindeki dolu haftalık Markdown notlarını gösterir. `TEKRAR` görselleri ve PDF ekleri ana notun sonundadır. Kod örnekleri kaynak bağlantısıyla açılır. Boş notlar yayımlanmaz. İngilizce arayüzde de notların özgün Türkçe metni korunur.
 
-- Site deposuna bir değişiklik geldiğinde (editörden kaydettiğinde),
-- Her gün Türkiye saatiyle yaklaşık **06:17**'de (GitHub yoğunlukta geciktirebilir),
-- Elle başlattığında (bir sonraki başlık).
+`java-spring` özel bir depo olduğu için site reposunda yalnızca bu seçilmiş klasörlerin yayın kopyası bulunur (`content-sources/java-spring`). Asıl notları BACKEND-ASKIM içinde düzenle. Site klasöründe `npm run sync:notes` veya `npm run build` çalıştırınca yerel klasörler varsa yayın kopyası otomatik güncellenir. Ardından `content-sources/` değişikliklerini site reposuna commit/push ederek canlıya yansıt.
 
-Not reposuna yaptığın değişiklik siteye anında değil, bu üç yoldan birinde gelir.
+Başka bir bilgisayarda kaynak yolunu vermek için:
 
-**Şu anki durum:** `java-spring` reposu özel (private) olduğu için bağlantısı hazır ama **kapalı** (`config/note-sources.json` → `"enabled": false`). Açmak için iki yol var:
-1. Notların olduğu repoyu herkese açık yapmak (repodaki her şey görünür olur), ya da
-2. Yalnızca yayınlamak istediğin notları ayrı, herkese açık bir not reposuna taşımak (önerilir).
+```bash
+npm run snapshot:notes -- /BACKEND-ASKIM/klasorunun/tam/yolu
+npm run build
+```
 
-Hangisini seçtiğini söylemen yeterli; ayarı birlikte açarız.
+GitHub Actions, siteye kaydedilmiş bu kopyayı kullanır. Günlük veya elle yayınlama özel depodaki yeni commit'leri kendiliğinden çekmez. Herkese açık yeni bir not kaynağı bağlandığında normal GitHub importu kullanılabilir.
 
 ## 9. Elle güncelleme nasıl çalıştırılır?
 
@@ -113,9 +112,13 @@ Site hazırlanırken bir hata olursa **son başarılı sürüm açık kalır**, 
 
 **Çalışma Serileri** bölümünde bir seri oluştur, chapter ekle, her part'a içeriğin site adresini yaz (ör. `/blog/spring-boot-controller/` veya `/notlar/yerel/java-interface/`). Seri, yazıları kopyalamaz; mevcut sayfalara sırayla bağlantı verir. Yazıların sonunda **önceki/sonraki part** bağlantıları otomatik görünür.
 
-## Örnek içerikler
+## Güncel içerik ve dil seçimi
 
-Sitede örnek olarak bir makale ("Örnek yazı: …"), bir not ("Örnek not: Java'da interface") ve bir seri var. Kendi içeriğini ekledikten sonra bunları editörden silebilirsin. Eski portfolyondan alınan bio, deneyim ve projeleri de kontrol edip güncelle. Bunlar 2024 tarihli eski sitenden çevrildi ve bazıları güncel olmayabilir.
+Profil ve projeler 7 Ekim 2026'da verilen güncel CV'den alınmıştır. Örnek makale/not taslak olarak kapatılmıştır; blogda gerçek Java ve Docker notları, çalışmalarda iki gerçek öğrenme serisi vardır.
+
+Arayüz cihaz diline göre Türkçe veya İngilizce açılır. Menü çubuğundaki TR/EN bağlantısından veya Kontrol Merkezi'nden dil değiştirilebilir. Manuel seçim sonraki ziyaretler için saklanır; **Otomatik** cihaz diline geri döner.
+
+Bazı kaynak notlar bilgisayardaki eski `Downloads/mermaid-diagram*.png` dosyalarını referans verir. Kaynakta olmayan görseller kırık resim yerine açıklamayla gösterilir; mevcut `TEKRAR` görselleri ayrıca yayımlanır.
 
 ## Google'da görünmek (isteğe bağlı)
 
@@ -129,6 +132,6 @@ Google'da görünme garanti değildir; zamanla ve içerik kalitesiyle gelir.
 
 ```bash
 npm install
-npm run build:ornek   # örnek notlarla siteyi hazırla
+npm run build         # gerçek notlarla siteyi hazırla
 npm run preview       # http://localhost:4321
 ```

@@ -31,6 +31,7 @@ import {
   headingIdForText,
   headingIds,
   looseHeadingId,
+  promoteSectionHeadings,
   removeRange,
   replaceOccurrences,
   splitFrontmatter,
@@ -441,7 +442,8 @@ class ImportRun {
         }
 
         const raw = (await readFile(absolute, 'utf8')).replace(/^﻿/, '');
-        const { data: originalData, body: originalBody, warning } = splitFrontmatter(raw);
+        const { data: originalData, body: sourceBody, warning } = splitFrontmatter(raw);
+        const originalBody = source.normalizeSectionHeadings ? promoteSectionHeadings(sourceBody) : sourceBody;
         const metadata = Object.entries(source.noteMetadata).find(
           ([file]) => file.toLowerCase() === rootRelative.toLowerCase(),
         )?.[1];

@@ -7,9 +7,17 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const sourceRoot = path.resolve(process.argv[2] ?? path.join(projectRoot, '../..'));
-const sourceDirs = ['JAVA/FIRAT ATALAY/00-WEEK', 'DOCKER/FIRAT ATALAY/00-WEEK', 'JAVA/FIRAT ATALAY/CODING'];
-for (const dir of sourceDirs) await readdir(path.join(sourceRoot, dir));
+const optional = process.argv.includes('--if-available');
+const sourceArgument = process.argv.slice(2).find((value) => value !== '--if-available');
+const sourceRoot = path.resolve(sourceArgument ?? path.join(projectRoot, '../..'));
+const sourceDirs = ['JAVA/FIRAT ATALAY', 'DOCKER/FIRAT ATALAY'];
+try {
+  for (const dir of sourceDirs) await readdir(path.join(sourceRoot, dir));
+} catch (error) {
+  if (!optional) throw error;
+  console.log('Yerel not klasörleri burada yok; kaydedilmiş yayın kopyası kullanılacak.');
+  process.exit(0);
+}
 const targetRoot = path.join(projectRoot, 'content-sources/java-spring');
 const files = [];
 const hash = createHash('sha256');

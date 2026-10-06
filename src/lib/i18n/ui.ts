@@ -232,6 +232,11 @@ const tr = {
     languageName: { tr: 'Türkçe', en: 'İngilizce' },
   },
   runtime: {
+    code: 'Kod',
+    text: 'Metin',
+    missingImage: (alt: string) => alt ? `Görsel bulunamadı: ${alt}` : 'Görsel bulunamadı',
+    footnotes: 'Dipnotlar',
+    footnoteBack: 'İçeriğe geri dön',
     copy: 'Kopyala',
     copied: 'Kopyalandı',
     copyFailed: 'Kopyalanamadı',
@@ -473,6 +478,11 @@ const en: Dictionary = {
     languageName: { tr: 'Turkish', en: 'English' },
   },
   runtime: {
+    code: 'Code',
+    text: 'Text',
+    missingImage: (alt: string) => alt ? `Image not found: ${alt}` : 'Image not found',
+    footnotes: 'Footnotes',
+    footnoteBack: 'Back to reference',
     copy: 'Copy',
     copied: 'Copied',
     copyFailed: 'Copy failed',

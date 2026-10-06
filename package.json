@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "astro dev",
     "dev:ornek": "npm run sync:notes -- --ornek && astro dev",
-    "sync:notes": "node scripts/import-notes.mjs",
+    "sync:notes": "node scripts/snapshot-notes.mjs --if-available && node scripts/import-notes.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "check": "astro check",
     "build": "npm run sync:notes && npm run validate:content && astro build && pagefind --site dist",
@@ -18,7 +18,8 @@
     "preview": "astro preview",
     "test": "node --test \"tests/content/**/*.test.ts\"",
     "test:e2e": "playwright test",
-    "astro": "astro"
+    "astro": "astro",
+    "snapshot:notes": "node scripts/snapshot-notes.mjs"
   },
   "allowScripts": {
     "esbuild": true,
