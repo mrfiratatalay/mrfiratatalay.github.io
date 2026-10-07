@@ -5,6 +5,7 @@ import type { Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
 import { sectionsFor, type IconName } from '../../lib/site/sections.ts';
 import AppIcon from '../icons/AppIcon.tsx';
+import IOSAppIcon from '../mobile/IOSAppIcon.tsx';
 import { search, type SearchHit } from './pagefind.ts';
 
 type Status = 'idle' | 'loading' | 'ready' | 'error';
@@ -20,6 +21,15 @@ interface Props {
 
 const PAGE_SIZE = 9;
 const TYPE_ICONS: Record<string, IconName> = { post: 'blog', note: 'notes', project: 'projects' };
+
+function ResultIcon({ name }: { name: IconName }) {
+  return (
+    <span className="search-result__icon" aria-hidden="true">
+      <span className="search-result__icon-desktop"><AppIcon name={name} /></span>
+      <span className="search-result__icon-mobile"><IOSAppIcon name={name} size={36} /></span>
+    </span>
+  );
+}
 
 /** Spotlight tarzı arama: alan, durum, gruplanmış sonuçlar ve öneriler. */
 export default function SearchPanel({ locale, autoFocus = false, syncUrl = false, onNavigate, onClose }: Props) {
@@ -82,7 +92,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
     // Spotlight gibi: ilk Escape yazıyı temizler, ikincisi pencereyi kapatır.
     if (event.key === 'Escape') {
       event.preventDefault();
-      if (query) setQuery('');
+      if (query) changeQuery('');
       else onClose?.();
       return;
     }
@@ -117,6 +127,14 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
   const groups = new Map<string, SearchHit[]>();
   for (const hit of hits) groups.set(hit.type, [...(groups.get(hit.type) ?? []), hit]);
 
+  const changeQuery = (value: string) => {
+    setQuery(value);
+    setLimit(PAGE_SIZE);
+    setHits([]);
+    setTotal(0);
+    setStatus(value.trim().length < 2 ? 'idle' : 'loading');
+  };
+
   return (
     <>
       <div className="spotlight__field glass glass-edge">
@@ -137,8 +155,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
           aria-describedby={statusId}
           onKeyDown={onInputKey}
           onChange={(event) => {
-            setLimit(PAGE_SIZE);
-            setQuery(event.target.value);
+            changeQuery(event.target.value);
           }}
         />
         {onClose && (
@@ -161,7 +178,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
               {sectionsFor(locale).map((section) => (
                 <li className="search-result" key={section.id}>
                   <a href={section.href} onClick={() => onNavigate?.()}>
-                    <AppIcon name={section.icon} />
+                    <ResultIcon name={section.icon} />
                     <span className="search-result__title">{section.label}</span>
                     <span className="search-result__excerpt search-result__route">{section.href}</span>
                   </a>
@@ -193,7 +210,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
                 {items.map((hit) => (
                   <li className="search-result" key={hit.url}>
                     <a href={hit.url} onClick={() => onNavigate?.()}>
-                      <AppIcon name={TYPE_ICONS[hit.type] ?? 'search'} />
+                      <ResultIcon name={TYPE_ICONS[hit.type] ?? 'search'} />
                       <span className="search-result__title">{hit.title}</span>
                       {/* Pagefind özeti metni kaçışlanmış olarak üretir; yalnızca <mark> ekler. */}
                       <span className="search-result__excerpt" dangerouslySetInnerHTML={{ __html: hit.excerpt }} />

@@ -338,7 +338,7 @@
   font-family: var(--font-display);
   line-height: 1.25;
   letter-spacing: -0.02em;
-  scroll-margin-top: 90px;
+  scroll-margin-top: 8px;
 }
 
 .prose h2 {
@@ -741,6 +741,8 @@
   color: var(--window-solid);
 }
 
+.filter-bar a:focus-visible { outline-offset: -3px; }
+
 @media (min-width: 900px) {
   .filter-bar--compact {
     display: none;
@@ -750,7 +752,7 @@
 /* ---------- Kartlar (blog ve projeler) ---------- */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
   gap: 18px;
   margin: 0;
   padding: 0;
@@ -946,7 +948,7 @@
   grid-column: 1 / -1;
 }
 
-@media (min-width: 760px) {
+@container window-content (min-width: 680px) {
   .card--featured {
     display: grid;
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -974,10 +976,29 @@
   }
 }
 
+@media (min-width: 900px) {
+  @container window-content (max-width: 560px) {
+    .welcome__apps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .welcome-app { min-width: 0; gap: 8px; }
+    .welcome-app > span:not(.app-icon) { min-width: 0; overflow-wrap: anywhere; }
+    .window__main .pager { grid-template-columns: minmax(0, 1fr); }
+    .window__main .pager__next:only-of-type { grid-column: auto; }
+  }
+
+  @container window-content (max-width: 390px) {
+    .welcome__apps { grid-template-columns: minmax(0, 1fr); }
+    .welcome__actions .button { white-space: normal; text-align: center; }
+    .welcome__hero > div { min-width: 0; overflow-wrap: anywhere; }
+    .welcome__avatar { width: 64px; height: 64px; }
+    .welcome__name { font-size: 2rem; }
+    .welcome__title .pill { white-space: normal; }
+  }
+}
+
 /* ---------- Finder simge görünümü ---------- */
 .finder-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr));
   gap: 8px;
   margin: 0;
   padding: 0;
@@ -1245,6 +1266,8 @@ a.group__row:hover {
   background: var(--fill-3);
 }
 
+.group__row:focus-visible { outline-offset: -3px; }
+
 .group__row .app-icon {
   --size: 32px;
   border-radius: 9px;
@@ -1451,7 +1474,7 @@ a.group__row:hover {
 
 .facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 12px;
   margin: 0;
 }
@@ -1528,7 +1551,7 @@ a.group__row:hover {
 
 .project-facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 12px;
   margin: 0 0 30px;
   padding: 0;
@@ -1554,7 +1577,7 @@ a.group__row:hover {
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
   gap: 12px;
   margin: 30px 0 0;
   padding: 0;

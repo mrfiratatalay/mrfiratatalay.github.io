@@ -356,3 +356,9 @@
     height: 46px;
   }
 }
+
+@media (min-width: 900px) {
+  @container window-content (max-width: 560px) {
+    .skills-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+}

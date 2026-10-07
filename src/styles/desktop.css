@@ -640,6 +640,12 @@
 
 /* ---------- Masaüstü düzeni (900 px ve üzeri) ---------- */
 @media (min-width: 900px) {
+  .control-center {
+    max-height: calc(100dvh - var(--menubar-h) - 20px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
   .menubar {
     gap: 8px;
     padding: 0 12px;
@@ -806,6 +812,9 @@
     bottom: 10px;
     z-index: 2;
     display: block;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
 
   .desktop-icons ul {
@@ -816,6 +825,8 @@
     gap: 10px;
     height: 100%;
   }
+
+  .desktop-icons li { flex: none; }
 
   html.js .notification {
     display: grid;

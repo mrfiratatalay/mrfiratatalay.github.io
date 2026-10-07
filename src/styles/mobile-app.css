@@ -22,6 +22,7 @@
     box-shadow: none;
     color: var(--label);
     text-shadow: none;
+    animation: none;
   }
   .control-center::after { display: none; }
   .cc-mobile-header {
@@ -48,10 +49,22 @@
     top: var(--search-viewport-top, 0px);
     height: var(--search-viewport-h, 100dvh);
     max-height: var(--search-viewport-h, 100dvh);
+    padding-inline: max(12px, env(safe-area-inset-left, 0px)) max(12px, env(safe-area-inset-right, 0px));
+    overflow: hidden;
   }
+  .spotlight .spotlight__inner {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+  }
+  .spotlight .spotlight__field { flex: none; }
   .spotlight .spotlight__panel {
-    max-height: calc(var(--search-viewport-h, 100dvh) - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: none;
   }
+  .search-result__icon-desktop { display: none; }
+  .search-result__icon-mobile { display: block; }
   .cc-mobile-app h3,
   .cc-app-ready,
   .cc-app-install summary,

@@ -190,6 +190,12 @@ const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
     }
   });
 
+  document.addEventListener('focusin', (event) => {
+    for (const menu of openMenus()) {
+      if (!menu.contains(event.target as Node)) menu.open = false;
+    }
+  });
+
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || event.isComposing) return;
     for (const menu of openMenus()) {

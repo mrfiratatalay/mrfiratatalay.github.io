@@ -143,6 +143,16 @@
   border-radius: 9px;
 }
 
+.search-result__icon {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+}
+
+.search-result__icon-mobile { display: none; }
+
 .search-result__title {
   overflow: hidden;
   font-size: 15px;

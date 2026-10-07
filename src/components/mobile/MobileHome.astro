@@ -87,13 +87,15 @@ const educonnect = profile.awards.find((award) => award.icon === 'award');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     let frame = 0;
     const sync = () => {
-      const current = Math.min(panels.length - 1, Math.round(pages.scrollLeft / Math.max(pages.clientWidth, 1)));
+      if (pages.clientWidth === 0) return;
+      const current = Math.max(0, Math.min(panels.length - 1, Math.round(pages.scrollLeft / Math.max(pages.clientWidth, 1))));
       panels.forEach((panel, index) => { panel.inert = index !== current; });
       buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(index === current)));
     };
     buttons.forEach((button, index) => button.addEventListener('click', () => pages.scrollTo({ left: index * pages.clientWidth, behavior: reduced.matches ? 'instant' : 'smooth' })));
     pages.addEventListener('scroll', () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(sync); }, { passive: true });
     window.addEventListener('resize', () => {
+      if (pages.clientWidth === 0) return;
       const current = Math.max(0, buttons.findIndex((button) => button.getAttribute('aria-pressed') === 'true'));
       pages.scrollTo({ left: current * pages.clientWidth, behavior: 'instant' });
       sync();

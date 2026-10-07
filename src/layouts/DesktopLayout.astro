@@ -143,8 +143,8 @@ const dockItems: DockItem[] = [
             if (g.maximized) root.setAttribute('data-' + id + '-maximized', '');
             const w = Math.min(g.width, areaWidth);
             const h = Math.min(g.height, areaHeight);
-            const x = Math.min(Math.max(g.x, Math.min(0, 120 - w)), Math.max(0, areaWidth - 120));
-            const y = Math.min(Math.max(g.y, 0), Math.max(0, areaHeight - 44));
+            const x = Math.min(Math.max(g.x, 0), Math.max(0, areaWidth - 120));
+            const y = Math.min(Math.max(g.y, 0), Math.max(0, areaHeight - 58));
             root.style.setProperty('--' + id + '-x', x + 'px');
             root.style.setProperty('--' + id + '-y', y + 'px');
             root.style.setProperty('--' + id + '-w', w + 'px');

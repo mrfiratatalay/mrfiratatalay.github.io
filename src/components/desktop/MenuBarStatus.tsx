@@ -13,6 +13,7 @@ import {
   setThemePreference,
   type ThemePreference,
 } from '../../lib/ui/appearance.ts';
+import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
 import { openSearch } from '../../lib/window-manager/events.ts';
 import MobileAppMode from '../mobile/MobileAppMode.tsx';
 
@@ -36,6 +37,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const launcherRef = useRef<HTMLElement | null>(null);
+  const returnFocusRef = useRef(false);
   const panelId = useId();
   const sliderLabelId = useId();
   const languageLabelId = useId();
@@ -66,9 +68,9 @@ function ControlCenter({ locale }: { locale: Locale }) {
   }, [panelId]);
 
   const close = () => {
+    returnFocusRef.current = true;
     setOpen(false);
     launcherRef.current?.setAttribute('aria-expanded', 'false');
-    (launcherRef.current ?? buttonRef.current)?.focus();
   };
 
   const themes = useMemo(
@@ -106,10 +108,10 @@ function ControlCenter({ locale }: { locale: Locale }) {
       }
     };
     const onKey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || document.querySelector('dialog[open]')) return;
       if (event.key === 'Escape') {
-        setOpen(false);
-        launcherRef.current?.setAttribute('aria-expanded', 'false');
-        (launcherRef.current ?? buttonRef.current)?.focus();
+        event.preventDefault();
+        close();
       } else if (event.key === 'Tab' && mobile) {
         const targets = [...(rootRef.current?.querySelectorAll<HTMLElement>('.control-center button, .control-center input, .control-center a[href], .control-center summary') ?? [])].filter((element) => element.getClientRects().length > 0);
         const first = targets[0];
@@ -118,16 +120,25 @@ function ControlCenter({ locale }: { locale: Locale }) {
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }
     };
-    const root = document.documentElement;
-    const overflow = root.style.overflow;
-    if (mobile) root.style.overflow = 'hidden';
+    const unlock = mobile ? lockPageScroll() : undefined;
+    const background = mobile
+      ? [...document.querySelectorAll<HTMLElement>('.workspace, .dock-bar, .menubar__left, .menubar__lang')].map((element) => ({ element, inert: element.inert }))
+      : [];
+    for (const { element } of background) element.inert = true;
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
-    rootRef.current?.querySelector<HTMLButtonElement>('.cc-segment button[aria-pressed="true"]')?.focus();
+    const initial = mobile ? '.cc-mobile-header button' : '.cc-segment button[aria-pressed="true"]';
+    rootRef.current?.querySelector<HTMLButtonElement>(initial)?.focus({ preventScroll: true });
     return () => {
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
-      if (mobile) root.style.overflow = overflow;
+      for (const { element, inert } of background) element.inert = inert;
+      unlock?.();
+      if (returnFocusRef.current) {
+        returnFocusRef.current = false;
+        const opener = launcherRef.current ?? buttonRef.current;
+        if (opener?.isConnected) opener.focus({ preventScroll: true });
+      }
     };
   }, [open, mobile]);
 

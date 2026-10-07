@@ -327,6 +327,7 @@ html.js .no-js-only {
   font-size: 0.875rem;
   font-weight: 550;
   text-align: center;
+  overflow-wrap: anywhere;
   transform: translateX(-50%);
   animation: toast-in var(--dur) var(--ease-spring);
 }

@@ -68,13 +68,22 @@ function isDesktop(): boolean {
 }
 
 function area(): Size {
-  return { width: workspace?.clientWidth ?? window.innerWidth, height: workspace?.clientHeight ?? window.innerHeight };
+  // Fullscreen hides the menu and Dock, but the saved normal rectangle must
+  // continue to fit the space available after the window is restored.
+  const styles = getComputedStyle(document.documentElement);
+  const menuHeight = parseFloat(styles.getPropertyValue('--menubar-h')) || 34;
+  const dockHeight = parseFloat(styles.getPropertyValue('--dock-reserved')) || 100;
+  const desktopHeight = workspace?.closest<HTMLElement>('.desktop')?.clientHeight ?? window.innerHeight;
+  return {
+    width: workspace?.clientWidth ?? window.innerWidth,
+    height: Math.max(0, desktopHeight - menuHeight - dockHeight),
+  };
 }
 
 function measure(win: ManagedWindow): Rect {
-  const box = win.el.getBoundingClientRect();
-  const origin = workspace?.getBoundingClientRect() ?? { left: 0, top: 0 };
-  return { x: box.left - origin.left, y: box.top - origin.top, width: box.width, height: box.height };
+  // The opening animation transforms the rendered box; offsets preserve the
+  // actual layout instead of saving a temporarily scaled and shifted window.
+  return { x: win.el.offsetLeft, y: win.el.offsetTop, width: win.el.offsetWidth, height: win.el.offsetHeight };
 }
 
 function readStored(id: string): StoredGeometry | null {
@@ -249,15 +258,22 @@ function startPointerAction(
   handle.setPointerCapture(event.pointerId);
   win.el.classList.add('is-moving');
   let frame = 0;
-  const onMove = (moveEvent: PointerEvent) => {
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => {
-      win.rect = update(start.rect, moveEvent.clientX - start.x, moveEvent.clientY - start.y);
-      applyGeometry(win);
-    });
+  let latest = { x: event.clientX, y: event.clientY };
+  const applyLatest = () => {
+    win.rect = update(start.rect, latest.x - start.x, latest.y - start.y);
+    applyGeometry(win);
   };
-  const onEnd = () => {
+  const onMove = (moveEvent: PointerEvent) => {
+    if (moveEvent.pointerId !== event.pointerId) return;
+    latest = { x: moveEvent.clientX, y: moveEvent.clientY };
     cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(applyLatest);
+  };
+  const onEnd = (endEvent: PointerEvent) => {
+    if (endEvent.pointerId !== event.pointerId) return;
+    if (endEvent.type === 'pointerup') latest = { x: endEvent.clientX, y: endEvent.clientY };
+    cancelAnimationFrame(frame);
+    applyLatest();
     handle.removeEventListener('pointermove', onMove);
     handle.removeEventListener('pointerup', onEnd);
     handle.removeEventListener('pointercancel', onEnd);

@@ -64,7 +64,7 @@
     right: 0;
     z-index: 50;
     width: min(270px, calc(100vw - 28px));
-    max-height: calc(100dvh - var(--mobile-toolbar-height) - 28px);
+    max-height: max(58px, calc(100dvh - var(--mobile-toolbar-height) - var(--mobile-dock-space) - 20px));
     padding: 5px;
     border-radius: 20px;
     background: light-dark(rgb(255 255 255 / 0.97), rgb(43 43 47 / 0.97));

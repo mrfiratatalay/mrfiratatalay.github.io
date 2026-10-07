@@ -4,7 +4,7 @@
  * Kurallar:
  * - Pencere çalışma alanından büyük olamaz; ekran daralınca boyut yeniden sınırlanır.
  * - Başlık çubuğu her zaman ulaşılabilir kalır: üstten dışarı çıkamaz, alttan en az
- *   başlık çubuğu yüksekliği kadar, yanlardan en az `minVisibleX` kadar görünür.
+ *   başlık çubuğu yüksekliği kadar görünür; soldaki pencere kontrolleri kaybolmaz.
  */
 export interface Rect {
   x: number;
@@ -29,7 +29,7 @@ export interface WindowLimits {
 export const WINDOW_LIMITS: WindowLimits = {
   minWidth: 360,
   minHeight: 240,
-  titlebarHeight: 44,
+  titlebarHeight: 58,
   minVisibleX: 120,
   margin: 8,
 };
@@ -50,12 +50,11 @@ export function clampSize(rect: Rect, area: Size, limits: WindowLimits = WINDOW_
 
 export function clampPosition(rect: Rect, area: Size, limits: WindowLimits = WINDOW_LIMITS): Rect {
   const visible = Math.min(limits.minVisibleX, rect.width);
-  const minX = Math.min(0, visible - rect.width);
   const maxX = Math.max(0, area.width - visible);
   const maxY = Math.max(0, area.height - limits.titlebarHeight);
   return {
     ...rect,
-    x: clamp(Math.round(rect.x), minX, maxX),
+    x: clamp(Math.round(rect.x), 0, maxX),
     y: clamp(Math.round(rect.y), 0, maxY),
   };
 }
@@ -70,12 +69,18 @@ export function moveRect(rect: Rect, dx: number, dy: number, area: Size, limits:
 
 /** Sağ alt köşeden boyutlandırma: pencere çalışma alanının dışına taşamaz. */
 export function resizeRect(rect: Rect, dw: number, dh: number, area: Size, limits: WindowLimits = WINDOW_LIMITS): Rect {
-  const maxWidth = Math.max(limits.minWidth, area.width - Math.max(rect.x, 0));
-  const maxHeight = Math.max(limits.minHeight, area.height - Math.max(rect.y, 0));
+  const minWidth = Math.min(limits.minWidth, area.width);
+  const minHeight = Math.min(limits.minHeight, area.height);
+  const x = clamp(rect.x, 0, Math.max(0, area.width - minWidth));
+  const y = clamp(rect.y, 0, Math.max(0, area.height - minHeight));
+  const maxWidth = Math.max(minWidth, area.width - x);
+  const maxHeight = Math.max(minHeight, area.height - y);
   return {
     ...rect,
-    width: Math.round(clamp(rect.width + dw, Math.min(limits.minWidth, area.width), maxWidth)),
-    height: Math.round(clamp(rect.height + dh, Math.min(limits.minHeight, area.height), maxHeight)),
+    x: Math.round(x),
+    y: Math.round(y),
+    width: Math.round(clamp(rect.width + dw, minWidth, maxWidth)),
+    height: Math.round(clamp(rect.height + dh, minHeight, maxHeight)),
   };
 }
 

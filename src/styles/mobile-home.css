@@ -7,7 +7,7 @@
   .ios-widget { min-width: 0; padding: 17px; border-radius: 27px; background: var(--ios-widget-surface); -webkit-backdrop-filter: blur(24px) saturate(1.15); backdrop-filter: blur(24px) saturate(1.15); box-shadow: inset 0 1px 0 light-dark(rgb(255 255 255 / .85), rgb(255 255 255 / .1)), 0 2px 8px -4px rgb(0 0 0 / .19); color: var(--label); text-decoration: none; -webkit-tap-highlight-color: transparent; }
   .ios-profile { display: block; min-height: 140px; }
   .ios-profile__identity { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .ios-profile__identity > div { min-width: 0; }
+  .ios-profile__identity > div { min-width: 0; overflow-wrap: anywhere; }
   .ios-profile h1 { margin: 0; font-family: var(--font-display); font-size: clamp(24px, 6.5vw, 29px); font-weight: 700; line-height: 1.12; letter-spacing: -.045em; }
   .ios-profile__identity p { margin: 6px 0 0; font-size: 12px; color: var(--label-2); line-height: 1.4; }
   .ios-profile img { flex: none; width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
@@ -23,7 +23,7 @@
   .ios-proof__top > span { font-size: 10px; font-weight: 650; line-height: 1.3; }
   .ios-proof--award .ios-proof__top { color: light-dark(#a47413, #efc565); }
   .ios-proof--thesis .ios-proof__top { color: var(--accent-text); }
-  .ios-proof > strong { font-size: clamp(17px, 4.7vw, 21px); font-weight: 750; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
+  .ios-proof > strong { font-size: clamp(17px, 4.7vw, 21px); font-weight: 750; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; overflow-wrap: anywhere; }
   .ios-proof__detail { margin-top: auto; padding-top: 10px; color: var(--label-2); font-size: 10.5px; line-height: 1.5; }
   .ios-home-controls { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 7px; }
   .ios-home-pagination { display: flex; gap: 0; }
@@ -34,6 +34,7 @@
   .ios-home-search svg { width: 12px; height: 12px; }
   .ios-notes-widget { padding: 0; overflow: hidden; }
   .ios-notes-widget__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px; color: inherit; text-decoration: none; }
+  .ios-notes-widget__head > div { min-width: 0; overflow-wrap: anywhere; }
   .ios-notes-widget__head h2 { margin: 0; font-size: 19px; line-height: 1.2; letter-spacing: -.025em; }
   .ios-notes-widget__head > div > span { display: block; margin-top: 5px; color: var(--label-3); font-size: 11px; }
   .ios-notes-widget ul { margin: 0; padding: 0 17px 7px; list-style: none; }

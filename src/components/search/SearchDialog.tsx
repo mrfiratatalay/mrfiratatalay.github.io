@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react';
 import type { Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
+import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
 import { OPEN_SEARCH, openSearch } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
 
@@ -22,17 +23,17 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
     if (!open || !dialog) return;
     const mobile = window.matchMedia('(max-width: 899.98px)');
     const viewport = window.visualViewport;
-    const root = document.documentElement;
-    const previousOverflow = root.style.overflow;
+    let unlock: (() => void) | undefined;
     const update = () => {
       if (mobile.matches) {
         dialog.style.setProperty('--search-viewport-h', `${viewport?.height ?? window.innerHeight}px`);
         dialog.style.setProperty('--search-viewport-top', `${viewport?.offsetTop ?? 0}px`);
-        root.style.overflow = 'hidden';
+        unlock ??= lockPageScroll();
       } else {
         dialog.style.removeProperty('--search-viewport-h');
         dialog.style.removeProperty('--search-viewport-top');
-        root.style.overflow = previousOverflow;
+        unlock?.();
+        unlock = undefined;
       }
     };
     update();
@@ -45,7 +46,7 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
       window.removeEventListener('resize', update);
       dialog.style.removeProperty('--search-viewport-h');
       dialog.style.removeProperty('--search-viewport-top');
-      root.style.overflow = previousOverflow;
+      unlock?.();
     };
   }, [open]);
 
