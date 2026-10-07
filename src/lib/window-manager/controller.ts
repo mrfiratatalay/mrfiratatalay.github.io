@@ -43,7 +43,6 @@ const windows = new Map<string, ManagedWindow>();
 let workspace: HTMLElement | null = null;
 let desktopMedia: MediaQueryList;
 let reducedMotion: MediaQueryList;
-let topZ = 30;
 let initialized = false;
 
 function readStorage(key: string): string | null {
@@ -145,9 +144,16 @@ function broadcast(): void {
 }
 
 function focusWindow(win: ManagedWindow): void {
-  topZ += 1;
-  win.el.style.zIndex = String(topZ);
-  for (const other of windows.values()) other.el.classList.toggle('is-active', other === win);
+  // Keep windows below the Dock and menu even after many interactions.
+  const others = [...windows.values()]
+    .filter((other) => other !== win)
+    .sort((a, b) => (Number(a.el.style.zIndex) || 30) - (Number(b.el.style.zIndex) || 30));
+  others.forEach((other, index) => {
+    other.el.style.zIndex = String(30 + index);
+    other.el.classList.remove('is-active');
+  });
+  win.el.style.zIndex = String(30 + others.length);
+  win.el.classList.add('is-active');
 }
 
 function dockTarget(win: ManagedWindow): Element | null {
