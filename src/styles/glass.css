@@ -207,6 +207,20 @@
 }
 
 /* Bağlantı türleri (markanın rengi; logo değil, genel ikon) */
+.app-icon--contact-email {
+  --icon-bg: linear-gradient(160deg, #54b4ff, #0876ed);
+}
+
+.app-icon--contact-phone {
+  --icon-bg: linear-gradient(160deg, #5bdd7b, #20ab49);
+}
+
+.app-icon:is(.app-icon--contact-email, .app-icon--contact-phone) > svg {
+  width: 60%;
+  height: 60%;
+  stroke-width: 1.9;
+}
+
 .app-icon--link-github {
   --icon-bg: linear-gradient(160deg, #57606a 0%, #24292f 100%);
 }

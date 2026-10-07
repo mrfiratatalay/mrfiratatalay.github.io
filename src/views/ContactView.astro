@@ -18,6 +18,11 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 const paths = localePaths(locale);
 const location = text(profile.location, locale);
+const displayUrl = (url: string) => {
+  const label = url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
+  try { return decodeURI(label); }
+  catch { return label; }
+};
 ---
 
 <DesktopLayout locale={locale} title={t.contact.title} description={t.contact.description(profile.name)} section="contact">
@@ -45,7 +50,7 @@ const location = text(profile.location, locale);
             {profile.email && (
               <li>
                 <a class="group__row" href={`mailto:${profile.email}`}>
-                  <span class="app-icon app-icon--contact" aria-hidden="true"><Mail /></span>
+                  <span class="app-icon app-icon--contact-email" aria-hidden="true"><Mail /></span>
                   <span class="group__text">
                     <span class="group__title">{t.contact.sendEmail}</span>
                     <span class="group__subtitle">{profile.email}</span>
@@ -57,7 +62,7 @@ const location = text(profile.location, locale);
             {profile.phone && (
               <li>
                 <a class="group__row" href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`}>
-                  <span class="app-icon app-icon--contact" aria-hidden="true"><Phone /></span>
+                  <span class="app-icon app-icon--contact-phone" aria-hidden="true"><Phone /></span>
                   <span class="group__text">
                     <span class="group__title">{t.contact.call}</span>
                     <span class="group__subtitle">{profile.phone}</span>
@@ -81,7 +86,7 @@ const location = text(profile.location, locale);
                     <span class={`app-icon app-icon--link-${link.kind}`} aria-hidden="true"><LinkIcon kind={link.kind} /></span>
                     <span class="group__text">
                       <span class="group__title">{link.label}</span>
-                      <span class="group__subtitle">{link.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}</span>
+                      <span class="group__subtitle">{displayUrl(link.url)}</span>
                     </span>
                     <ChevronRight className="group__chevron" aria-hidden="true" />
                   </a>

@@ -173,7 +173,7 @@ const numbers = Array.from({ length: 12 }, (_, index) => {
         <ul class="widget-list">
           {recent.map((item) => (
             <li>
-              <a href={item.url}>
+              <a href={item.url} title={item.title}>
                 <span class="widget-list__title" lang={item.lang}>{item.title}</span>
                 <span class="widget-list__meta">{item.date ? formatDate(item.date, locale) : item.metadata}</span>
               </a>
