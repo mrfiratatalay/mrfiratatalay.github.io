@@ -4,7 +4,7 @@
  * sistem araç çubuğu ve kaydırılan içerik. İçerik Astro'nun
  * ürettiği HTML olarak kalır; davranışı pencere yöneticisi ekler.
  */
-import { BookOpen, ChevronLeft, ChevronRight, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Ellipsis, Globe, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
 import { localePaths, localizePath } from '../../lib/content/urls.ts';
 import { languageHref, LANGUAGE_CODES, otherLocale, type Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
@@ -36,6 +36,7 @@ const pathname = Astro.url.pathname;
 const sections = sectionsFor(locale);
 const other = otherLocale(locale);
 const otherPath = alternatePath ?? localizePath(pathname, other);
+const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
 ---
 
 <div
@@ -131,28 +132,38 @@ const otherPath = alternatePath ?? localizePath(pathname, other);
           </div>
         )
       }
-      <div class="toolbar-capsule js-only only-compact">
-        {
-          readingTools && (
-            <button type="button" class="icon-button" data-copy-link aria-label={t.window.copyLink}>
-              <Link2 aria-hidden="true" />
-            </button>
-          )
-        }
-        {
-          otherPath !== pathname && (
-            <a class="icon-button lang-button" href={languageHref(otherPath, other)} hreflang={other} lang={other} data-lang-switch={other} aria-label={t.menubar.switchLanguage}>
-              {LANGUAGE_CODES[other]}
-            </a>
-          )
-        }
-        <button type="button" class="icon-button" data-action="theme-toggle" aria-label={t.window.toggleTheme}>
-          <SunMoon aria-hidden="true" />
-        </button>
-        <button type="button" class="icon-button" data-open-search aria-haspopup="dialog" aria-label={t.menubar.search}>
-          <Search aria-hidden="true" />
-        </button>
-      </div>
+      <details class="ios-page-menu only-compact">
+        <summary class="ios-page-menu__trigger" aria-label={mobileMenuLabel} title={mobileMenuLabel}>
+          <Ellipsis aria-hidden="true" />
+        </summary>
+        <div class="ios-page-menu__panel" role="group" aria-label={mobileMenuLabel}>
+          {
+            otherPath !== pathname && (
+              <a class="ios-page-menu__action" href={languageHref(otherPath, other)} hreflang={other} data-lang-switch={other}>
+                <Globe aria-hidden="true" />
+                <span>{t.menubar.switchLanguage}</span>
+                <span class="ios-page-menu__value" lang={other}>{LANGUAGE_CODES[other]}</span>
+              </a>
+            )
+          }
+          <button type="button" class="ios-page-menu__action js-only" data-action="theme-toggle">
+            <SunMoon aria-hidden="true" />
+            <span>{t.window.toggleTheme}</span>
+          </button>
+          <button type="button" class="ios-page-menu__action js-only" data-ios-open-search aria-haspopup="dialog">
+            <Search aria-hidden="true" />
+            <span>{t.menubar.search}</span>
+          </button>
+          {
+            readingTools && (
+              <button type="button" class="ios-page-menu__action js-only" data-copy-link>
+                <Link2 aria-hidden="true" />
+                <span>{t.window.copyLink}</span>
+              </button>
+            )
+          }
+        </div>
+      </details>
       <button type="button" class="toolbar-search js-only only-desktop" data-open-search aria-haspopup="dialog" aria-label={t.menubar.search}>
         <Search aria-hidden="true" />
         <span>{t.window.search}</span>
@@ -167,6 +178,41 @@ const otherPath = alternatePath ?? localizePath(pathname, other);
   </div>
   <div class="window__resize" data-window-resize aria-hidden="true"></div>
 </div>
+
+<script>
+  import { openSearch } from '../../lib/window-manager/events.ts';
+
+  const openMenus = () => document.querySelectorAll<HTMLDetailsElement>('.ios-page-menu[open]');
+
+  document.addEventListener('pointerdown', (event) => {
+    for (const menu of openMenus()) {
+      if (!menu.contains(event.target as Node)) menu.open = false;
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || event.isComposing) return;
+    for (const menu of openMenus()) {
+      menu.open = false;
+      menu.querySelector<HTMLElement>('summary')?.focus();
+      event.preventDefault();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    const action = (event.target as Element | null)?.closest<HTMLElement>('.ios-page-menu__action');
+    if (!action) return;
+    const menu = action.closest<HTMLDetailsElement>('.ios-page-menu');
+    const trigger = menu?.querySelector<HTMLElement>('summary');
+    if (menu) menu.open = false;
+    if (action.hasAttribute('data-ios-open-search')) {
+      event.preventDefault();
+      openSearch(trigger ?? action);
+    } else if (action instanceof HTMLButtonElement) {
+      trigger?.focus();
+    }
+  });
+</script>
 
 <style>
   .window__sidebar-head {

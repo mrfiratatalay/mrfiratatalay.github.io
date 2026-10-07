@@ -1,0 +1,45 @@
+/* Native phone icon family. Its artwork never changes the desktop assets. */
+.ios-app-icon {
+  --size: 60px;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: var(--size);
+  height: var(--size);
+  overflow: hidden;
+  border-radius: 23%;
+  vertical-align: middle;
+  background: transparent;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.09), 0 5px 11px -8px rgb(0 0 0 / 0.32);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@supports (corner-shape: squircle) {
+  .ios-app-icon {
+    corner-shape: squircle;
+    border-radius: 33%;
+  }
+}
+
+.ios-app-icon > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+html[data-theme='dark'] .ios-app-icon > svg {
+  filter: saturate(0.93) brightness(0.96);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) .ios-app-icon > svg {
+    filter: saturate(0.93) brightness(0.96);
+  }
+}
+
+@media (prefers-contrast: more) {
+  .ios-app-icon {
+    outline: 1px solid light-dark(rgb(0 0 0 / 0.2), rgb(255 255 255 / 0.3));
+    outline-offset: -1px;
+  }
+}

@@ -11,6 +11,7 @@ import {
   type WindowSummary,
 } from '../../lib/window-manager/events.ts';
 import AppIcon from '../icons/AppIcon.tsx';
+import IOSAppIcon from '../mobile/IOSAppIcon.tsx';
 import SectionIcon from '../icons/SectionIcon.tsx';
 
 export interface DockItem {
@@ -110,6 +111,10 @@ export default function Dock({ locale, items, current, pathname }: Props) {
   ];
   const mobileCurrent = ['blog', 'notes', 'series', 'search'].includes(current) ? 'blog' : current;
   const mobileHome = current === 'home';
+  const homeDockItems: DockItem[] = [
+    { id: 'about', label: t.sections.about.short, href: paths.about, icon: 'about' },
+    ...mobileItems.slice(1),
+  ];
 
   return (
     <>
@@ -170,7 +175,7 @@ export default function Dock({ locale, items, current, pathname }: Props) {
         aria-label={locale === 'tr' ? 'Ana gezinme' : 'Main navigation'}
       >
         <ul className="mobile-dock__list">
-          {mobileItems.map((item) => (
+          {(mobileHome ? homeDockItems : mobileItems).map((item) => (
             <li className="mobile-dock__item" key={item.id}>
               <a
                 className="mobile-dock__link"
@@ -179,7 +184,7 @@ export default function Dock({ locale, items, current, pathname }: Props) {
                 data-active={item.id === mobileCurrent ? '' : undefined}
                 aria-current={item.id === mobileCurrent ? (item.href === pathname ? 'page' : 'location') : undefined}
               >
-                {mobileHome ? <AppIcon name={item.icon} /> : <SectionIcon name={item.icon} />}
+                {mobileHome ? <IOSAppIcon name={item.icon} /> : <SectionIcon name={item.icon} />}
                 <span className="mobile-dock__label">{item.label}</span>
               </a>
             </li>

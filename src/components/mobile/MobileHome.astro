@@ -1,150 +1,107 @@
 ---
-/** A compact personal home screen for phones and tablets. */
-import { ArrowUpRight, Download, FileUser, GraduationCap, Trophy } from 'lucide-react';
-import AppIcon from '../icons/AppIcon.tsx';
-import { initials, profile } from '../../lib/content/site-data.ts';
+import { ChevronRight, GraduationCap, Search, Trophy } from 'lucide-react';
+import IOSAppIcon from './IOSAppIcon.tsx';
+import { profile } from '../../lib/content/site-data.ts';
+import type { NoteItem } from '../../lib/content/collections.ts';
 import { localePaths } from '../../lib/content/urls.ts';
 import type { Locale } from '../../lib/i18n/locales.ts';
 import { text } from '../../lib/i18n/text.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
-import { sectionsFor } from '../../lib/site/sections.ts';
-
-interface Props {
-  locale: Locale;
-}
-
-const { locale } = Astro.props;
+interface Props { locale: Locale; notes?: NoteItem[]; noteCount?: number; projectCount?: number }
+const { locale, notes = [], noteCount = 0, projectCount = 0 } = Astro.props;
 const paths = localePaths(locale);
 const t = useTranslations(locale);
-const apps = sectionsFor(locale);
 const copy = locale === 'tr' ? {
-  introduction: 'Güvenilir backend sistemleri geliştiriyor, öğrendiklerimi projelerim ve teknik yazılarımla paylaşıyorum.',
-  projects: 'Projelerim',
-  cv: 'CV’mi indir',
-  achievements: 'Öne çıkan çalışmalarım',
-  firstPlace: 'Trabzon Birinciliği',
-  finalist: 'All-Star Finalisti',
-  captain: 'Takım Kaptanı',
-  capstone: 'Bitirme tez projem',
-  funded: 'TÜBİTAK 2209-A destekli',
-  viewProject: 'Projeyi incele',
+  home: 'Ana ekran', work: 'Çalışmalarım', pages: 'Ana ekran sayfaları', settings: 'Ayarlar', cv: 'CV', search: 'Ara', awards: 'Öne çıkan çalışmalarım',
+  first: 'Trabzon birincisi', finalist: 'All-Star finalisti', captain: 'Takım kaptanı', capstone: 'Bitirme tez projem', funded: 'TÜBİTAK 2209-A destekli',
+  library: 'Öğrenme notlarım', notes: `${noteCount} not`, projects: `${projectCount} proje`, journey: 'Üreterek öğreniyorum.',
+  journeyDetail: 'Java, Spring Boot, .NET ve Docker üzerine projelerim ve teknik çalışmalarım.', projectAction: 'Projelerimi keşfet', collections: 'Not koleksiyonları', read: (minutes: number) => `${minutes} dk okuma`,
 } : {
-  introduction: 'I build reliable backend systems and share what I learn through my projects and technical writing.',
-  projects: 'My projects',
-  cv: 'Download CV',
-  achievements: 'Featured work',
-  firstPlace: 'Trabzon First Place',
-  finalist: 'All-Star Finalist',
-  captain: 'Team Captain',
-  capstone: 'University capstone',
-  funded: 'Funded by TÜBİTAK 2209-A',
-  viewProject: 'View project',
+  home: 'Home Screen', work: 'My work', pages: 'Home Screen pages', settings: 'Settings', cv: 'CV', search: 'Search', awards: 'Featured work',
+  first: 'Trabzon first place', finalist: 'All-Star finalist', captain: 'Team captain', capstone: 'University capstone', funded: 'Funded by TÜBİTAK 2209-A',
+  library: 'My learning notes', notes: `${noteCount} notes`, projects: `${projectCount} projects`, journey: 'Learning by building.',
+  journeyDetail: 'My projects and technical work with Java, Spring Boot, .NET and Docker.', projectAction: 'Explore my projects', collections: 'Note collections', read: (minutes: number) => `${minutes} min read`,
 };
-const turkcellAward = profile.awards?.find((award) => award.icon === 'trophy');
-const educonnectAward = profile.awards?.find((award) => award.icon === 'award');
+const appIds = ['about', 'projects', 'notes', 'series', 'blog', 'contact'] as const;
+const turkcell = profile.awards.find((award) => award.icon === 'trophy');
+const educonnect = profile.awards.find((award) => award.icon === 'award');
 ---
-
-<main class="mobile-home" id="mobile-icerik" tabindex="-1">
-  <section class="mobile-home__profile" aria-labelledby="mobile-profile-name">
-    <div class="mobile-home__identity">
-      <a class="mobile-home__portrait" href={paths.about} aria-label={`${profile.name} — ${t.sections.about.label}`}>
-        {
-          profile.avatar ? (
-            <img src={profile.avatar} alt={text(profile.avatarAlt, locale)} width="72" height="72" fetchpriority="high" />
-          ) : (
-            <span aria-hidden="true">{initials(profile.name)}</span>
-          )
-        }
+<main class="mobile-home" id="mobile-icerik" tabindex="-1" data-ios-home>
+  <div class="ios-home-pages" data-ios-pages>
+    <section class="ios-home-page" aria-label={copy.home} data-ios-page>
+      <a class="ios-widget ios-profile" href={paths.about} aria-label={`${profile.name} · ${t.sections.about.label}`}>
+        <div class="ios-profile__identity">
+          <div><h1>{profile.name}</h1><p>{text(profile.title, locale)}</p></div>
+          {profile.avatar && <img src={profile.avatar} alt={text(profile.avatarAlt, locale)} width="64" height="64" fetchpriority="high" />}
+        </div>
+        <div class="ios-profile__stack"><span>Java / Spring Boot</span><span>C# / ASP.NET Core</span></div>
       </a>
-      <div class="mobile-home__identity-text">
-        <h1 id="mobile-profile-name">{profile.name}</h1>
-        <p>{text(profile.title, locale)}</p>
-      </div>
-    </div>
-
-    <div class="mobile-home__technologies" aria-label={t.about.skills}>
-      <span>Java <span aria-hidden="true">/</span> Spring Boot</span>
-      <span>C# <span aria-hidden="true">/</span> ASP.NET Core</span>
-    </div>
-
-    <p class="mobile-home__introduction">{copy.introduction}</p>
-
-    <div class="mobile-home__actions">
-      <a class="mobile-home__action mobile-home__action--primary" href={paths.projects}>
-        <span>{copy.projects}</span>
-        <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />
+      <nav class="ios-home-apps" aria-label={t.home.apps}>
+        <ul>
+          {appIds.map((id) => <li><a class="ios-home-app" href={paths[id]}><IOSAppIcon name={id} /><span>{t.sections[id].short}</span></a></li>)}
+          {profile.cv && <li><a class="ios-home-app" href={profile.cv} download aria-label={t.about.cv}><IOSAppIcon name="cv" /><span>{copy.cv}</span></a></li>}
+          <li class="js-only"><button class="ios-home-app" type="button" data-ios-settings aria-haspopup="dialog" aria-expanded="false"><IOSAppIcon name="settings" /><span>{copy.settings}</span></button></li>
+        </ul>
+      </nav>
+      <section class="ios-proof-grid" aria-label={copy.awards}>
+        {turkcell && <a class="ios-widget ios-proof ios-proof--award" href={paths.project('turkcell-skillhub')} aria-label={`${text(turkcell.title, locale)} · ${text(turkcell.detail, locale)}`}>
+          <div class="ios-proof__top"><Trophy aria-hidden="true" /><span>Code Night</span></div><strong>{copy.first}</strong><span class="ios-proof__detail">{copy.finalist}<br />{copy.captain}</span>
+        </a>}
+        {educonnect && <a class="ios-widget ios-proof ios-proof--thesis" href={paths.project('educonnect')} aria-label={`${text(educonnect.title, locale)} · ${text(educonnect.detail, locale)}`}>
+          <div class="ios-proof__top"><GraduationCap aria-hidden="true" /><span>{copy.capstone}</span></div><strong>EduConnect</strong><span class="ios-proof__detail">{copy.funded}</span>
+        </a>}
+      </section>
+    </section>
+    <section class="ios-home-page" aria-label={copy.work} data-ios-page>
+      <section class="ios-widget ios-notes-widget" aria-labelledby="ios-library-title">
+        <a class="ios-notes-widget__head" href={paths.notes}><div><h2 id="ios-library-title">{copy.library}</h2><span>{copy.notes}</span></div><IOSAppIcon name="notes" size={34} /></a>
+        <ul>{notes.slice(0, 2).map((note) => <li><a href={paths.note(note.sourceId, note.slug)}><span><strong lang={note.lang}>{note.title}</strong><span>{copy.read(note.readingMinutes)}</span></span><ChevronRight aria-hidden="true" /></a></li>)}</ul>
+      </section>
+      <nav class="ios-home-apps" aria-label={copy.collections}>
+        <ul>
+          <li><a class="ios-home-app" href={paths.noteSource('java-notlari')}><IOSAppIcon name="java" /><span>Java</span></a></li>
+          <li><a class="ios-home-app" href={paths.noteSource('docker-notlari')}><IOSAppIcon name="docker" /><span>Docker</span></a></li>
+          <li><a class="ios-home-app" href={paths.series}><IOSAppIcon name="series" /><span>{t.sections.series.short}</span></a></li>
+          <li><a class="ios-home-app" href={paths.blog}><IOSAppIcon name="blog" /><span>{t.sections.blog.short}</span></a></li>
+        </ul>
+      </nav>
+      <a class="ios-widget ios-project-widget" href={paths.projects}>
+        <span class="ios-project-widget__eyebrow">{copy.projects}</span><strong>{copy.journey}</strong><p>{copy.journeyDetail}</p><span class="ios-project-widget__action">{copy.projectAction}<ChevronRight aria-hidden="true" /></span>
       </a>
-      {
-        profile.cv && (
-          <a class="mobile-home__action mobile-home__action--cv" href={profile.cv} download>
-            <Download size={16} strokeWidth={1.8} aria-hidden="true" />
-            <span>{copy.cv}</span>
-          </a>
-        )
-      }
-    </div>
-  </section>
-
-  <section class="mobile-home__achievements" aria-label={copy.achievements}>
-    {
-      turkcellAward && (
-        <a class="mobile-home__achievement mobile-home__achievement--turkcell" href={paths.project('turkcell-skillhub')} aria-label={`${text(turkcellAward.title, locale)} — ${text(turkcellAward.detail, locale)}. ${copy.viewProject}`}>
-          <span class="mobile-home__achievement-top">
-            <span class="mobile-home__award-icon mobile-home__award-icon--gold"><Trophy size={25} strokeWidth={1.5} aria-hidden="true" /></span>
-            <ArrowUpRight className="mobile-home__award-link" size={15} aria-hidden="true" />
-          </span>
-          <span class="mobile-home__award-eyebrow">Turkcell Code Night</span>
-          <strong class="mobile-home__award-title">{copy.firstPlace}</strong>
-          <span class="mobile-home__award-detail">{copy.finalist}<br />{copy.captain}</span>
-        </a>
-      )
-    }
-    {
-      educonnectAward && (
-        <a class="mobile-home__achievement mobile-home__achievement--educonnect" href={paths.project('educonnect')} aria-label={`${text(educonnectAward.title, locale)} — ${text(educonnectAward.detail, locale)}. ${copy.capstone}. ${copy.viewProject}`}>
-          <span class="mobile-home__achievement-top">
-            <span class="mobile-home__award-icon mobile-home__award-icon--blue"><GraduationCap size={27} strokeWidth={1.5} aria-hidden="true" /></span>
-            <ArrowUpRight className="mobile-home__award-link" size={15} aria-hidden="true" />
-          </span>
-          <span class="mobile-home__award-eyebrow">{copy.capstone}</span>
-          <strong class="mobile-home__award-title">EduConnect</strong>
-          <span class="mobile-home__award-detail">{copy.funded}</span>
-        </a>
-      )
-    }
-  </section>
-
-  <nav class="mobile-home__apps" aria-label={t.home.apps}>
-    <ul>
-      {
-        apps.map((app) => (
-          <li>
-            <a class="mobile-home__app" href={app.href}>
-              <AppIcon name={app.icon} />
-              <span class="mobile-home__app-label">{app.shortLabel}</span>
-            </a>
-          </li>
-        ))
-      }
-      {
-        profile.cv && (
-          <li>
-            <a class="mobile-home__app" href={profile.cv} download aria-label={copy.cv}>
-              <span class="mobile-home__cv-icon" aria-hidden="true">
-                <FileUser size={35} strokeWidth={1.3} />
-                <span>PDF</span>
-              </span>
-              <span class="mobile-home__app-label">{t.about.cv}</span>
-            </a>
-          </li>
-        )
-      }
-      <li>
-        <a class="mobile-home__app" href={paths.search} data-open-search aria-haspopup="dialog">
-          <AppIcon name="search" />
-          <span class="mobile-home__app-label">{t.sections.search.short}</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+    </section>
+  </div>
+  <div class="ios-home-controls">
+    <nav class="ios-home-pagination js-only" aria-label={copy.pages}>
+      <button type="button" data-ios-page-button="0" aria-label={copy.home} aria-pressed="true"><span></span></button>
+      <button type="button" data-ios-page-button="1" aria-label={copy.work} aria-pressed="false"><span></span></button>
+    </nav>
+    <a class="ios-home-search" href={paths.search} data-open-search aria-haspopup="dialog"><Search aria-hidden="true" /><span>{copy.search}</span></a>
+  </div>
 </main>
+<script>
+  const home = document.querySelector<HTMLElement>('[data-ios-home]');
+  const pages = home?.querySelector<HTMLElement>('[data-ios-pages]');
+  if (home && pages) {
+    const panels = [...pages.querySelectorAll<HTMLElement>('[data-ios-page]')];
+    const buttons = [...home.querySelectorAll<HTMLButtonElement>('[data-ios-page-button]')];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const sync = () => {
+      const current = Math.min(panels.length - 1, Math.round(pages.scrollLeft / Math.max(pages.clientWidth, 1)));
+      panels.forEach((panel, index) => { panel.inert = index !== current; });
+      buttons.forEach((button, index) => button.setAttribute('aria-pressed', String(index === current)));
+    };
+    buttons.forEach((button, index) => button.addEventListener('click', () => pages.scrollTo({ left: index * pages.clientWidth, behavior: reduced.matches ? 'instant' : 'smooth' })));
+    pages.addEventListener('scroll', () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(sync); }, { passive: true });
+    window.addEventListener('resize', () => {
+      const current = Math.max(0, buttons.findIndex((button) => button.getAttribute('aria-pressed') === 'true'));
+      pages.scrollTo({ left: current * pages.clientWidth, behavior: 'instant' });
+      sync();
+    });
+    home.querySelector<HTMLButtonElement>('[data-ios-settings]')?.addEventListener('click', (event) => {
+      if (!document.documentElement.hasAttribute('data-ios-settings-ready')) document.documentElement.setAttribute('data-ios-settings-requested', '');
+      window.dispatchEvent(new CustomEvent('mobile:open-settings', { detail: { opener: event.currentTarget } }));
+    });
+    sync();
+  }
+</script>

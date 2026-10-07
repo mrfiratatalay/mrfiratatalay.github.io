@@ -1,4 +1,4 @@
-import { Globe, Monitor, Moon, Search, SlidersHorizontal, Sun } from 'lucide-react';
+import { ChevronLeft, Globe, Monitor, Moon, Search, SlidersHorizontal, Sun } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { deviceLocale, getLanguagePreference, goToLocale, setLanguagePreference } from '../../lib/i18n/client.ts';
 import { languageHref, LANGUAGE_CODES, LANGUAGE_NAMES, LOCALE_TAGS, type Locale } from '../../lib/i18n/locales.ts';
@@ -32,11 +32,44 @@ function ControlCenter({ locale }: { locale: Locale }) {
   const [theme, setTheme] = useState<ThemePreference>('system');
   const [language, setLanguage] = useState<LanguageChoice>('auto');
   const [scale, setScale] = useState(1);
+  const [mobile, setMobile] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const launcherRef = useRef<HTMLElement | null>(null);
   const panelId = useId();
   const sliderLabelId = useId();
   const languageLabelId = useId();
+
+  useEffect(() => {
+    const screen = window.matchMedia('(max-width: 899.98px)');
+    const sync = () => setMobile(screen.matches);
+    const fromLauncher = (event: Event) => {
+      const opener = (event as CustomEvent<{ opener?: HTMLElement }>).detail?.opener;
+      launcherRef.current = opener ?? null;
+      opener?.setAttribute('aria-controls', panelId);
+      opener?.setAttribute('aria-expanded', 'true');
+      setOpen(true);
+    };
+    sync();
+    screen.addEventListener('change', sync);
+    window.addEventListener('mobile:open-settings', fromLauncher);
+    document.documentElement.setAttribute('data-ios-settings-ready', '');
+    if (document.documentElement.hasAttribute('data-ios-settings-requested')) {
+      document.documentElement.removeAttribute('data-ios-settings-requested');
+      fromLauncher(new CustomEvent('mobile:open-settings', { detail: { opener: document.querySelector('[data-ios-settings]') } }));
+    }
+    return () => {
+      document.documentElement.removeAttribute('data-ios-settings-ready');
+      screen.removeEventListener('change', sync);
+      window.removeEventListener('mobile:open-settings', fromLauncher);
+    };
+  }, [panelId]);
+
+  const close = () => {
+    setOpen(false);
+    launcherRef.current?.setAttribute('aria-expanded', 'false');
+    (launcherRef.current ?? buttonRef.current)?.focus();
+  };
 
   const themes = useMemo(
     () =>
@@ -67,22 +100,36 @@ function ControlCenter({ locale }: { locale: Locale }) {
   useEffect(() => {
     if (!open) return;
     const onPointer = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        launcherRef.current?.setAttribute('aria-expanded', 'false');
+      }
     };
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpen(false);
-        buttonRef.current?.focus();
+        launcherRef.current?.setAttribute('aria-expanded', 'false');
+        (launcherRef.current ?? buttonRef.current)?.focus();
+      } else if (event.key === 'Tab' && mobile) {
+        const targets = [...(rootRef.current?.querySelectorAll<HTMLElement>('.control-center button, .control-center input, .control-center a[href], .control-center summary') ?? [])].filter((element) => element.getClientRects().length > 0);
+        const first = targets[0];
+        const last = targets.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }
     };
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    if (mobile) root.style.overflow = 'hidden';
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
     rootRef.current?.querySelector<HTMLButtonElement>('.cc-segment button[aria-pressed="true"]')?.focus();
     return () => {
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
+      if (mobile) root.style.overflow = overflow;
     };
-  }, [open]);
+  }, [open, mobile]);
 
   const chooseLanguage = (choice: LanguageChoice) => {
     setLanguage(choice);
@@ -100,12 +147,17 @@ function ControlCenter({ locale }: { locale: Locale }) {
         title={t.controlCenter}
         aria-expanded={open}
         aria-controls={panelId}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => { launcherRef.current = null; setOpen((value) => !value); }}
       >
         <SlidersHorizontal aria-hidden="true" />
       </button>
       {open && (
-        <div id={panelId} className="control-center glass glass-edge" role="dialog" aria-label={t.controlCenter}>
+        <div id={panelId} className="control-center glass glass-edge" role="dialog" aria-modal={mobile || undefined} aria-label={mobile ? (locale === 'tr' ? 'Ayarlar' : 'Settings') : t.controlCenter}>
+          <header className="cc-mobile-header">
+            <button type="button" onClick={close} aria-label={locale === 'tr' ? 'Ana ekrana dön' : 'Back to Home Screen'}><ChevronLeft aria-hidden="true" /></button>
+            <h2>{locale === 'tr' ? 'Ayarlar' : 'Settings'}</h2>
+            <span aria-hidden="true" />
+          </header>
           <section className="cc-module" aria-label={t.appearance}>
             <h3>{t.appearance}</h3>
             <div className="cc-segment">

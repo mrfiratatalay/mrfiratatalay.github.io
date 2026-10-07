@@ -19,7 +19,7 @@ const { locale, current, pathname, alternatePath } = Astro.props;
 const t = useTranslations(locale);
 ---
 
-<header class="menubar">
+<header class:list={['menubar', { 'menubar--launcher': current === 'home' }]}>
   <nav class="menubar__left" aria-label={t.menubar.mainMenu}>
     <a class="menubar__item menubar__brand" href={localePaths(locale).home} data-section-link aria-label={t.menubar.brand(profile.name)}>
       <AppIcon name="monogram" text={initials(profile.name)} className="menubar__logo" />

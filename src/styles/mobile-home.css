@@ -1,489 +1,82 @@
-/* Phone home: personal widgets above a familiar four-column app grid. */
-.mobile-home {
-  display: none;
-}
-
+.mobile-home { display: none; }
 @media (max-width: 899.98px) {
-  .mobile-home {
-    --home-glass: light-dark(rgb(253 252 249 / 0.8), rgb(37 39 42 / 0.82));
-    --home-rim: light-dark(rgb(255 255 255 / 0.84), rgb(255 255 255 / 0.16));
-    --home-shadow: 0 2px 5px rgb(0 0 0 / 0.035), 0 14px 35px -22px rgb(0 0 0 / 0.34);
-    display: grid;
-    gap: 18px;
-    width: 100%;
-    min-width: 0;
-    max-width: 620px;
-    margin-inline: auto;
-    color: var(--label);
-    outline: none;
-  }
-
-  .mobile-home__profile,
-  .mobile-home__achievement {
-    position: relative;
-    min-width: 0;
-    overflow: hidden;
-    border: 0.5px solid light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.1));
-    background: var(--home-glass);
-    -webkit-backdrop-filter: blur(30px) saturate(1.1);
-    backdrop-filter: blur(30px) saturate(1.1);
-    box-shadow: inset 0 1px 0 var(--home-rim), var(--home-shadow);
-  }
-
-  .mobile-home__profile {
-    padding: 21px;
-    border-radius: 30px;
-  }
-
-  .mobile-home__identity {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .mobile-home__portrait {
-    display: grid;
-    flex: 0 0 64px;
-    width: 64px;
-    height: 64px;
-    overflow: hidden;
-    place-items: center;
-    border-radius: 50%;
-    background: var(--fill);
-    color: var(--label);
-    font-size: 23px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 0 0 3px light-dark(rgb(255 255 255 / 0.65), rgb(255 255 255 / 0.09)), 0 4px 10px -5px rgb(0 0 0 / 0.3);
-  }
-
-  .mobile-home__portrait img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .mobile-home__identity-text {
-    min-width: 0;
-  }
-
-  .mobile-home__identity h1 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: clamp(1.45rem, 6.3vw, 1.85rem);
-    font-weight: 700;
-    letter-spacing: -0.045em;
-    line-height: 1.12;
-  }
-
-  .mobile-home__identity p {
-    margin: 6px 0 0;
-    color: var(--label-2);
-    font-size: 12px;
-    font-weight: 550;
-    line-height: 1.4;
-  }
-
-  .mobile-home__technologies {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
-    margin-top: 19px;
-  }
-
-  .mobile-home__technologies > span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    min-height: 30px;
-    padding: 6px 5px;
-    border-radius: 10px;
-    background: light-dark(rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.06));
-    color: var(--label-2);
-    font-size: clamp(9.5px, 2.85vw, 12px);
-    font-weight: 600;
-    line-height: 1.3;
-    box-shadow: inset 0 0 0 0.5px var(--separator);
-    white-space: nowrap;
-  }
-
-  .mobile-home__technologies > span > span {
-    color: var(--label-3);
-    font-weight: 400;
-  }
-
-  .mobile-home__introduction {
-    margin: 15px 0 18px;
-    color: var(--label-2);
-    font-size: 14px;
-    letter-spacing: -0.012em;
-    line-height: 1.55;
-    text-wrap: pretty;
-  }
-
-  .mobile-home__actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9px;
-  }
-
-  .mobile-home__action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-width: 0;
-    min-height: 44px;
-    padding: 10px 9px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.25;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast);
-  }
-
-  .mobile-home__action svg {
-    flex: none;
-  }
-
-  .mobile-home__action--primary {
-    background: var(--blue);
-    color: var(--on-accent);
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.17), 0 3px 8px -4px rgb(0 93 214 / 0.45);
-  }
-
-  .mobile-home__action--cv {
-    background: light-dark(rgb(255 255 255 / 0.62), rgb(255 255 255 / 0.08));
-    color: var(--label);
-    box-shadow: inset 0 0 0 0.5px var(--separator-strong);
-  }
-
-  .mobile-home__achievements {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .mobile-home__achievement {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    min-height: 175px;
-    padding: 14px;
-    border-radius: 26px;
-    color: var(--label);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform var(--dur-fast) var(--ease-out);
-  }
-
-  .mobile-home__achievement-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    margin-bottom: 12px;
-  }
-
-  .mobile-home__award-icon {
-    display: grid;
-    width: 37px;
-    height: 37px;
-    place-items: center;
-    border-radius: 12px;
-  }
-
-  .mobile-home__award-icon--gold {
-    background: light-dark(rgb(171 127 49 / 0.09), rgb(232 187 102 / 0.1));
-    color: light-dark(#9a732e, #e5bd76);
-  }
-
-  .mobile-home__award-icon--blue {
-    background: light-dark(rgb(41 107 171 / 0.08), rgb(105 164 220 / 0.11));
-    color: light-dark(#386c9e, #a3c6eb);
-  }
-
-  .mobile-home__award-link {
-    color: var(--label-3);
-  }
-
-  .mobile-home__award-eyebrow {
-    color: var(--label-2);
-    font-size: 10px;
-    font-weight: 550;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
-  }
-
-  .mobile-home__award-title {
-    display: block;
-    margin: 5px 0 7px;
-    font-family: var(--font-display);
-    font-size: clamp(16px, 4.4vw, 20px);
-    font-weight: 700;
-    letter-spacing: -0.035em;
-    line-height: 1.18;
-    text-wrap: balance;
-  }
-
-  .mobile-home__award-detail {
-    display: block;
-    margin-top: auto;
-    color: var(--label-2);
-    font-size: 10.5px;
-    line-height: 1.5;
-    text-wrap: pretty;
-  }
-
-  .mobile-home__apps ul {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px 7px;
-    margin: 2px 0 0;
-    padding: 4px 0 0;
-    list-style: none;
-  }
-
-  .mobile-home__app {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 7px;
-    min-width: 0;
-    min-height: 86px;
-    padding: 0;
-    color: var(--label-on-wallpaper);
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .mobile-home__app .app-icon,
-  .mobile-home__cv-icon {
-    --size: clamp(54px, 15.5vw, 65px);
-    width: var(--size);
-    height: var(--size);
-    border-radius: 24%;
-    box-shadow: 0 0 0 0.5px rgb(0 0 0 / 0.08), 0 3px 7px -3px rgb(0 0 0 / 0.22), 0 10px 15px -9px rgb(0 0 0 / 0.24);
-    transition: transform var(--dur-fast) var(--ease-out);
-  }
-
-  .mobile-home__app .app-icon__artwork {
-    display: block;
-  }
-
-  .mobile-home__app .app-icon__flat {
-    display: none;
-  }
-
-  .mobile-home__cv-icon {
-    position: relative;
-    display: grid;
-    flex: none;
-    place-items: center;
-    background: linear-gradient(155deg, #fdfefe, #e8eef2);
-    color: #637f97;
-  }
-
-  .mobile-home__cv-icon > svg {
-    transform: translateY(-3px);
-  }
-
-  .mobile-home__cv-icon > span {
-    position: absolute;
-    right: 10px;
-    bottom: 9px;
-    padding: 1px 4px;
-    border-radius: 3px;
-    background: #547ea3;
-    color: #fff;
-    font-size: 7px;
-    font-weight: 750;
-    letter-spacing: 0.06em;
-    line-height: 1.5;
-  }
-
-  .mobile-home__app-label {
-    display: block;
-    max-width: 100%;
-    padding: 1px 4px;
-    border-radius: 5px;
-    background: light-dark(rgb(246 242 235 / 0.48), rgb(26 28 32 / 0.25));
-    color: var(--label-on-wallpaper);
-    font-size: 11px;
-    font-weight: 550;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
-    text-align: center;
-    text-wrap: balance;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-  }
-
-  .mobile-home__app:active .app-icon,
-  .mobile-home__app:active .mobile-home__cv-icon,
-  .mobile-home__action:active,
-  .mobile-home__achievement:active {
-    transform: scale(0.96);
-  }
-
-  .mobile-home a:focus-visible {
-    outline: 3px solid var(--blue);
-    outline-offset: 4px;
-  }
+  .mobile-home { --ios-widget-surface: light-dark(rgb(255 255 255 / .88), rgb(34 35 38 / .88)); display: flex; flex-direction: column; width: 100%; min-width: 0; max-width: 540px; margin: 0 auto; outline: none; }
+  .ios-home-pages { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; align-items: start; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 8px 0 4px; -webkit-overflow-scrolling: touch; }
+  .ios-home-pages::-webkit-scrollbar { display: none; }
+  .ios-home-page { display: grid; gap: clamp(18px, 2.6dvh, 25px); min-width: 0; padding: 0 4px; scroll-snap-align: start; scroll-snap-stop: always; }
+  .ios-widget { min-width: 0; padding: 17px; border-radius: 27px; background: var(--ios-widget-surface); -webkit-backdrop-filter: blur(24px) saturate(1.15); backdrop-filter: blur(24px) saturate(1.15); box-shadow: inset 0 1px 0 light-dark(rgb(255 255 255 / .85), rgb(255 255 255 / .1)), 0 2px 8px -4px rgb(0 0 0 / .19); color: var(--label); text-decoration: none; -webkit-tap-highlight-color: transparent; }
+  .ios-profile { display: block; min-height: 140px; }
+  .ios-profile__identity { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ios-profile__identity > div { min-width: 0; }
+  .ios-profile h1 { margin: 0; font-family: var(--font-display); font-size: clamp(24px, 6.5vw, 29px); font-weight: 700; line-height: 1.12; letter-spacing: -.045em; }
+  .ios-profile__identity p { margin: 6px 0 0; font-size: 12px; color: var(--label-2); line-height: 1.4; }
+  .ios-profile img { flex: none; width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+  .ios-profile__stack { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 10px; margin-top: 17px; padding-top: 12px; border-top: .5px solid var(--separator); font-size: 11px; font-weight: 600; color: var(--label-2); }
+  .ios-home-apps ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px 6px; margin: 0; padding: 0; list-style: none; }
+  .ios-home-app { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; width: 100%; padding: 0; border: 0; background: transparent; color: var(--label-on-wallpaper); text-align: center; text-decoration: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .ios-home-app .ios-app-icon { --size: clamp(54px, 15.8vw, 64px); }
+  .ios-home-app > span:last-child { max-width: 100%; color: inherit; font-size: 11px; font-weight: 500; line-height: 1.3; text-wrap: balance; text-shadow: 0 1px 2px light-dark(rgb(255 255 255 / .6), rgb(0 0 0 / .5)); }
+  .ios-proof-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
+  .ios-proof { display: flex; flex-direction: column; min-height: 140px; padding: 15px; }
+  .ios-proof__top { display: flex; align-items: center; gap: 6px; margin-bottom: 11px; }
+  .ios-proof__top svg { flex: none; width: 20px; height: 20px; }
+  .ios-proof__top > span { font-size: 10px; font-weight: 650; line-height: 1.3; }
+  .ios-proof--award .ios-proof__top { color: light-dark(#a47413, #efc565); }
+  .ios-proof--thesis .ios-proof__top { color: var(--accent-text); }
+  .ios-proof > strong { font-size: clamp(17px, 4.7vw, 21px); font-weight: 750; line-height: 1.12; letter-spacing: -.035em; text-wrap: balance; }
+  .ios-proof__detail { margin-top: auto; padding-top: 10px; color: var(--label-2); font-size: 10.5px; line-height: 1.5; }
+  .ios-home-controls { display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 7px; }
+  .ios-home-pagination { display: flex; gap: 0; }
+  .ios-home-pagination button { display: grid; place-items: center; width: 30px; height: 26px; padding: 0; border: 0; background: none; }
+  .ios-home-pagination button span { width: 6px; height: 6px; border-radius: 50%; background: var(--label-on-wallpaper); opacity: .24; }
+  .ios-home-pagination button[aria-pressed='true'] span { opacity: .9; }
+  .ios-home-search { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 82px; min-height: 30px; padding: 6px 13px; border-radius: 999px; background: light-dark(rgb(255 255 255 / .3), rgb(255 255 255 / .13)); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); color: var(--label-on-wallpaper); font-size: 11px; font-weight: 600; line-height: 1.3; text-decoration: none; }
+  .ios-home-search svg { width: 12px; height: 12px; }
+  .ios-notes-widget { padding: 0; overflow: hidden; }
+  .ios-notes-widget__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 17px; color: inherit; text-decoration: none; }
+  .ios-notes-widget__head h2 { margin: 0; font-size: 19px; line-height: 1.2; letter-spacing: -.025em; }
+  .ios-notes-widget__head > div > span { display: block; margin-top: 5px; color: var(--label-3); font-size: 11px; }
+  .ios-notes-widget ul { margin: 0; padding: 0 17px 7px; list-style: none; }
+  .ios-notes-widget li { border-top: .5px solid var(--separator); }
+  .ios-notes-widget li a { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 70px; padding: 12px 0; color: inherit; text-decoration: none; }
+  .ios-notes-widget li a > span { min-width: 0; }
+  .ios-notes-widget li strong { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: 13px; font-weight: 600; line-height: 1.35; }
+  .ios-notes-widget li a > span > span { display: block; margin-top: 5px; font-size: 10.5px; color: var(--label-3); }
+  .ios-notes-widget li svg { flex: none; width: 16px; height: 16px; color: var(--label-3); }
+  .ios-project-widget { display: block; min-height: 153px; }
+  .ios-project-widget__eyebrow { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 600; color: var(--accent-text); }
+  .ios-project-widget > strong { font-size: 23px; font-weight: 750; letter-spacing: -.035em; line-height: 1.2; }
+  .ios-project-widget p { max-width: 38ch; margin: 8px 0 12px; color: var(--label-2); font-size: 12px; line-height: 1.5; }
+  .ios-project-widget__action { display: flex; align-items: center; gap: 4px; color: var(--accent-text); font-size: 11px; font-weight: 600; }
+  .ios-project-widget__action svg { width: 13px; height: 13px; }
+  .mobile-home :is(a, button):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .ios-home-app:active .ios-app-icon { transform: scale(.91); }
+  .ios-widget:active { filter: brightness(.96); }
 }
-
 @media (max-width: 359.98px) {
-  .mobile-home {
-    gap: 15px;
-  }
-
-  .mobile-home__profile {
-    padding: 17px;
-    border-radius: 26px;
-  }
-
-  .mobile-home__identity {
-    gap: 11px;
-  }
-
-  .mobile-home__portrait {
-    flex-basis: 54px;
-    width: 54px;
-    height: 54px;
-  }
-
-  .mobile-home__identity p {
-    font-size: 11px;
-  }
-
-  .mobile-home__introduction {
-    font-size: 13px;
-  }
-
-  .mobile-home__action {
-    gap: 5px;
-    padding-inline: 7px;
-    font-size: 11px;
-  }
-
-  .mobile-home__achievements {
-    gap: 10px;
-  }
-
-  .mobile-home__achievement {
-    min-height: 168px;
-    padding: 12px;
-    border-radius: 23px;
-  }
-
-  .mobile-home__award-eyebrow,
-  .mobile-home__award-detail {
-    font-size: 10.5px;
-  }
-
-  .mobile-home__apps ul {
-    column-gap: 3px;
-  }
-
-  .mobile-home__app-label {
-    padding-inline: 2px;
-    font-size: 11px;
-  }
+  .ios-home-page { gap: 17px; padding-inline: 1px; }
+  .ios-profile { min-height: 134px; padding: 15px; }
+  .ios-profile h1 { font-size: 24px; }
+  .ios-profile img { width: 51px; height: 51px; }
+  .ios-profile__identity p { font-size: 11px; }
+  .ios-profile__stack { margin-top: 14px; font-size: 10.5px; gap: 4px; }
+  .ios-proof-grid { gap: 13px; }
+  .ios-proof { min-height: 137px; padding: 13px; }
 }
-
 @media (min-width: 600px) and (max-width: 899.98px) {
-  .mobile-home {
-    gap: 22px;
-  }
-
-  .mobile-home__profile {
-    padding: 28px;
-  }
-
-  .mobile-home__portrait {
-    flex-basis: 72px;
-    width: 72px;
-    height: 72px;
-  }
-
-  .mobile-home__identity p {
-    font-size: 14px;
-  }
-
-  .mobile-home__technologies {
-    gap: 10px;
-    max-width: 380px;
-  }
-
-  .mobile-home__technologies > span {
-    padding-block: 8px;
-  }
-
-  .mobile-home__introduction {
-    max-width: 49ch;
-    font-size: 16px;
-  }
-
-  .mobile-home__actions {
-    max-width: 380px;
-  }
-
-  .mobile-home__action {
-    min-height: 44px;
-    font-size: 14px;
-  }
-
-  .mobile-home__achievements {
-    gap: 18px;
-  }
-
-  .mobile-home__achievement {
-    min-height: 164px;
-    padding: 20px;
-  }
-
-  .mobile-home__award-eyebrow,
-  .mobile-home__award-detail {
-    font-size: 12px;
-  }
-
-  .mobile-home__apps ul {
-    gap: 26px 18px;
-    max-width: 500px;
-    margin-inline: auto;
-  }
-
-  .mobile-home__app-label {
-    font-size: 12px;
-  }
+  .ios-home-page { gap: 26px; }
+  .ios-profile { padding: 22px; min-height: 160px; }
+  .ios-profile__identity p, .ios-profile__stack { font-size: 13px; }
+  .ios-home-apps ul { row-gap: 25px; }
+  .ios-home-app > span:last-child { font-size: 12px; }
+  .ios-proof { padding: 20px; min-height: 157px; }
+  .ios-proof__top > span, .ios-proof__detail { font-size: 12px; }
 }
-
 @media (prefers-reduced-transparency: reduce) and (max-width: 899.98px) {
-  .mobile-home {
-    --home-glass: var(--window-solid);
-  }
-
-  .mobile-home__profile,
-  .mobile-home__achievement,
-  .mobile-home__app-label {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .mobile-home__app-label {
-    background: light-dark(#efebe4, #27292c);
-  }
+  .mobile-home { --ios-widget-surface: var(--card-bg); }
+  .ios-widget, .ios-home-search { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .ios-home-search { background: var(--card-bg); color: var(--label); }
 }
-
-@supports not (backdrop-filter: blur(1px)) {
-  @media (max-width: 899.98px) {
-    .mobile-home {
-      --home-glass: var(--window-solid);
-    }
-  }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .mobile-home { --ios-widget-surface: var(--card-bg); }
 }

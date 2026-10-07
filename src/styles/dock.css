@@ -208,7 +208,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    padding: 0 max(14px, env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+    padding: 0 max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
   }
 
   .dock--desktop {
@@ -272,17 +272,44 @@
   }
 
   .mobile-dock--home {
-    height: 82px;
-    padding: 10px 9px;
-    border-radius: 29px;
+    --mobile-dock-glass: light-dark(rgb(248 248 250 / 0.24), rgb(210 216 227 / 0.1));
+    position: relative;
+    height: 88px;
+    padding: 14px 11px;
+    border: 0;
+    border-radius: 34px;
+    -webkit-backdrop-filter: blur(32px) saturate(1.5);
+    backdrop-filter: blur(32px) saturate(1.5);
+    box-shadow:
+      inset 0 1px 1px light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.28)),
+      inset 0 -1px 1px light-dark(rgb(255 255 255 / 0.17), rgb(0 0 0 / 0.2)),
+      inset 0 0 0 0.5px light-dark(rgb(255 255 255 / 0.34), rgb(255 255 255 / 0.2)),
+      0 14px 35px -18px rgb(14 18 25 / 0.38);
   }
 
-  .mobile-dock--home .app-icon {
-    --size: clamp(52px, 14vw, 60px);
-    border-radius: 23%;
-    box-shadow:
-      0 0 0 0.5px rgb(0 0 0 / 0.08),
-      0 3px 8px -4px rgb(0 0 0 / 0.3);
+  .mobile-dock--home .mobile-dock__link {
+    border-radius: 18px;
+    transition: transform 180ms var(--ease-out), filter 180ms;
+  }
+
+  .mobile-dock--home :is(.ios-app-icon, .app-icon) {
+    --size: clamp(52px, 14.7vw, 60px);
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 24%;
+    overflow: hidden;
+    filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.16));
+  }
+
+  .mobile-dock--home .mobile-dock__link:active {
+    transform: scale(0.91);
+    filter: brightness(0.9);
+  }
+
+  .mobile-dock--home .mobile-dock__link:focus-visible {
+    border-radius: 18px;
+    outline-offset: 4px;
   }
 
   .mobile-dock--home .mobile-dock__label {
@@ -335,7 +362,7 @@
 }
 
 @media (max-width: 899.98px) and (prefers-reduced-transparency: reduce) {
-  .mobile-dock {
+  .mobile-dock, .mobile-dock--home {
     --mobile-dock-glass: light-dark(#f0f1f3, #292b30);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -344,7 +371,7 @@
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   @media (max-width: 899.98px) {
-    .mobile-dock {
+    .mobile-dock, .mobile-dock--home {
       --mobile-dock-glass: light-dark(#f0f1f3, #292b30);
     }
   }
