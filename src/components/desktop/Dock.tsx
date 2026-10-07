@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { localePaths } from '../../lib/content/urls.ts';
 import type { Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
 import type { IconName, SectionId } from '../../lib/site/sections.ts';
@@ -100,59 +101,91 @@ export default function Dock({ locale, items, current, pathname }: Props) {
   }, [windows.length]);
 
   const parked = windows.filter((win) => win.minimized || win.closed);
+  const paths = localePaths(locale);
+  const mobileItems: DockItem[] = [
+    { id: 'home', label: locale === 'tr' ? 'Ana Sayfa' : 'Home', href: paths.home, icon: 'home' },
+    { id: 'projects', label: t.sections.projects.short, href: paths.projects, icon: 'projects' },
+    { id: 'blog', label: locale === 'tr' ? 'Yazılar' : 'Writing', href: paths.blog, icon: 'blog' },
+    { id: 'contact', label: t.sections.contact.short, href: paths.contact, icon: 'contact' },
+  ];
+  const mobileCurrent = ['blog', 'notes', 'series', 'search'].includes(current) ? 'blog' : current;
+  const mobileHome = current === 'home';
 
   return (
-    <nav className="dock glass glass-edge" aria-label={t.dock.label}>
-      <ul className="dock__list" ref={listRef}>
-        {items.map((item) => (
-          <li key={item.id} className={item.desktopOnly ? 'dock__item dock__item--desktop-only' : 'dock__item'}>
-            <a
-              className="dock__app"
-              href={item.href}
-              data-section-link=""
-              data-dock-section={item.icon}
-              data-open={item.id === current ? '' : undefined}
-              aria-current={item.href === pathname ? 'page' : undefined}
-            >
-              <AppIcon name={item.icon} />
-              <span className="dock__label">{item.label}</span>
-              <span className="dock__dot" aria-hidden="true" />
-            </a>
-          </li>
-        ))}
-        <li className="dock__divider dock__item--desktop-only" aria-hidden="true" />
-        <li className="dock__item dock__item--desktop-only">
-          <button
-            type="button"
-            className="dock__app"
-            data-dock-section="search"
-            aria-haspopup="dialog"
-            onClick={(event) => openSearch(event.currentTarget)}
-          >
-            <AppIcon name="search" />
-            <span className="dock__label">{t.sections.search.label}</span>
-            <span className="dock__dot" aria-hidden="true" />
-          </button>
-        </li>
-        {parked.map((win) => (
-          <li key={win.id} className="dock__item dock__item--window">
+    <>
+      <nav className="dock dock--desktop glass glass-edge" aria-label={t.dock.label}>
+        <ul className="dock__list" ref={listRef}>
+          {items.map((item) => (
+            <li key={item.id} className={item.desktopOnly ? 'dock__item dock__item--desktop-only' : 'dock__item'}>
+              <a
+                className="dock__app"
+                href={item.href}
+                data-section-link=""
+                data-dock-section={item.icon}
+                data-open={item.id === current ? '' : undefined}
+                aria-current={item.href === pathname ? 'page' : undefined}
+              >
+                <AppIcon name={item.icon} />
+                <span className="dock__label">{item.label}</span>
+                <span className="dock__dot" aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+          <li className="dock__divider dock__item--desktop-only" aria-hidden="true" />
+          <li className="dock__item dock__item--desktop-only">
             <button
               type="button"
               className="dock__app"
-              data-restore-window={win.id}
-              aria-label={t.dock.restore(win.title)}
-              onClick={() => sendWindowCommand({ id: win.id, action: 'restore' })}
+              data-dock-section="search"
+              aria-haspopup="dialog"
+              onClick={(event) => openSearch(event.currentTarget)}
             >
-              <span className="dock__window-thumb" aria-hidden="true">
-                <SectionIcon name={win.icon as IconName} />
-              </span>
-              <span className="dock__label" aria-hidden="true">
-                {win.title}
-              </span>
+              <AppIcon name="search" />
+              <span className="dock__label">{t.sections.search.label}</span>
+              <span className="dock__dot" aria-hidden="true" />
             </button>
           </li>
-        ))}
-      </ul>
-    </nav>
+          {parked.map((win) => (
+            <li key={win.id} className="dock__item dock__item--window">
+              <button
+                type="button"
+                className="dock__app"
+                data-restore-window={win.id}
+                aria-label={t.dock.restore(win.title)}
+                onClick={() => sendWindowCommand({ id: win.id, action: 'restore' })}
+              >
+                <span className="dock__window-thumb" aria-hidden="true">
+                  <SectionIcon name={win.icon as IconName} />
+                </span>
+                <span className="dock__label" aria-hidden="true">
+                  {win.title}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <nav
+        className={`dock dock--mobile mobile-dock ${mobileHome ? 'mobile-dock--home' : 'mobile-dock--tabs'}`}
+        aria-label={locale === 'tr' ? 'Ana gezinme' : 'Main navigation'}
+      >
+        <ul className="mobile-dock__list">
+          {mobileItems.map((item) => (
+            <li className="mobile-dock__item" key={item.id}>
+              <a
+                className="mobile-dock__link"
+                href={item.href}
+                data-section-link=""
+                data-active={item.id === mobileCurrent ? '' : undefined}
+                aria-current={item.id === mobileCurrent ? (item.href === pathname ? 'page' : 'location') : undefined}
+              >
+                {mobileHome ? <AppIcon name={item.icon} /> : <SectionIcon name={item.icon} />}
+                <span className="mobile-dock__label">{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </>
   );
 }

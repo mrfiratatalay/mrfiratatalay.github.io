@@ -16,6 +16,39 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
   const openerRef = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
 
+  // Mobile keyboards resize the visual viewport, not always the CSS viewport.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!open || !dialog) return;
+    const mobile = window.matchMedia('(max-width: 899.98px)');
+    const viewport = window.visualViewport;
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    const update = () => {
+      if (mobile.matches) {
+        dialog.style.setProperty('--search-viewport-h', `${viewport?.height ?? window.innerHeight}px`);
+        dialog.style.setProperty('--search-viewport-top', `${viewport?.offsetTop ?? 0}px`);
+        root.style.overflow = 'hidden';
+      } else {
+        dialog.style.removeProperty('--search-viewport-h');
+        dialog.style.removeProperty('--search-viewport-top');
+        root.style.overflow = previousOverflow;
+      }
+    };
+    update();
+    viewport?.addEventListener('resize', update);
+    viewport?.addEventListener('scroll', update);
+    window.addEventListener('resize', update);
+    return () => {
+      viewport?.removeEventListener('resize', update);
+      viewport?.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+      dialog.style.removeProperty('--search-viewport-h');
+      dialog.style.removeProperty('--search-viewport-top');
+      root.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   useEffect(() => {
     const onOpen = (event: Event) => {
       const dialog = dialogRef.current;

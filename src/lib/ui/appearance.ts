@@ -41,7 +41,16 @@ export function getEffectiveTheme(): 'light' | 'dark' {
 }
 
 function notify(): void {
+  syncBrowserColor();
   window.dispatchEvent(new CustomEvent(APPEARANCE_CHANGED));
+}
+
+/** Keep Safari/installed-app chrome aligned with the selected wallpaper theme. */
+function syncBrowserColor(): void {
+  const color = getEffectiveTheme() === 'dark' ? '#292a2c' : '#d3ccc1';
+  for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+    meta.content = color;
+  }
 }
 
 export function setThemePreference(preference: ThemePreference): void {
@@ -68,6 +77,7 @@ export function setReadingScale(scale: number): void {
 
 /** Tema "otomatik" iken işletim sistemi değişikliğini takip eder. */
 export function watchSystemTheme(): void {
+  syncBrowserColor();
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     if (getThemePreference() === 'system') {
       document.documentElement.dataset.theme = systemTheme();

@@ -70,10 +70,14 @@ const defaultAlternate = alternates.tr ? new URL(alternates.tr, site).toString()
 <meta name="author" content={profile.name} />
 <meta name="generator" content={Astro.generator} />
 <meta name="color-scheme" content="light dark" />
-<meta name="theme-color" content="#e4ebfb" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0b1533" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#d3ccc1" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#292a2c" media="(prefers-color-scheme: dark)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content={profile.name} />
+<link rel="manifest" href="/manifest.webmanifest" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
 <link rel="alternate" type="application/rss+xml" title={`${profile.name} · Blog`} href={new URL(paths.rss, site)} />
 <link rel="sitemap" href="/sitemap-index.xml" />
 

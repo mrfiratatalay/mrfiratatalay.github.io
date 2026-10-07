@@ -354,6 +354,8 @@ function mainWindow(): ManagedWindow | undefined {
 }
 
 function onSectionLinkClick(event: MouseEvent): void {
+  // On phones these links navigate whole pages; no desktop window to restore.
+  if (!isDesktop()) return;
   if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
     return;
   }

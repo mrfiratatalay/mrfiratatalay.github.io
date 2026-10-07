@@ -122,6 +122,9 @@ const dockItems: DockItem[] = [
           theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         root.dataset.theme = theme;
+        for (const meta of document.querySelectorAll('meta[name="theme-color"]')) {
+          meta.setAttribute('content', theme === 'dark' ? '#292a2c' : '#d3ccc1');
+        }
         try {
           if (document.referrer && new URL(document.referrer).origin === location.origin) {
             root.setAttribute('data-navigated', '');
@@ -152,7 +155,8 @@ const dockItems: DockItem[] = [
     </script>
   </head>
   <body data-section={section}>
-    <a class="skip-link" href="#icerik">{t.site.skipToContent}</a>
+    <a class:list={['skip-link', { 'skip-link--desktop': home }]} href="#icerik">{t.site.skipToContent}</a>
+    {home && <a class="skip-link skip-link--mobile" href="#mobile-icerik">{t.site.skipToContent}</a>}
     <div class="desktop">
       <MenuBar locale={locale} current={section} pathname={pathname} alternatePath={alternates[other]} />
       <div class="workspace" data-workspace>

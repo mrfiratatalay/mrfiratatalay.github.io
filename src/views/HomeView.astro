@@ -1,7 +1,7 @@
 ---
 /** Masaüstü (ana sayfa): araçlar, karşılama penceresi ve telefondaki ana ekran. */
 import { BriefcaseBusiness } from 'lucide-react';
-import HomeApps from '../components/desktop/HomeApps.astro';
+import MobileHome from '../components/mobile/MobileHome.astro';
 import WelcomeNotification from '../components/desktop/WelcomeNotification.astro';
 import Widgets from '../components/desktop/Widgets.astro';
 import Window from '../components/desktop/Window.astro';
@@ -102,6 +102,6 @@ const jsonLd = {
     </div>
   </Window>
 
-  <HomeApps locale={locale} />
+  <MobileHome locale={locale} />
   <WelcomeNotification locale={locale} />
 </DesktopLayout>

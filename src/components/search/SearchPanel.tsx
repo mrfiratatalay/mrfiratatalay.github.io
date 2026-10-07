@@ -143,7 +143,8 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
         />
         {onClose && (
           <button type="button" className="spotlight__esc" onClick={onClose} aria-label={t.close}>
-            esc
+            <span className="spotlight__esc-desktop">esc</span>
+            <span className="spotlight__esc-mobile">{locale === 'tr' ? 'Vazgeç' : 'Cancel'}</span>
           </button>
         )}
       </div>
@@ -162,7 +163,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
                   <a href={section.href} onClick={() => onNavigate?.()}>
                     <AppIcon name={section.icon} />
                     <span className="search-result__title">{section.label}</span>
-                    <span className="search-result__excerpt">{section.href}</span>
+                    <span className="search-result__excerpt search-result__route">{section.href}</span>
                   </a>
                 </li>
               ))}

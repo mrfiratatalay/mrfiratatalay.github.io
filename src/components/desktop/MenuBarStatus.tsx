@@ -14,6 +14,7 @@ import {
   type ThemePreference,
 } from '../../lib/ui/appearance.ts';
 import { openSearch } from '../../lib/window-manager/events.ts';
+import MobileAppMode from '../mobile/MobileAppMode.tsx';
 
 interface Props {
   locale: Locale;
@@ -152,6 +153,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
             </div>
             <p className="cc-note">{t.readingSizeNote}</p>
           </section>
+          <MobileAppMode locale={locale} />
         </div>
       )}
     </div>

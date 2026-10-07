@@ -1,0 +1,44 @@
+.cc-mobile-app { display: none; }
+.spotlight__esc-mobile { display: none; }
+
+@media (max-width: 899.98px) {
+  .cc-mobile-app { display: block; }
+  .spotlight__esc-mobile { display: inline; }
+  .spotlight__esc-desktop,
+  .search-result__route { display: none; }
+  .spotlight {
+    top: var(--search-viewport-top, 0px);
+    height: var(--search-viewport-h, 100dvh);
+    max-height: var(--search-viewport-h, 100dvh);
+  }
+  .spotlight .spotlight__panel {
+    max-height: calc(var(--search-viewport-h, 100dvh) - 100px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  }
+  .cc-mobile-app h3,
+  .cc-app-ready,
+  .cc-app-install summary,
+  .cc-app-fullscreen {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cc-mobile-app svg { flex: none; width: 17px; height: 17px; }
+  .cc-app-ready { margin: 8px 0 0; font-size: 13px; color: var(--label-2); }
+  .cc-app-ready svg { color: var(--green); }
+  .cc-app-install summary,
+  .cc-app-fullscreen {
+    min-height: 44px;
+    padding: 9px 12px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--fill-2);
+    color: var(--accent-text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .cc-app-install summary::-webkit-details-marker { display: none; }
+  .cc-app-install p { margin: 10px 3px 0; color: var(--label-2); font-size: 12px; line-height: 1.6; }
+  .cc-app-fullscreen { width: 100%; margin-top: 8px; }
+}
