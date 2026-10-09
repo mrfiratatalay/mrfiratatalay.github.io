@@ -1,5 +1,5 @@
 /*
- * Dock: masaüstünde büyüyen ikonlu cam raf; telefonda yüzen cam sekme çubuğu.
+ * Dock: masaüstünde büyüyen ikonlu cam raf; telefonda sabit iOS uygulama rafı.
  */
 .dock-bar {
   z-index: 150;
@@ -201,14 +201,14 @@
   }
 }
 
-/* ---------- iPhone: uygulama rafı ve içerik sekmeleri ---------- */
+/* ---------- iPhone: bütün sayfalarda aynı uygulama rafı ---------- */
 @media (max-width: 899.98px) {
   .dock-bar {
     position: fixed;
     right: 0;
     bottom: 0;
     left: 0;
-    padding: 0 max(14px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
+    padding: 0 max(14px, env(safe-area-inset-right, 0px)) calc(var(--mobile-dock-gap, 10px) + env(safe-area-inset-bottom, 0px)) max(14px, env(safe-area-inset-left, 0px));
   }
 
   .dock--desktop {
@@ -247,6 +247,7 @@
   }
 
   .mobile-dock__link {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -271,10 +272,10 @@
     outline-offset: 2px;
   }
 
-  .mobile-dock--home {
+  .mobile-dock--apps {
     --mobile-dock-glass: light-dark(rgb(248 248 250 / 0.24), rgb(210 216 227 / 0.1));
     position: relative;
-    height: 88px;
+    height: var(--mobile-dock-height, 88px);
     padding: 14px 11px;
     border: 0;
     border-radius: 34px;
@@ -287,12 +288,12 @@
       0 14px 35px -18px rgb(14 18 25 / 0.38);
   }
 
-  .mobile-dock--home .mobile-dock__link {
+  .mobile-dock--apps .mobile-dock__link {
     border-radius: 18px;
     transition: transform 180ms var(--ease-out), filter 180ms;
   }
 
-  .mobile-dock--home :is(.ios-app-icon, .app-icon) {
+  .mobile-dock--apps :is(.ios-app-icon, .app-icon) {
     --size: clamp(52px, 14.7vw, 60px);
     flex: none;
     width: var(--size);
@@ -302,17 +303,17 @@
     filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.16));
   }
 
-  .mobile-dock--home .mobile-dock__link:active {
+  .mobile-dock--apps .mobile-dock__link:active {
     transform: scale(0.91);
     filter: brightness(0.9);
   }
 
-  .mobile-dock--home .mobile-dock__link:focus-visible {
+  .mobile-dock--apps .mobile-dock__link:focus-visible {
     border-radius: 18px;
     outline-offset: 4px;
   }
 
-  .mobile-dock--home .mobile-dock__label {
+  .mobile-dock--apps .mobile-dock__label {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -321,38 +322,24 @@
     white-space: nowrap;
   }
 
-  .mobile-dock--tabs {
-    height: 66px;
-    padding: 4px;
-    border-radius: 34px;
+  .mobile-dock__link[data-active]::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 1px light-dark(rgb(255 255 255 / 0.55), rgb(0 0 0 / 0.2));
   }
 
-  .mobile-dock--tabs .mobile-dock__list {
-    gap: 2px;
+  :root[data-mobile-keyboard] .dock-bar,
+  body:has(.control-center[aria-modal='true']) .dock-bar,
+  body:has(dialog[open]) .dock-bar {
+    visibility: hidden;
+    pointer-events: none;
   }
 
-  .mobile-dock--tabs .mobile-dock__link > svg {
-    width: 23px;
-    height: 23px;
-    flex: none;
-  }
-
-  .mobile-dock--tabs .mobile-dock__label {
-    max-width: 100%;
-    overflow: hidden;
-    padding: 0 3px;
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .mobile-dock--tabs .mobile-dock__link[data-active] {
-    background: light-dark(rgb(0 122 255 / 0.09), rgb(89 167 255 / 0.15));
-    color: var(--accent);
-  }
 }
 
 @media (min-width: 600px) and (max-width: 899.98px) {
@@ -362,7 +349,7 @@
 }
 
 @media (max-width: 899.98px) and (prefers-reduced-transparency: reduce) {
-  .mobile-dock, .mobile-dock--home {
+  .mobile-dock, .mobile-dock--apps {
     --mobile-dock-glass: light-dark(#f0f1f3, #292b30);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -371,14 +358,14 @@
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   @media (max-width: 899.98px) {
-    .mobile-dock, .mobile-dock--home {
+    .mobile-dock, .mobile-dock--apps {
       --mobile-dock-glass: light-dark(#f0f1f3, #292b30);
     }
   }
 }
 
 @media (max-width: 899.98px) and (prefers-reduced-motion: reduce) {
-  .mobile-dock__link {
+  .mobile-dock--apps .mobile-dock__link {
     transition: none;
   }
 }

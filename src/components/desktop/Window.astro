@@ -4,7 +4,7 @@
  * sistem araç çubuğu ve kaydırılan içerik. İçerik Astro'nun
  * ürettiği HTML olarak kalır; davranışı pencere yöneticisi ekler.
  */
-import { BookOpen, ChevronLeft, ChevronRight, Ellipsis, Globe, House, Link2, Minus, Plus, Search, SunMoon, X } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Ellipsis, Globe, House, Link2, Minus, MonitorSmartphone, Plus, Search, SunMoon, X } from 'lucide-react';
 import { localePaths, localizePath } from '../../lib/content/urls.ts';
 import { languageHref, LANGUAGE_CODES, otherLocale, type Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
@@ -158,6 +158,10 @@ const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
             <Search aria-hidden="true" />
             <span>{t.menubar.search}</span>
           </button>
+          <button type="button" class="ios-page-menu__action js-only" data-ios-open-settings aria-haspopup="dialog">
+            <MonitorSmartphone aria-hidden="true" />
+            <span>{locale === 'tr' ? 'Uygulama görünümü' : 'App view'}</span>
+          </button>
           {
             readingTools && (
               <button type="button" class="ios-page-menu__action js-only" data-copy-link>
@@ -218,6 +222,12 @@ const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
     if (action.hasAttribute('data-ios-open-search')) {
       event.preventDefault();
       openSearch(trigger ?? action);
+    } else if (action.hasAttribute('data-ios-open-settings')) {
+      event.preventDefault();
+      if (!document.documentElement.hasAttribute('data-ios-settings-ready')) {
+        document.documentElement.setAttribute('data-ios-settings-requested', '');
+      }
+      window.dispatchEvent(new CustomEvent('mobile:open-settings', { detail: { opener: trigger ?? action } }));
     } else if (action instanceof HTMLButtonElement) {
       trigger?.focus();
     }

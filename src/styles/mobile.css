@@ -7,7 +7,9 @@
 
 @media (max-width: 899.98px) {
   :root {
-    --mobile-dock-space: calc(106px + env(safe-area-inset-bottom, 0px));
+    --mobile-dock-height: 88px;
+    --mobile-dock-gap: 10px;
+    --mobile-dock-space: calc(var(--mobile-dock-height) + var(--mobile-dock-gap) + 8px + env(safe-area-inset-bottom, 0px));
     --mobile-page-gutter: clamp(18px, 5vw, 28px);
     --mobile-page-start: max(var(--mobile-page-gutter), env(safe-area-inset-left, 0px));
     --mobile-page-end: max(var(--mobile-page-gutter), env(safe-area-inset-right, 0px));
@@ -116,21 +118,6 @@
   }
   .mobile-home { display: block; }
 
-  /* Control Center stays inside the viewport, including phones in landscape. */
-  body[data-section='home'] .control-center {
-    position: fixed;
-    top: calc(50px + env(safe-area-inset-top, 0px));
-    right: 12px;
-    left: 12px;
-    width: min(calc(100% - 24px), 380px);
-    max-height: calc(100dvh - 74px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-    margin-left: auto;
-    padding: 12px;
-    border-radius: 30px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    box-shadow: var(--mobile-glass-shadow), 0 24px 70px -24px rgb(0 0 0 / 0.3);
-  }
   .cc-module { padding: 14px; border-radius: 20px; }
   .cc-segment button { min-height: 64px; border-radius: 15px; font-size: 12px; }
   .cc-note { line-height: 1.5; }

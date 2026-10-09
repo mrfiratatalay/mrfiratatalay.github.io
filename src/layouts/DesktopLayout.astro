@@ -179,9 +179,13 @@ const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
       import { initLanguage } from '../lib/i18n/client.ts';
       import { watchSystemTheme } from '../lib/ui/appearance.ts';
       import { initReadingEnhancements } from '../lib/ui/enhancements.ts';
+      import { initFullscreenMode } from '../lib/ui/fullscreen.ts';
+      import { initMobileViewport } from '../lib/ui/mobile-viewport.ts';
       import { initDesktop } from '../lib/window-manager/controller.ts';
 
       initLanguage();
+      initFullscreenMode();
+      initMobileViewport();
       initDesktop();
       initReadingEnhancements();
       watchSystemTheme();

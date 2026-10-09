@@ -1,5 +1,6 @@
-import { ChevronLeft, Globe, Monitor, Moon, Search, SlidersHorizontal, Sun } from 'lucide-react';
+import { ChevronLeft, Globe, Maximize2, Minimize2, Monitor, Moon, Search, SlidersHorizontal, Sun } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { deviceLocale, getLanguagePreference, goToLocale, setLanguagePreference } from '../../lib/i18n/client.ts';
 import { languageHref, LANGUAGE_CODES, LANGUAGE_NAMES, LOCALE_TAGS, type Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
@@ -14,6 +15,8 @@ import {
   type ThemePreference,
 } from '../../lib/ui/appearance.ts';
 import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
+import { subscribeFullscreenState, toggleNativeFullscreen } from '../../lib/ui/fullscreen.ts';
+import { showToast } from '../../lib/ui/enhancements.ts';
 import { openSearch } from '../../lib/window-manager/events.ts';
 import MobileAppMode from '../mobile/MobileAppMode.tsx';
 
@@ -35,6 +38,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
   const [scale, setScale] = useState(1);
   const [mobile, setMobile] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const launcherRef = useRef<HTMLElement | null>(null);
   const returnFocusRef = useRef(false);
@@ -58,7 +62,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
     document.documentElement.setAttribute('data-ios-settings-ready', '');
     if (document.documentElement.hasAttribute('data-ios-settings-requested')) {
       document.documentElement.removeAttribute('data-ios-settings-requested');
-      fromLauncher(new CustomEvent('mobile:open-settings', { detail: { opener: document.querySelector('[data-ios-settings]') } }));
+      fromLauncher(new CustomEvent('mobile:open-settings', { detail: { opener: document.querySelector('[data-ios-settings], [data-ios-open-settings]') } }));
     }
     return () => {
       document.documentElement.removeAttribute('data-ios-settings-ready');
@@ -102,7 +106,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
   useEffect(() => {
     if (!open) return;
     const onPointer = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
+      if (!rootRef.current?.contains(event.target as Node) && !panelRef.current?.contains(event.target as Node)) {
         setOpen(false);
         launcherRef.current?.setAttribute('aria-expanded', 'false');
       }
@@ -113,7 +117,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
         event.preventDefault();
         close();
       } else if (event.key === 'Tab' && mobile) {
-        const targets = [...(rootRef.current?.querySelectorAll<HTMLElement>('.control-center button, .control-center input, .control-center a[href], .control-center summary') ?? [])].filter((element) => element.getClientRects().length > 0);
+        const targets = [...(panelRef.current?.querySelectorAll<HTMLElement>('button, input, a[href], summary') ?? [])].filter((element) => element.getClientRects().length > 0);
         const first = targets[0];
         const last = targets.at(-1);
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -128,7 +132,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
     document.addEventListener('pointerdown', onPointer);
     document.addEventListener('keydown', onKey);
     const initial = mobile ? '.cc-mobile-header button' : '.cc-segment button[aria-pressed="true"]';
-    rootRef.current?.querySelector<HTMLButtonElement>(initial)?.focus({ preventScroll: true });
+    panelRef.current?.querySelector<HTMLButtonElement>(initial)?.focus({ preventScroll: true });
     return () => {
       document.removeEventListener('pointerdown', onPointer);
       document.removeEventListener('keydown', onKey);
@@ -137,7 +141,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
       if (returnFocusRef.current) {
         returnFocusRef.current = false;
         const opener = launcherRef.current ?? buttonRef.current;
-        if (opener?.isConnected) opener.focus({ preventScroll: true });
+        if (opener?.isConnected && opener.getClientRects().length) opener.focus({ preventScroll: true });
       }
     };
   }, [open, mobile]);
@@ -148,24 +152,10 @@ function ControlCenter({ locale }: { locale: Locale }) {
     goToLocale(choice === 'auto' ? deviceLocale() : choice, stored || choice === 'auto');
   };
 
-  return (
-    <div className="control-center-root" ref={rootRef}>
-      <button
-        ref={buttonRef}
-        type="button"
-        className="menubar__status"
-        aria-label={t.controlCenterLabel}
-        title={t.controlCenter}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => { launcherRef.current = null; setOpen((value) => !value); }}
-      >
-        <SlidersHorizontal aria-hidden="true" />
-      </button>
-      {open && (
-        <div id={panelId} className="control-center glass glass-edge" role="dialog" aria-modal={mobile || undefined} aria-label={mobile ? (locale === 'tr' ? 'Ayarlar' : 'Settings') : t.controlCenter}>
+  const panel = open ? (
+        <div ref={panelRef} id={panelId} className="control-center glass glass-edge" role="dialog" aria-modal={mobile || undefined} aria-label={mobile ? (locale === 'tr' ? 'Ayarlar' : 'Settings') : t.controlCenter}>
           <header className="cc-mobile-header">
-            <button type="button" onClick={close} aria-label={locale === 'tr' ? 'Ana ekrana dön' : 'Back to Home Screen'}><ChevronLeft aria-hidden="true" /></button>
+            <button type="button" onClick={close} aria-label={locale === 'tr' ? 'Geri dön' : 'Go back'}><ChevronLeft aria-hidden="true" /></button>
             <h2>{locale === 'tr' ? 'Ayarlar' : 'Settings'}</h2>
             <span aria-hidden="true" />
           </header>
@@ -218,8 +208,44 @@ function ControlCenter({ locale }: { locale: Locale }) {
           </section>
           <MobileAppMode locale={locale} />
         </div>
-      )}
+      ) : null;
+
+  return (
+    <div className="control-center-root" ref={rootRef}>
+      <button
+        ref={buttonRef}
+        type="button"
+        className="menubar__status"
+        aria-label={t.controlCenterLabel}
+        title={t.controlCenter}
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => { launcherRef.current = null; setOpen((value) => !value); }}
+      >
+        <SlidersHorizontal aria-hidden="true" />
+      </button>
+      {mobile && panel ? createPortal(panel, document.body) : panel}
     </div>
+  );
+}
+
+function FullscreenButton({ locale }: { locale: Locale }) {
+  const [mode, setMode] = useState({ available: false, fullscreen: false });
+  const [pending, setPending] = useState(false);
+  useEffect(() => subscribeFullscreenState(({ available, fullscreen }) => setMode({ available, fullscreen })), []);
+  if (!mode.available) return null;
+  const label = locale === 'tr'
+    ? (mode.fullscreen ? 'Tam ekrandan çık' : 'Tam ekran aç')
+    : (mode.fullscreen ? 'Exit fullscreen' : 'Open fullscreen');
+  return (
+    <button type="button" className="menubar__status" aria-label={label} title={label} aria-pressed={mode.fullscreen} disabled={pending} onClick={async () => {
+      setPending(true);
+      try { await toggleNativeFullscreen(); }
+      catch { showToast(locale === 'tr' ? 'Tarayıcı tam ekran isteğini kabul etmedi.' : 'The browser declined the fullscreen request.'); }
+      finally { setPending(false); }
+    }}>
+      {mode.fullscreen ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+    </button>
   );
 }
 
@@ -286,6 +312,7 @@ export default function MenuBarStatus({ locale, otherLocale, alternatePath }: Pr
       >
         <Search aria-hidden="true" />
       </button>
+      <FullscreenButton locale={locale} />
       <ControlCenter locale={locale} />
       <Clock locale={locale} />
     </div>

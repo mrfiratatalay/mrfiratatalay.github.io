@@ -35,7 +35,7 @@ const RADIUS = 145;
 /**
  * Dock: bölümlere gerçek bağlantılar verir. Masaüstünde imleç yaklaştıkça
  * ikonlar büyür; küçültülen pencereler sağ tarafta minyatür olarak görünür.
- * Telefonda yüzen bir sekme çubuğuna dönüşür.
+ * Telefonda bütün sayfalarda aynı iOS uygulama rafı olarak kalır.
  */
 export default function Dock({ locale, items, current, pathname }: Props) {
   const t = useTranslations(locale);
@@ -125,15 +125,10 @@ export default function Dock({ locale, items, current, pathname }: Props) {
   const mobileItems: DockItem[] = [
     { id: 'home', label: locale === 'tr' ? 'Ana Sayfa' : 'Home', href: paths.home, icon: 'home' },
     { id: 'projects', label: t.sections.projects.short, href: paths.projects, icon: 'projects' },
-    { id: 'blog', label: locale === 'tr' ? 'Yazılar' : 'Writing', href: paths.blog, icon: 'blog' },
+    { id: 'blog', label: t.sections.blog.short, href: paths.blog, icon: 'blog' },
     { id: 'contact', label: t.sections.contact.short, href: paths.contact, icon: 'contact' },
   ];
   const mobileCurrent = ['blog', 'notes', 'series', 'search'].includes(current) ? 'blog' : current;
-  const mobileHome = current === 'home';
-  const homeDockItems: DockItem[] = [
-    { id: 'about', label: t.sections.about.short, href: paths.about, icon: 'about' },
-    ...mobileItems.slice(1),
-  ];
 
   return (
     <>
@@ -204,20 +199,21 @@ export default function Dock({ locale, items, current, pathname }: Props) {
         </ul>
       </nav>
       <nav
-        className={`dock dock--mobile mobile-dock ${mobileHome ? 'mobile-dock--home' : 'mobile-dock--tabs'}`}
+        className="dock dock--mobile mobile-dock mobile-dock--apps"
         aria-label={locale === 'tr' ? 'Ana gezinme' : 'Main navigation'}
       >
         <ul className="mobile-dock__list">
-          {(mobileHome ? homeDockItems : mobileItems).map((item) => (
+          {mobileItems.map((item) => (
             <li className="mobile-dock__item" key={item.id}>
               <a
                 className="mobile-dock__link"
                 href={item.href}
                 data-section-link=""
+                title={item.label}
                 data-active={item.id === mobileCurrent ? '' : undefined}
                 aria-current={item.id === mobileCurrent ? (item.href === pathname ? 'page' : 'location') : undefined}
               >
-                {mobileHome ? <IOSAppIcon name={item.icon} /> : <SectionIcon name={item.icon} />}
+                <IOSAppIcon name={item.icon} />
                 <span className="mobile-dock__label">{item.label}</span>
               </a>
             </li>
