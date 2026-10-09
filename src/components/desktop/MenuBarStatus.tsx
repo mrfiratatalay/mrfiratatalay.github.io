@@ -17,6 +17,7 @@ import {
 import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
 import { subscribeFullscreenState, toggleNativeFullscreen } from '../../lib/ui/fullscreen.ts';
 import { showToast } from '../../lib/ui/enhancements.ts';
+import { subscribeSettingsOpen, type SettingsRequest } from '../../lib/ui/settings-events.ts';
 import { openSearch } from '../../lib/window-manager/events.ts';
 import MobileAppMode from '../mobile/MobileAppMode.tsx';
 
@@ -49,8 +50,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
   useEffect(() => {
     const screen = window.matchMedia('(max-width: 899.98px)');
     const sync = () => setMobile(screen.matches);
-    const fromLauncher = (event: Event) => {
-      const opener = (event as CustomEvent<{ opener?: HTMLElement }>).detail?.opener;
+    const fromLauncher = ({ opener }: SettingsRequest) => {
       launcherRef.current = opener ?? null;
       opener?.setAttribute('aria-controls', panelId);
       opener?.setAttribute('aria-expanded', 'true');
@@ -58,16 +58,10 @@ function ControlCenter({ locale }: { locale: Locale }) {
     };
     sync();
     screen.addEventListener('change', sync);
-    window.addEventListener('mobile:open-settings', fromLauncher);
-    document.documentElement.setAttribute('data-ios-settings-ready', '');
-    if (document.documentElement.hasAttribute('data-ios-settings-requested')) {
-      document.documentElement.removeAttribute('data-ios-settings-requested');
-      fromLauncher(new CustomEvent('mobile:open-settings', { detail: { opener: document.querySelector('[data-ios-settings], [data-ios-open-settings]') } }));
-    }
+    const unsubscribe = subscribeSettingsOpen(fromLauncher);
     return () => {
-      document.documentElement.removeAttribute('data-ios-settings-ready');
       screen.removeEventListener('change', sync);
-      window.removeEventListener('mobile:open-settings', fromLauncher);
+      unsubscribe();
     };
   }, [panelId]);
 

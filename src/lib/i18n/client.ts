@@ -101,6 +101,13 @@ function onLanguageLinkClick(event: MouseEvent): void {
   const locale = link.dataset.langSwitch;
   if (!isLocale(locale)) return;
   event.preventDefault();
+  followLanguageLink(link);
+}
+
+/** Shared by native page menus and the desktop language switch. */
+export function followLanguageLink(link: HTMLAnchorElement): void {
+  const locale = link.dataset.langSwitch;
+  if (!isLocale(locale)) return;
   const stored = setLanguagePreference(locale);
   if (locale === pageLocale()) return;
   // A background Finder window can have its own locale link.

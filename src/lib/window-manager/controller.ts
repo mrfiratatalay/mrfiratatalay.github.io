@@ -14,6 +14,7 @@ import { localizeContentLinks, pageLocale, strings } from '../i18n/client.ts';
 import { toggleTheme } from '../ui/appearance.ts';
 import { initReadingEnhancements, showToast } from '../ui/enhancements.ts';
 import { initBlogFilters } from '../ui/blog-filters.ts';
+import { initPageMenus } from '../ui/page-menu.ts';
 import { clampRect, isRect, moveRect, resizeRect, type Rect, type Size } from './bounds.ts';
 import { openSearch, WINDOW_COMMAND, WINDOWS_CHANGED, type WindowCommand, type WindowSummary } from './events.ts';
 import { activateMetadata, loadWindow, pageMetadata, type PageMetadata } from './navigation.ts';
@@ -445,6 +446,7 @@ function register(el: HTMLElement, meta: PageMetadata = pageMetadata(document)):
     operation: 0,
   };
   windows.set(id, win);
+  initPageMenus(el);
 
   if (isDesktop()) {
     win.rect = clampRect(stored ?? measure(win), area());
@@ -461,11 +463,11 @@ function register(el: HTMLElement, meta: PageMetadata = pageMetadata(document)):
 
   for (const handle of el.querySelectorAll<HTMLElement>('[data-window-handle]')) {
     handle.addEventListener('pointerdown', (event) => {
-      if ((event.target as Element).closest('a, button, input, [data-no-drag]')) return;
+      if ((event.target as Element).closest('a, button, input, select, textarea, summary, details, [data-no-drag]')) return;
       startPointerAction(win, event, handle, (start, dx, dy) => moveRect(start, dx, dy, area()));
     });
     handle.addEventListener('dblclick', (event) => {
-      if ((event.target as Element).closest('a, button, input')) return;
+      if ((event.target as Element).closest('a, button, input, select, textarea, summary, details, [data-no-drag]')) return;
       toggleZoom(win);
     });
   }

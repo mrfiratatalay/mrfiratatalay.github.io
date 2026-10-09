@@ -188,50 +188,8 @@ const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
 </div>
 
 <script>
-  import { openSearch } from '../../lib/window-manager/events.ts';
-
-  const openMenus = () => document.querySelectorAll<HTMLDetailsElement>('.ios-page-menu[open]');
-
-  document.addEventListener('pointerdown', (event) => {
-    for (const menu of openMenus()) {
-      if (!menu.contains(event.target as Node)) menu.open = false;
-    }
-  });
-
-  document.addEventListener('focusin', (event) => {
-    for (const menu of openMenus()) {
-      if (!menu.contains(event.target as Node)) menu.open = false;
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape' || event.isComposing) return;
-    for (const menu of openMenus()) {
-      menu.open = false;
-      menu.querySelector<HTMLElement>('summary')?.focus();
-      event.preventDefault();
-    }
-  });
-
-  document.addEventListener('click', (event) => {
-    const action = (event.target as Element | null)?.closest<HTMLElement>('.ios-page-menu__action');
-    if (!action) return;
-    const menu = action.closest<HTMLDetailsElement>('.ios-page-menu');
-    const trigger = menu?.querySelector<HTMLElement>('summary');
-    if (menu) menu.open = false;
-    if (action.hasAttribute('data-ios-open-search')) {
-      event.preventDefault();
-      openSearch(trigger ?? action);
-    } else if (action.hasAttribute('data-ios-open-settings')) {
-      event.preventDefault();
-      if (!document.documentElement.hasAttribute('data-ios-settings-ready')) {
-        document.documentElement.setAttribute('data-ios-settings-requested', '');
-      }
-      window.dispatchEvent(new CustomEvent('mobile:open-settings', { detail: { opener: trigger ?? action } }));
-    } else if (action instanceof HTMLButtonElement) {
-      trigger?.focus();
-    }
-  });
+  import { initPageMenus } from '../../lib/ui/page-menu.ts';
+  initPageMenus();
 </script>
 
 <style>

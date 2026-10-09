@@ -56,6 +56,9 @@
   .ios-page-menu__trigger::-webkit-details-marker { display: none; }
   .ios-page-menu__trigger::marker { content: ''; }
   .ios-page-menu__trigger svg { width: 23px; height: 23px; }
+  .ios-page-menu__trigger svg,
+  .ios-page-menu__action > * { pointer-events: none; }
+  .ios-page-menu[open] { z-index: 60; }
   .ios-page-menu[open] .ios-page-menu__trigger { background: var(--accent-soft); }
 
   .ios-page-menu__panel {

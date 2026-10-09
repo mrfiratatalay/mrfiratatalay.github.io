@@ -87,23 +87,27 @@ function installReadingHandlers(): void {
     }, 2200);
   });
 
-  document.addEventListener('click', async (event) => {
+  document.addEventListener('click', (event) => {
     const button = (event.target as Element | null)?.closest<HTMLButtonElement>('[data-copy-link]');
     if (!button) return;
-    const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href;
-    const windowUrl = button.closest<HTMLElement>('[data-window-id]')?.dataset.windowUrl;
-    let url = canonical ?? window.location.href;
-    if (windowUrl) {
-      try {
-        url = new URL(windowUrl, window.location.href).href;
-      } catch {
-        // Keep the canonical fallback if a window's URL is invalid.
-      }
-    }
-    const ok = await copyText(url);
-    const t = strings().runtime;
-    showToast(ok ? t.linkCopied : t.linkCopyFailed(url));
+    void copyPageLink(button);
   });
+}
+
+export async function copyPageLink(button: HTMLElement): Promise<void> {
+  const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href;
+  const windowUrl = button.closest<HTMLElement>('[data-window-id]')?.dataset.windowUrl;
+  let url = canonical ?? window.location.href;
+  if (windowUrl) {
+    try {
+      url = new URL(windowUrl, window.location.href).href;
+    } catch {
+      // Keep the canonical fallback if a window's URL is invalid.
+    }
+  }
+  const ok = await copyText(url);
+  const t = strings().runtime;
+  showToast(ok ? t.linkCopied : t.linkCopyFailed(url));
 }
 
 /** Markdown hattının ürettiği arayüz etiketleri içerikten bağımsız olarak çevrilir. */

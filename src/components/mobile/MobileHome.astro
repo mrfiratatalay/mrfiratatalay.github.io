@@ -79,6 +79,7 @@ const educonnect = profile.awards.find((award) => award.icon === 'award');
   </div>
 </main>
 <script>
+  import { openSettings } from '../../lib/ui/settings-events.ts';
   const home = document.querySelector<HTMLElement>('[data-ios-home]');
   const pages = home?.querySelector<HTMLElement>('[data-ios-pages]');
   if (home && pages) {
@@ -101,8 +102,7 @@ const educonnect = profile.awards.find((award) => award.icon === 'award');
       sync();
     });
     home.querySelector<HTMLButtonElement>('[data-ios-settings]')?.addEventListener('click', (event) => {
-      if (!document.documentElement.hasAttribute('data-ios-settings-ready')) document.documentElement.setAttribute('data-ios-settings-requested', '');
-      window.dispatchEvent(new CustomEvent('mobile:open-settings', { detail: { opener: event.currentTarget } }));
+      openSettings(event.currentTarget as HTMLButtonElement);
     });
     sync();
   }

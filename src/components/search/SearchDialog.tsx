@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from
 import type { Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
 import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
-import { OPEN_SEARCH, openSearch, sendWindowCommand } from '../../lib/window-manager/events.ts';
+import { openSearch, registerSearchOpener, sendWindowCommand } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -60,16 +60,13 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
   }, [open]);
 
   useEffect(() => {
-    const onOpen = (event: Event) => {
+    return registerSearchOpener((opener) => {
       const dialog = dialogRef.current;
       if (!dialog || dialog.open) return;
-      const detail = (event as CustomEvent<{ opener: HTMLElement | null }>).detail;
-      openerRef.current = detail?.opener ?? (document.activeElement as HTMLElement | null);
+      openerRef.current = opener ?? (document.activeElement as HTMLElement | null);
       dialog.showModal();
       setOpen(true);
-    };
-    window.addEventListener(OPEN_SEARCH, onOpen);
-    return () => window.removeEventListener(OPEN_SEARCH, onOpen);
+    });
   }, []);
 
   // ⌘K / Ctrl+K Spotlight'ı açar ve kapatır; yazı alanı dışında "/" de açar.
