@@ -4,14 +4,30 @@
   box-sizing: border-box;
 }
 
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-  background-color: #3f63d6;
+:root {
+  --wallpaper-color: #d3ccc1;
+  --wallpaper-image: url('/wallpapers/mineral-light.webp');
+  --wallpaper-mobile-image: url('/wallpapers/mineral-light-mobile.webp');
 }
 
 :root[data-theme='dark'] {
-  background-color: #0b0f2e;
+  --wallpaper-color: #292a2c;
+  --wallpaper-image: url('/wallpapers/mineral-dark.webp');
+  --wallpaper-mobile-image: url('/wallpapers/mineral-dark-mobile.webp');
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --wallpaper-color: #292a2c;
+    --wallpaper-image: url('/wallpapers/mineral-dark.webp');
+    --wallpaper-mobile-image: url('/wallpapers/mineral-dark-mobile.webp');
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background-color: var(--wallpaper-color);
 }
 
 body {
@@ -36,69 +52,7 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: #3f63d6 url('/wallpapers/gunduz-kucuk.webp') center / cover no-repeat;
-}
-
-@media (min-width: 900px) {
-  body::before {
-    background-image: url('/wallpapers/gunduz.webp');
-  }
-}
-
-:root[data-theme='dark'] body::before {
-  background-color: #0b0f2e;
-  background-image: url('/wallpapers/gece-kucuk.webp');
-}
-
-@media (min-width: 900px) {
-  :root[data-theme='dark'] body::before {
-    background-image: url('/wallpapers/gece.webp');
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) body::before {
-    background-color: #0b0f2e;
-    background-image: url('/wallpapers/gece-kucuk.webp');
-  }
-}
-
-@media (prefers-color-scheme: dark) and (min-width: 900px) {
-  :root:not([data-theme='light']) body::before {
-    background-image: url('/wallpapers/gece.webp');
-  }
-}
-
-/* Masaüstünde açık/koyu temayla eşleşen aynı doğal manzara. */
-@media (min-width: 900px) {
-  html {
-    background-color: #d3ccc1;
-  }
-
-  body::before {
-    background-color: #d3ccc1;
-    background-image: url('/wallpapers/finder-day.webp');
-  }
-
-  :root[data-theme='dark'] {
-    background-color: #292a2c;
-  }
-
-  :root[data-theme='dark'] body::before {
-    background-color: #292a2c;
-    background-image: url('/wallpapers/finder-night.webp');
-  }
-}
-
-@media (prefers-color-scheme: dark) and (min-width: 900px) {
-  :root:not([data-theme='light']) {
-    background-color: #292a2c;
-  }
-
-  :root:not([data-theme='light']) body::before {
-    background-color: #292a2c;
-    background-image: url('/wallpapers/finder-night.webp');
-  }
+  background: var(--wallpaper-color) var(--wallpaper-image) center / cover no-repeat;
 }
 
 img,

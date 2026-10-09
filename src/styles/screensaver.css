@@ -1,0 +1,72 @@
+.screensaver {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  opacity: 0;
+  isolation: isolate;
+  transition: opacity 700ms ease;
+}
+
+.screensaver__journey {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  pointer-events: none;
+}
+
+.screensaver__light-halo { fill: #c2e7fa; opacity: 0.6; }
+.screensaver__light-core { fill: #fff; }
+.screensaver__pulse { fill: none; stroke: #c4edff; stroke-width: 1.2; }
+
+.screensaver__dismiss {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.screensaver__dismiss:focus-visible {
+  outline: 2px solid rgb(151 202 233 / 0.7);
+  outline-offset: -6px;
+}
+
+@media (min-width: 900px) {
+  .desktop {
+    transition: opacity 700ms ease;
+  }
+
+  :root[data-screensaver] .desktop {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :root[data-screensaver] .screensaver {
+    opacity: 1;
+  }
+
+  :root[data-screensaver] :is(.skip-link, .toast) {
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 899.98px) {
+  .screensaver { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screensaver, .desktop { transition: none; }
+  .screensaver__journey { display: none; }
+}
+
+@media print {
+  .screensaver { display: none !important; }
+  :root[data-screensaver] .desktop { opacity: 1; }
+}

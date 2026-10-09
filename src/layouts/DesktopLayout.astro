@@ -8,6 +8,7 @@ import BaseHead, { type SeoProps } from '../components/BaseHead.astro';
 import DesktopIcons from '../components/desktop/DesktopIcons.astro';
 import Dock, { type DockItem } from '../components/desktop/Dock.tsx';
 import MenuBar from '../components/desktop/MenuBar.astro';
+import ScreenSaver from '../components/desktop/ScreenSaver.astro';
 import Widgets from '../components/desktop/Widgets.astro';
 import SearchDialog from '../components/search/SearchDialog.tsx';
 import { getNoteSources, getPublishedNotes, getPublishedPosts, getPublishedProjects } from '../lib/content/collections.ts';
@@ -174,6 +175,7 @@ const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
         <Dock client:load locale={locale} items={dockItems} current={section} pathname={pathname} />
       </div>
     </div>
+    <ScreenSaver locale={locale} />
     <SearchDialog client:load locale={locale} />
     <script>
       import { initLanguage } from '../lib/i18n/client.ts';
@@ -181,6 +183,7 @@ const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
       import { initReadingEnhancements } from '../lib/ui/enhancements.ts';
       import { initFullscreenMode } from '../lib/ui/fullscreen.ts';
       import { initMobileViewport } from '../lib/ui/mobile-viewport.ts';
+      import { initScreensaver } from '../lib/ui/screensaver.ts';
       import { initDesktop } from '../lib/window-manager/controller.ts';
 
       initLanguage();
@@ -189,6 +192,7 @@ const noteCount = sources.reduce((sum, source) => sum + source.notes.length, 0);
       initDesktop();
       initReadingEnhancements();
       watchSystemTheme();
+      initScreensaver();
     </script>
   </body>
 </html>

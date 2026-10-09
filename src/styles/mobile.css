@@ -36,18 +36,14 @@
     --mobile-glass-shadow: inset 0 1px 0 var(--glass-highlight),
       inset 0 0 0 0.5px var(--glass-rim), 0 0 0 0.5px var(--glass-edge),
       0 10px 24px -16px rgb(0 0 0 / 0.34);
-    background-color: #d3ccc1;
+    background-color: var(--wallpaper-color);
     scroll-padding-top: calc(var(--mobile-toolbar-height) + 16px);
   }
 
-  :root[data-theme='dark'] { background-color: #292a2c; }
   body { min-width: 0; -webkit-tap-highlight-color: transparent; }
   body::before {
-    background: #d3ccc1 url('/wallpapers/finder-day.webp') 55% center / cover no-repeat;
-  }
-  :root[data-theme='dark'] body::before {
-    background-color: #292a2c;
-    background-image: url('/wallpapers/finder-night.webp');
+    background-image: var(--wallpaper-mobile-image);
+    background-position: 55% center;
   }
   .desktop, .workspace { min-height: 100vh; min-height: 100dvh; }
   .workspace { padding: 0; }
@@ -435,14 +431,6 @@
   .window--main .finder-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .window--main .article { max-width: 68ch; }
   .window--main .quick-actions { width: min(100%, 460px); }
-}
-
-@media (prefers-color-scheme: dark) and (max-width: 899.98px) {
-  :root:not([data-theme='light']) { background-color: #292a2c; }
-  :root:not([data-theme='light']) body::before {
-    background-color: #292a2c;
-    background-image: url('/wallpapers/finder-night.webp');
-  }
 }
 
 @media (max-width: 899.98px) and (prefers-reduced-motion: reduce) {

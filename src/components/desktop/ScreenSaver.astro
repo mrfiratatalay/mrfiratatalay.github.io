@@ -1,0 +1,33 @@
+---
+import type { Locale } from '../../lib/i18n/locales.ts';
+
+const { locale } = Astro.props as { locale: Locale };
+const label = locale === 'tr' ? 'Ekran koruyucu' : 'Screen saver';
+const dismiss = locale === 'tr' ? 'Masaüstüne dön' : 'Return to desktop';
+---
+
+<div class="screensaver" data-screensaver-overlay role="dialog" aria-modal="true" aria-label={label} hidden>
+  <!-- Same viewBox and center/cover crop as the approved wallpaper. The paths
+       follow its physical channels; only the travelling light is visible. -->
+  <svg class="screensaver__journey" viewBox="0 0 1586 992" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="screensaver-glow">
+        <stop offset="0" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="0.25" stop-color="#c6edff" stop-opacity="0.6" />
+        <stop offset="1" stop-color="#8dcfff" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    <path data-screensaver-route d="M -20 620 C 140 647 252 690 354 750 C 442 825 520 834 636 812" fill="none" stroke="none" />
+    <path data-screensaver-route d="M 636 812 C 700 802 745 809 788 840 C 752 820 759 792 807 789 C 832 785 858 784 880 781" fill="none" stroke="none" />
+    <g data-screensaver-light opacity="0">
+      <circle r="20" fill="url(#screensaver-glow)" />
+      <circle class="screensaver__light-halo" r="5.5" />
+      <circle class="screensaver__light-core" r="2.2" />
+    </g>
+    <circle data-screensaver-pulse class="screensaver__pulse" cx="636" cy="812" r="5" opacity="0" />
+    <circle data-screensaver-pulse class="screensaver__pulse" cx="880" cy="781" r="5" opacity="0" />
+  </svg>
+  <button class="screensaver__dismiss" type="button" data-screensaver-dismiss aria-label={dismiss}>
+    <span class="visually-hidden">{dismiss}</span>
+  </button>
+</div>

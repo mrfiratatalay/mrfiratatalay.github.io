@@ -1,4 +1,4 @@
-import { ChevronLeft, Globe, Maximize2, Minimize2, Monitor, Moon, Search, SlidersHorizontal, Sun } from 'lucide-react';
+import { ChevronLeft, Globe, Maximize2, Minimize2, Monitor, Moon, Play, Search, SlidersHorizontal, Sun } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { deviceLocale, getLanguagePreference, goToLocale, setLanguagePreference } from '../../lib/i18n/client.ts';
@@ -18,6 +18,7 @@ import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
 import { subscribeFullscreenState, toggleNativeFullscreen } from '../../lib/ui/fullscreen.ts';
 import { showToast } from '../../lib/ui/enhancements.ts';
 import { subscribeSettingsOpen, type SettingsRequest } from '../../lib/ui/settings-events.ts';
+import { getScreensaverEnabled, previewScreensaver, SCREENSAVER_CHANGED, setScreensaverEnabled } from '../../lib/ui/screensaver-preference.ts';
 import { openSearch } from '../../lib/window-manager/events.ts';
 import MobileAppMode from '../mobile/MobileAppMode.tsx';
 
@@ -29,6 +30,37 @@ interface Props {
 }
 
 type LanguageChoice = Locale | 'auto';
+
+function ScreenSaverControls({ locale, onPreview }: { locale: Locale; onPreview: () => void }) {
+  const [enabled, setEnabled] = useState(true);
+  const labelId = useId();
+  useEffect(() => {
+    const sync = () => setEnabled(getScreensaverEnabled());
+    sync();
+    window.addEventListener(SCREENSAVER_CHANGED, sync);
+    return () => window.removeEventListener(SCREENSAVER_CHANGED, sync);
+  }, []);
+
+  return (
+    <section className="cc-module cc-screensaver" aria-labelledby={labelId}>
+      <div className="cc-screensaver__row">
+        <h3 id={labelId}>{locale === 'tr' ? 'Ekran koruyucu' : 'Screen saver'}</h3>
+        <button
+          type="button"
+          className="cc-screensaver__switch"
+          role="switch"
+          aria-labelledby={labelId}
+          aria-checked={enabled}
+          onClick={() => setScreensaverEnabled(!enabled)}
+        ><span aria-hidden="true" /></button>
+      </div>
+      <button type="button" className="cc-screensaver__preview" onClick={onPreview}>
+        <Play aria-hidden="true" />
+        {locale === 'tr' ? 'Önizle' : 'Preview'}
+      </button>
+    </section>
+  );
+}
 
 /** Denetim Merkezi: görünüm (tema), dil ve okuma metni boyutu. */
 function ControlCenter({ locale }: { locale: Locale }) {
@@ -200,6 +232,7 @@ function ControlCenter({ locale }: { locale: Locale }) {
             </div>
             <p className="cc-note">{t.readingSizeNote}</p>
           </section>
+          {!mobile && <ScreenSaverControls locale={locale} onPreview={() => { close(); previewScreensaver(); }} />}
           <MobileAppMode locale={locale} />
         </div>
       ) : null;
