@@ -19,7 +19,7 @@ interface Props {
   variant: 'main' | 'intro';
   /** Kenar çubuğunda vurgulanacak bölüm. */
   section?: SectionId;
-  /** Ana içerik penceresinde kırmızı düğme masaüstüne giden gerçek bir bağlantıdır. */
+  /** JavaScript olmadan kırmızı düğmenin masaüstü bağlantısı. */
   closeHref?: string;
   /** Okuma modu ve bağlantı kopyalama düğmeleri. */
   readingTools?: boolean;
@@ -44,13 +44,17 @@ const mobileMenuLabel = locale === 'tr' ? 'Sayfa seçenekleri' : 'Page options';
   data-window-id={id}
   data-window-title={title}
   data-window-icon={icon}
+  data-window-section={section ?? icon}
+  data-window-url={pathname}
   data-window-main
+  role="region"
+  aria-label={title}
   tabindex="-1"
 >
   <div class="window__controls">
     {
       closeHref ? (
-        <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label={t.window.closeToDesktop}>
+        <a class="traffic traffic--close" href={closeHref} data-window-action="close" aria-label={t.window.close}>
           <X aria-hidden="true" strokeWidth={3} />
         </a>
       ) : (

@@ -2,10 +2,19 @@ import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from
 import type { Locale } from '../../lib/i18n/locales.ts';
 import { useTranslations } from '../../lib/i18n/ui.ts';
 import { lockPageScroll } from '../../lib/ui/scroll-lock.ts';
-import { OPEN_SEARCH, openSearch } from '../../lib/window-manager/events.ts';
+import { OPEN_SEARCH, openSearch, sendWindowCommand } from '../../lib/window-manager/events.ts';
 import SearchPanel from './SearchPanel.tsx';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function isVisible(element: HTMLElement): boolean {
+  return element.isConnected && !element.closest('[hidden], [inert]') && element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden';
+}
+
+function visiblePageInput(): HTMLInputElement | undefined {
+  const inputs = [...document.querySelectorAll<HTMLInputElement>('.search-page input[type="search"]')].filter(isVisible);
+  return inputs.find((input) => input.closest('[data-window-id].is-active')) ?? inputs[0];
+}
 
 /**
  * Spotlight: gerçek modal arama penceresi (WAI-ARIA modal dialog deseni).
@@ -77,8 +86,12 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
         if (commandK) dialogRef.current.close();
         return;
       }
-      const pageInput = document.querySelector<HTMLInputElement>('.search-page input[type="search"]');
+      const pageInput = visiblePageInput();
       if (pageInput) {
+        const owner = pageInput.closest<HTMLElement>('[data-window-id]');
+        if (owner?.dataset.windowId && !owner.classList.contains('is-active')) {
+          sendWindowCommand({ id: owner.dataset.windowId, action: 'restore' });
+        }
         pageInput.focus();
         pageInput.select();
         return;
@@ -93,7 +106,8 @@ export default function SearchDialog({ locale }: { locale: Locale }) {
 
   const onClose = () => {
     setOpen(false);
-    openerRef.current?.focus();
+    const opener = openerRef.current;
+    if (opener && isVisible(opener)) opener.focus({ preventScroll: true });
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDialogElement>) => {

@@ -469,7 +469,7 @@
   }
 
   .window--no-sidebar .window__toolbar,
-  :root[data-reading] .window--main .window__toolbar {
+  .window--main[data-reading] .window__toolbar {
     padding-left: 104px;
   }
 
@@ -505,21 +505,21 @@
   /* Ana içerik penceresi */
   .window--main {
     --default-w: min(1200px, calc(100% - 2 * var(--gutter) - var(--icons-column)));
-    left: var(--main-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--default-w)) / 2)));
-    top: var(--main-y, 8px);
-    width: var(--main-w, var(--default-w));
-    height: var(--main-h, calc(100% - 20px));
+    left: var(--window-x, var(--main-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--default-w)) / 2))));
+    top: var(--window-y, var(--main-y, 8px));
+    width: var(--window-w, var(--main-w, var(--default-w)));
+    height: var(--window-h, var(--main-h, calc(100% - 20px)));
     z-index: 20;
   }
 
   /* Ana sayfa karşılama penceresi */
   .window--intro {
     --default-w: min(760px, calc(100% - var(--icons-column) - var(--widgets-column) - 3 * var(--gutter)));
-    left: var(--intro-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--widgets-column) - var(--gutter) - var(--default-w)) / 2)));
-    top: var(--intro-y, clamp(14px, 6%, 60px));
-    width: var(--intro-w, var(--default-w));
-    height: var(--intro-h, auto);
-    max-height: max(var(--toolbar-h), calc(100% - var(--intro-y, clamp(14px, 6%, 60px)) - 18px));
+    left: var(--window-x, var(--intro-x, max(calc(var(--icons-column) + var(--gutter)), calc((100% + var(--icons-column) - var(--widgets-column) - var(--gutter) - var(--default-w)) / 2))));
+    top: var(--window-y, var(--intro-y, clamp(14px, 6%, 60px)));
+    width: var(--window-w, var(--intro-w, var(--default-w)));
+    height: var(--window-h, var(--intro-h, auto));
+    max-height: max(var(--toolbar-h), calc(100% - var(--window-y, var(--intro-y, clamp(14px, 6%, 60px))) - 18px));
     z-index: 20;
   }
 
@@ -548,7 +548,7 @@
     border-radius: 0;
   }
 
-  :root[data-reading] .window--main:not([data-maximized]) {
+  .window--main[data-reading]:not([data-maximized]) {
     top: 8px;
     left: 8px;
     width: calc(100% - 16px);
@@ -565,11 +565,11 @@
   }
 
   .window[data-maximized] .window__resize,
-  :root[data-reading] .window--main .window__resize {
+  .window--main[data-reading] .window__resize {
     display: none;
   }
 
-  :root[data-reading] .window--main .window__sidebar {
+  .window--main[data-reading] .window__sidebar {
     display: none;
   }
 

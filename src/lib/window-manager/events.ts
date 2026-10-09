@@ -12,6 +12,10 @@ export interface WindowSummary {
   icon: string;
   minimized: boolean;
   closed: boolean;
+  /** The foreground window; minimized and closed windows are never active. */
+  active?: boolean;
+  /** The window's document URL, independent of the initial page URL. */
+  url?: string;
 }
 
 export interface WindowCommand {

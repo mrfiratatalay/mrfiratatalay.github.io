@@ -41,6 +41,13 @@ const t = useTranslations(locale);
         ))
       }
     </ul>
+    <details class="desktop-window-menu js-only" data-window-menu>
+      <summary class="menubar__item">{locale === 'tr' ? 'Pencere' : 'Window'}</summary>
+      <div class="desktop-window-menu__panel glass glass-edge">
+        <p class="desktop-window-menu__empty" data-window-menu-empty>{locale === 'tr' ? 'Açık pencere yok' : 'No open windows'}</p>
+        <ul data-window-menu-list aria-label={locale === 'tr' ? 'Açık pencereler' : 'Open windows'}></ul>
+      </div>
+    </details>
   </nav>
   <MenuBarStatus client:load locale={locale} alternatePath={alternatePath} otherLocale={otherLocale(locale)} />
 </header>

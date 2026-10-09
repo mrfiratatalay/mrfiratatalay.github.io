@@ -3,7 +3,6 @@
 import { BriefcaseBusiness } from 'lucide-react';
 import MobileHome from '../components/mobile/MobileHome.astro';
 import WelcomeNotification from '../components/desktop/WelcomeNotification.astro';
-import Widgets from '../components/desktop/Widgets.astro';
 import Window from '../components/desktop/Window.astro';
 import AppIcon from '../components/icons/AppIcon.tsx';
 import DesktopLayout from '../layouts/DesktopLayout.astro';
@@ -50,8 +49,6 @@ const jsonLd = {
 ---
 
 <DesktopLayout locale={locale} title={profile.name} description={description} section="home" home jsonLd={jsonLd}>
-  <Widgets locale={locale} posts={posts.slice(0, 3)} notes={notes.slice(0, 3)} noteCount={noteCount} collectionCount={sources.length} projectCount={projects.length} />
-
   <Window locale={locale} id="intro" variant="intro" title={t.home.windowTitle} icon="home" section="home">
     <div class="welcome">
       <div class="welcome__hero">

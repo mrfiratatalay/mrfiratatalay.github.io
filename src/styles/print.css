@@ -1,5 +1,12 @@
 /* Yazdırırken menü çubuğu, dock ve pencere süsleri gizlenir; asıl içerik okunaklı basılır. */
 @media print {
+  html.js .window:not(.is-active),
+  .window[hidden] {
+    display: none !important;
+  }
+  body[data-section='home'] .window--intro.is-active {
+    display: block !important;
+  }
   :root {
     color-scheme: light;
   }

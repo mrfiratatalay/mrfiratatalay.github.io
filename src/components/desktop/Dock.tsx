@@ -41,10 +41,21 @@ export default function Dock({ locale, items, current, pathname }: Props) {
   const t = useTranslations(locale);
   const [windows, setWindows] = useState<WindowSummary[]>([]);
   const listRef = useRef<HTMLUListElement>(null);
+  const focusedOrder = useRef(new Map<string, number>());
+  const focusSequence = useRef(0);
+  const parked = windows.filter((win) => win.minimized && !win.closed);
 
   useEffect(() => {
-    setWindows(currentWindows());
-    const onChange = (event: Event) => setWindows((event as CustomEvent<WindowSummary[]>).detail);
+    const sync = (summary: WindowSummary[]) => {
+      for (const win of summary) {
+        if (win.active && !win.closed && !win.minimized) {
+          focusedOrder.current.set(win.id, ++focusSequence.current);
+        }
+      }
+      setWindows(summary);
+    };
+    sync(currentWindows());
+    const onChange = (event: Event) => sync((event as CustomEvent<WindowSummary[]>).detail);
     window.addEventListener(WINDOWS_CHANGED, onChange);
     return () => window.removeEventListener(WINDOWS_CHANGED, onChange);
   }, []);
@@ -99,9 +110,17 @@ export default function Dock({ locale, items, current, pathname }: Props) {
       window.removeEventListener('resize', onLeave);
       cancelAnimationFrame(frame);
     };
-  }, [windows.length]);
+  }, [windows.length, parked.length]);
 
-  const parked = windows.filter((win) => win.minimized || win.closed);
+  const openWindows = windows.filter((win) => !win.closed);
+  const activeWindow = openWindows.find((win) => win.active && !win.minimized);
+  const windowForApp = (icon: IconName): WindowSummary | undefined => {
+    const matching = openWindows.filter((win) => win.icon === icon);
+    return matching.find((win) => win.active && !win.minimized) ?? matching.reduce<WindowSummary | undefined>(
+      (preferred, win) => !preferred || (focusedOrder.current.get(win.id) ?? 0) >= (focusedOrder.current.get(preferred.id) ?? 0) ? win : preferred,
+      undefined,
+    );
+  };
   const paths = localePaths(locale);
   const mobileItems: DockItem[] = [
     { id: 'home', label: locale === 'tr' ? 'Ana Sayfa' : 'Home', href: paths.home, icon: 'home' },
@@ -127,8 +146,16 @@ export default function Dock({ locale, items, current, pathname }: Props) {
                 href={item.href}
                 data-section-link=""
                 data-dock-section={item.icon}
-                data-open={item.id === current ? '' : undefined}
-                aria-current={item.href === pathname ? 'page' : undefined}
+                data-open={openWindows.some((win) => win.icon === item.icon) ? '' : undefined}
+                aria-current={activeWindow?.icon === item.icon ? 'location' : undefined}
+                onClick={(event) => {
+                  if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  if (!window.matchMedia('(min-width: 900px)').matches) return;
+                  const existing = windowForApp(item.icon);
+                  if (!existing) return;
+                  event.preventDefault();
+                  sendWindowCommand({ id: existing.id, action: 'restore' });
+                }}
               >
                 <AppIcon name={item.icon} />
                 <span className="dock__label">{item.label}</span>
@@ -142,8 +169,14 @@ export default function Dock({ locale, items, current, pathname }: Props) {
               type="button"
               className="dock__app"
               data-dock-section="search"
+              data-open={openWindows.some((win) => win.icon === 'search') ? '' : undefined}
+              aria-current={activeWindow?.icon === 'search' ? 'location' : undefined}
               aria-haspopup="dialog"
-              onClick={(event) => openSearch(event.currentTarget)}
+              onClick={(event) => {
+                const existing = window.matchMedia('(min-width: 900px)').matches ? windowForApp('search') : undefined;
+                if (existing) sendWindowCommand({ id: existing.id, action: 'restore' });
+                else openSearch(event.currentTarget);
+              }}
             >
               <AppIcon name="search" />
               <span className="dock__label">{t.sections.search.label}</span>

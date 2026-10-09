@@ -101,21 +101,28 @@ function onLanguageLinkClick(event: MouseEvent): void {
   const locale = link.dataset.langSwitch;
   if (!isLocale(locale)) return;
   event.preventDefault();
-  goToLocale(locale, setLanguagePreference(locale));
+  const stored = setLanguagePreference(locale);
+  if (locale === pageLocale()) return;
+  // A background Finder window can have its own locale link.
+  const url = new URL(link.href, window.location.href);
+  if (stored) url.searchParams.delete(LANGUAGE_KEY);
+  else url.searchParams.set(LANGUAGE_KEY, locale);
+  window.location.assign(url);
 }
 
 /**
  * İngilizce sayfalarda yazıların içindeki site içi bağlantılar (ör. /notlar/...)
  * İngilizce karşılıklarına çevrilir; böylece okur dil değiştirmeden gezinir.
  */
-function localizeContentLinks(): void {
+export function localizeContentLinks(root: ParentNode = document): void {
   const locale = pageLocale();
   if (locale === DEFAULT_LOCALE) return;
-  for (const link of document.querySelectorAll<HTMLAnchorElement>('.prose a[href^="/"], .series-block a[href^="/"]')) {
+  for (const link of root.querySelectorAll<HTMLAnchorElement>('.prose a[href], .series-block a[href]')) {
     const href = link.getAttribute('href') ?? '';
-    if (href.startsWith('//')) continue;
-    const localized = localizePath(href, locale);
-    if (localized !== href) link.setAttribute('href', localized);
+    const url = new URL(href, root instanceof HTMLElement ? root.closest<HTMLElement>('[data-window-id]')?.dataset.windowUrl ?? window.location.href : window.location.href);
+    if (url.origin !== window.location.origin || href.startsWith('#')) continue;
+    const localized = localizePath(url.pathname, locale);
+    if (localized !== url.pathname) link.setAttribute('href', localized + url.search + url.hash);
   }
 }
 

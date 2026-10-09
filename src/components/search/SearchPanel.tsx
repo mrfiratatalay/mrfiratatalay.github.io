@@ -40,6 +40,8 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
   const statusId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const windowRef = useRef<HTMLElement | null>(null);
+  const [urlReady, setUrlReady] = useState(!syncUrl);
   const [query, setQuery] = useState('');
   const [limit, setLimit] = useState(PAGE_SIZE);
   const [status, setStatus] = useState<Status>('idle');
@@ -48,20 +50,34 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    const host = inputRef.current?.closest<HTMLElement>('[data-window-id]') ?? null;
+    windowRef.current = host;
+    const readQuery = () => {
+      const url = new URL(host?.dataset.windowUrl ?? window.location.href, window.location.href);
+      setQuery(url.searchParams.get('q') ?? '');
+      setLimit(PAGE_SIZE);
+      setUrlReady(true);
+    };
     if (syncUrl) {
-      const initial = new URLSearchParams(window.location.search).get('q');
-      if (initial) setQuery(initial);
+      readQuery();
+      host?.addEventListener('desktop:location', readQuery);
     }
-    if (autoFocus) inputRef.current?.focus();
+    const foreground = !host || !window.matchMedia('(min-width: 900px)').matches || host.classList.contains('is-active');
+    if (autoFocus && foreground) inputRef.current?.focus();
+    return () => host?.removeEventListener('desktop:location', readQuery);
   }, [autoFocus, syncUrl]);
 
   useEffect(() => {
     const term = query.trim();
-    if (syncUrl) {
-      const url = new URL(window.location.href);
+    if (syncUrl && urlReady) {
+      const host = windowRef.current;
+      const url = new URL(host?.dataset.windowUrl ?? window.location.href, window.location.href);
       if (term) url.searchParams.set('q', term);
       else url.searchParams.delete('q');
-      window.history.replaceState(null, '', url);
+      if (host) host.dataset.windowUrl = url.href;
+      if (!host || !window.matchMedia('(min-width: 900px)').matches || host.classList.contains('is-active')) {
+        window.history.replaceState(window.history.state, '', url);
+      }
     }
     if (term.length < 2) {
       setStatus('idle');
@@ -84,7 +100,7 @@ export default function SearchPanel({ locale, autoFocus = false, syncUrl = false
     return () => {
       cancelled = true;
     };
-  }, [query, limit, attempt, syncUrl]);
+  }, [query, limit, attempt, syncUrl, urlReady]);
 
   // Ok tuşlarıyla sonuçlar arasında gezinme (Enter bağlantıyı açar).
   const links = () => [...(panelRef.current?.querySelectorAll<HTMLAnchorElement>('.search-result a') ?? [])];
