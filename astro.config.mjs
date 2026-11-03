@@ -19,6 +19,11 @@ export default defineConfig({
   site: SITE,
   output: 'static',
   trailingSlash: 'always',
+  // Proje Atalay Şantiye adından Constructor ERP'ye geçti; eski bağlantılar kırılmasın.
+  redirects: {
+    '/projeler/atalay-santiye': '/projeler/constructor-erp/',
+    '/en/projects/atalay-santiye': '/en/projects/constructor-erp/',
+  },
   // HTML boşluk kuralları (Astro 7 varsayılanı olan JSX kuralları yerine).
   compressHTML: true,
   integrations: [
