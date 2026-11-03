@@ -28,7 +28,10 @@ const t = useTranslations(locale);
 const paths = localePaths(locale);
 const { Content, headings } = await render(project);
 const site = Astro.site ?? new URL('https://mrfiratatalay.github.io');
-const gallery = await Promise.all(data.gallery.map(async (item) => ({ ...item, size: await publicImageSize(item.image) })));
+// Önizlemedeki ekran görüntülerinin yazısı okunmuyor: açıklaması altında görünür, tıklanınca tam boyutu açılır.
+const gallery = await Promise.all(
+  data.gallery.map(async (item) => ({ ...item, caption: text(item.alt, locale), size: await publicImageSize(item.image) })),
+);
 const period = [data.startedAt, data.endedAt]
   .filter((date): date is Date => Boolean(date))
   .map((date) => formatDate(date, locale))
@@ -194,14 +197,19 @@ const jsonLd = {
         <ul class="gallery" aria-label={t.projects.gallery}>
           {gallery.map((item) => (
             <li>
-              <img
-                src={item.image}
-                alt={text(item.alt, locale)}
-                width={item.size?.width}
-                height={item.size?.height}
-                loading="lazy"
-                decoding="async"
-              />
+              <figure>
+                <a href={item.image} target="_blank" rel="noopener">
+                  <img
+                    src={item.image}
+                    alt={item.caption}
+                    width={item.size?.width}
+                    height={item.size?.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+                {item.caption && <figcaption>{item.caption}</figcaption>}
+              </figure>
             </li>
           ))}
         </ul>

@@ -1593,6 +1593,27 @@ a.group__row:hover {
   box-shadow: var(--shadow-card);
 }
 
+.gallery figure {
+  margin: 0;
+}
+
+.gallery a {
+  display: block;
+  border-radius: 16px;
+}
+
+.gallery a:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.gallery figcaption {
+  margin-top: 10px;
+  color: var(--label-2);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
 /* ---------- Seriler ---------- */
 .series-block + .series-block {
   margin-top: 36px;
