@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { helpLocales, type HelpLocale, type HelpPage } from '../../../lib/studywithme/help-links';
+import HelpView from '../../../views/studywithme/HelpView.astro';
+
+export const getStaticPaths = (() => {
+  const pages: HelpPage[] = ['support', 'privacy'];
+  return helpLocales.filter((locale) => locale !== 'tr').flatMap((locale) =>
+    pages.map((page) => ({ params: { helpLocale: locale, helpPage: page }, props: { locale, page } }))
+  );
+}) satisfies GetStaticPaths;
+
+interface Props {
+  locale: HelpLocale;
+  page: HelpPage;
+}
+
+const { locale, page } = Astro.props;
+---
+
+<HelpView locale={locale} page={page} />
