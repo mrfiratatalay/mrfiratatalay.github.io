@@ -1,0 +1,146 @@
+---
+import { languageHref } from '../../lib/i18n/locales';
+import RoomPreview from './RoomPreview.astro';
+import { landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import './landing.css';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const otherLanguage = lang === 'tr' ? 'en' : 'tr';
+const imagePath = '/studywithme/images/';
+const canonical = new URL(copy.path, Astro.site ?? Astro.url);
+const alternate = new URL(copy.alternate, canonical);
+const socialImage = new URL(imagePath + 'room-day.webp', canonical);
+const outfits = ['library', 'bunny', 'strawberry'];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f8f3e7" />
+    <title>{copy.title}</title>
+    <meta name="description" content={copy.description} />
+    <meta property="og:title" content={copy.title} />
+    <meta property="og:description" content={copy.description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={socialImage.href} />
+    <meta property="og:image:alt" content={copy.roomScenes[0].alt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang={lang} href={canonical.href} />
+    <link rel="alternate" hreflang={otherLanguage} href={alternate.href} />
+    <link rel="icon" href={imagePath + 'app-icon.webp'} type="image/webp" />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">{copy.skip}</a>
+    <header class="site-header">
+      <div class="site-width header-inner">
+        <a class="brand" href={copy.path}>
+          <img src={imagePath + 'app-icon.webp'} alt="" width="42" height="42" />
+          <span lang="en">Study With Me</span>
+        </a>
+        <nav aria-label={copy.nav}>
+          <a href={copy.support}>{copy.supportLabel}</a>
+          <a class="language-link" href={copy.alternate} hreflang={otherLanguage} lang={otherLanguage}>
+            {otherLanguage === 'en' ? 'English' : 'Türkçe'}
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="content">
+      <section class="site-width hero" aria-labelledby="landing-title">
+        <div class="hero-copy">
+          <p class="eyebrow">{copy.kicker}</p>
+          <h1 id="landing-title">{copy.heading[0]} <span>{copy.heading[1]}</span></h1>
+          <p class="intro">{copy.intro}</p>
+          <a class="button-link" href="#window">
+            {copy.explore}
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4c-.2 5.1.1 10.6 0 15m-5.3-5.1 5.3 5.3 5.3-5.2" /></svg>
+          </a>
+          <p class="platform-note">{copy.deviceLabel}</p>
+        </div>
+        <RoomPreview lang={lang} />
+      </section>
+
+      <section class="window-section" id="window" aria-labelledby="window-title">
+        <div class="site-width feature-split">
+          <figure class="window-print">
+            <img src={imagePath + 'window-break.webp'} alt={copy.breakAlt} width="1440" height="900" loading="lazy" decoding="async" />
+          </figure>
+          <div class="feature-copy">
+            <p class="eyebrow">{copy.breakLabel}</p>
+            <h2 id="window-title">{copy.breakTitle}</h2>
+            <p>{copy.breakBody}</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="site-width paper-spread">
+        <section class="notebook-sheet" aria-labelledby="notebook-title">
+          <p class="eyebrow">{copy.notebookLabel}</p>
+          <h2 id="notebook-title">{copy.notebookTitle}</h2>
+          <p>{copy.notebookBody}</p>
+          <figure class="notebook-crop">
+            <img src={imagePath + 'notebook-ipad.webp'} alt={copy.notebookAlt} width="900" height="1200" loading="lazy" decoding="async" />
+          </figure>
+        </section>
+        <section class="studio-sheet" aria-labelledby="studio-title">
+          <p class="eyebrow">{copy.studioLabel}</p>
+          <h2 id="studio-title">{copy.studioTitle}</h2>
+          <p>{copy.studioBody}</p>
+          <div class="outfit-strip">
+            {outfits.map((outfit, index) => (
+              <img src={imagePath + 'outfit-' + outfit + '.webp'} alt={copy.outfits[index]} loading="lazy" decoding="async" />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <section class="device-section" aria-labelledby="device-title">
+        <div class="site-width feature-split device-split">
+          <div class="feature-copy">
+            <p class="eyebrow">{copy.deviceLabel}</p>
+            <h2 id="device-title">{copy.deviceTitle}</h2>
+            <p>{copy.deviceBody}</p>
+            <p class="availability">{copy.status}</p>
+          </div>
+          <figure class="device-prints">
+            <div class="phone-print">
+              <img src={imagePath + 'focus-iphone.webp'} alt={copy.phoneAlt} width="560" height="1218" loading="lazy" decoding="async" />
+            </div>
+            <div class="menu-print">
+              <img src={imagePath + 'menu-bar.webp'} alt={copy.macAlt} loading="lazy" decoding="async" />
+            </div>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-width footer-inner">
+        <div>
+          <a class="brand" href={copy.path}>
+            <img src={imagePath + 'app-icon.webp'} alt="" width="36" height="36" loading="lazy" />
+            <span lang="en">Study With Me</span>
+          </a>
+          <p>{copy.localData}</p>
+        </div>
+        <nav aria-label={copy.nav}>
+          <a href={copy.support}>{copy.supportLabel}</a>
+          <a href={copy.privacy}>{copy.privacyLabel}</a>
+          <a href={languageHref(copy.directory, lang)}>{copy.directoryLabel} <span aria-hidden="true">↗</span></a>
+        </nav>
+        <p class="trademark">{copy.trademark}</p>
+      </div>
+    </footer>
+  </body>
+</html>

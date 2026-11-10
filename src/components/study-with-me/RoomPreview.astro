@@ -1,0 +1,63 @@
+---
+import { landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const { roomCaption, roomLabel, roomScenes } = landingCopy[lang];
+---
+
+<figure class="room-card" data-room-preview>
+  <div class="room-frame">
+    {roomScenes.map(({ image, alt }, index) => (
+      <img
+        data-room-scene
+        src={'/studywithme/images/' + image + '.webp'}
+        alt={alt}
+        width="1440"
+        height="900"
+        hidden={index !== 0}
+        loading="eager"
+        fetchpriority={index === 0 ? 'high' : 'low'}
+        decoding="async"
+      />
+    ))}
+  </div>
+  <figcaption>
+    <div class="room-controls" data-room-controls hidden role="group" aria-label={roomLabel}>
+      {roomScenes.map(({ name }, index) => (
+        <button type="button" aria-pressed={index === 0 ? 'true' : 'false'}>
+          <span class="room-swatch" aria-hidden="true"></span>
+          {name}
+        </button>
+      ))}
+    </div>
+    <p>{roomCaption}</p>
+    <span class="visually-hidden" data-room-announcement aria-live="polite"></span>
+  </figcaption>
+</figure>
+
+<script>
+  for (const preview of document.querySelectorAll('[data-room-preview]')) {
+    const controls = preview.querySelector<HTMLElement>('[data-room-controls]');
+    const announcement = preview.querySelector('[data-room-announcement]');
+    const scenes = preview.querySelectorAll<HTMLImageElement>('[data-room-scene]');
+    const buttons = controls?.querySelectorAll('button');
+
+    if (!controls || !buttons || !announcement) continue;
+
+    buttons.forEach((button, selected) => {
+      button.addEventListener('click', () => {
+        if (button.getAttribute('aria-pressed') === 'true') return;
+        buttons.forEach((option, index) => option.setAttribute('aria-pressed', String(index === selected)));
+        scenes.forEach((scene, index) => { scene.hidden = index !== selected; });
+        announcement.textContent = scenes[selected]?.alt ?? '';
+      });
+    });
+
+    controls.hidden = false;
+  }
+</script>
