@@ -22,7 +22,7 @@ const copy = locale === 'tr' ? {
   library: 'My learning notes', notes: `${noteCount} notes`, projects: `${projectCount} projects`, journey: 'Learning by building.',
   journeyDetail: 'My projects and technical work with Java, Spring Boot, .NET and Docker.', projectAction: 'Explore my projects', collections: 'Note collections', read: (minutes: number) => `${minutes} min read`,
 };
-const appIds = ['about', 'projects', 'notes', 'series', 'blog', 'contact'] as const;
+const appIds = ['about', 'projects', 'apps', 'notes', 'series', 'blog', 'contact'] as const;
 const turkcell = profile.awards.find((award) => award.icon === 'trophy');
 const educonnect = profile.awards.find((award) => award.icon === 'award');
 ---

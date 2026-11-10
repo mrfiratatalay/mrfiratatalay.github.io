@@ -1,0 +1,56 @@
+---
+import { ArrowUpRight } from 'lucide-react';
+import Window from '../components/desktop/Window.astro';
+import AppIcon from '../components/icons/AppIcon.tsx';
+import DesktopLayout from '../layouts/DesktopLayout.astro';
+import { localePaths } from '../lib/content/urls.ts';
+import type { Locale } from '../lib/i18n/locales.ts';
+import { useTranslations } from '../lib/i18n/ui.ts';
+import { portfolioApps } from '../lib/site/apps.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const paths = localePaths(locale);
+const title = t.sections.apps.label;
+---
+
+<DesktopLayout locale={locale} title={title} description={t.apps.description} section="apps">
+  <Window
+    locale={locale}
+    id="main"
+    variant="main"
+    title={title}
+    icon="apps"
+    section="apps"
+    closeHref={paths.home}
+    backHref={paths.home}
+    backLabel={t.sections.home.label}
+  >
+    <header class="page-head">
+      <p class="page-head__eyebrow"><AppIcon name="apps" /> {title}</p>
+      <h1 class="page-title">{title}</h1>
+    </header>
+    <ul class="app-directory">
+      {portfolioApps.map((app) => (
+        <li>
+          <a class="app-directory__entry" href={app.href[locale]}>
+            <img class="app-directory__icon" src={app.icon} width="72" height="72" alt="" />
+            <div class="app-directory__details">
+              <h2 lang="en">{app.name}</h2>
+              <p>{app.description[locale]}</p>
+              <p class="app-directory__platforms">{app.platforms.join(' · ')}</p>
+            </div>
+            <span class="app-directory__action">
+              <span>{t.apps.open}</span>
+              <ArrowUpRight aria-hidden="true" />
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </Window>
+</DesktopLayout>

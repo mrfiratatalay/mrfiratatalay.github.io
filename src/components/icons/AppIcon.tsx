@@ -33,6 +33,7 @@ function IconArtwork({ name, id }: { name: IconName; id: string }) {
     home: ['#f8fcff', '#dceaf7'],
     about: ['#fbfaf6', '#e6e3dc'],
     projects: ['#faf4e9', '#e8dcc9'],
+    apps: ['#eff8ee', '#d3e4d0'],
     blog: ['#fafbfc', '#dce3e9'],
     notes: ['#fffef9', '#f3efdc'],
     series: ['#eef5ef', '#d8e6dc'],
@@ -77,6 +78,18 @@ function IconArtwork({ name, id }: { name: IconName; id: string }) {
           <path d="M10 39v7c0 1.2.8 2 2 2h40c1.2 0 2-.8 2-2v-7" fill="none" stroke="#e8c392" strokeWidth=".7" strokeDasharray="1.3 1.8" opacity=".65" />
           <rect x="27" y="28" width="10" height="9" rx="1.7" fill={paint('metal')} stroke="#827c64" strokeWidth=".6" />
           <path d="M30 31h4v3h-4z" fill="#75634d" />
+        </>
+      );
+      break;
+    case 'apps':
+      artwork = (
+        <>
+          <rect x="10" y="11" width="44" height="44" rx="11" fill="#405c3d" opacity=".18" />
+          <rect x="10" y="9" width="44" height="44" rx="11" fill={paint('paper')} stroke="#a9b7a6" strokeWidth=".7" />
+          <rect x="17" y="16" width="12" height="12" rx="3.5" fill={paint('green')} />
+          <rect x="35" y="16" width="12" height="12" rx="3.5" fill={paint('blue')} />
+          <rect x="17" y="34" width="12" height="12" rx="3.5" fill={paint('yellow')} />
+          <rect x="35" y="34" width="12" height="12" rx="3.5" fill={paint('leather')} />
         </>
       );
       break;

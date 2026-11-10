@@ -15,6 +15,7 @@ const tr = {
     home: { label: 'Masaüstü', short: 'Masaüstü' },
     about: { label: 'Hakkımda', short: 'Hakkımda' },
     projects: { label: 'Projelerim', short: 'Projeler' },
+    apps: { label: 'Uygulamalarım', short: 'Uygulamalar' },
     blog: { label: 'Blog', short: 'Blog' },
     notes: { label: 'Öğrenme Notları', short: 'Notlar' },
     series: { label: 'Çalışmalarım', short: 'Çalışmalar' },
@@ -110,6 +111,10 @@ const tr = {
     call: 'Telefonla ulaş',
     noEmail: 'E-posta adresi henüz eklenmedi.',
     accounts: 'Hesaplar',
+  },
+  apps: {
+    description: 'Geliştirdiğim uygulamaları keşfet.',
+    open: 'Uygulama sayfasını aç',
   },
   projects: {
     title: 'Projelerim',
@@ -261,6 +266,7 @@ const en: Dictionary = {
     home: { label: 'Desktop', short: 'Desktop' },
     about: { label: 'About Me', short: 'About' },
     projects: { label: 'My Projects', short: 'Projects' },
+    apps: { label: 'My Apps', short: 'Apps' },
     blog: { label: 'Blog', short: 'Blog' },
     notes: { label: 'Learning Notes', short: 'Notes' },
     series: { label: 'Study Series', short: 'Series' },
@@ -356,6 +362,10 @@ const en: Dictionary = {
     call: 'Call me',
     noEmail: 'No email address has been added yet.',
     accounts: 'Accounts',
+  },
+  apps: {
+    description: 'Explore the apps I build.',
+    open: 'Open app page',
   },
   projects: {
     title: 'My Projects',

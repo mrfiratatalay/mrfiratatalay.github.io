@@ -1,0 +1,115 @@
+.app-directory {
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-directory__entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 19px;
+  border: 1px solid var(--separator);
+  border-radius: var(--radius-card);
+  background: var(--card-bg);
+  color: var(--label);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+}
+
+.app-directory__entry:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.app-directory__entry:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.app-directory__icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 22%;
+  object-fit: cover;
+}
+
+.app-directory__details h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.25;
+}
+
+.app-directory__details p {
+  margin: 5px 0 0;
+  color: var(--label-2);
+  font-size: .875rem;
+  line-height: 1.45;
+}
+
+.app-directory__details .app-directory__platforms {
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.app-directory__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--accent-text);
+  font-size: .8rem;
+  font-weight: 650;
+}
+
+.app-directory__action svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 899px) {
+  .app-directory__action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 499px) {
+  .app-directory__entry {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .app-directory__icon {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@container window-content (max-width: 460px) {
+  .app-directory__entry {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .app-directory__icon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .app-directory__action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

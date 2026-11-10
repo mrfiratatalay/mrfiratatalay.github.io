@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { locale, current } = Astro.props;
-const desktopSections = sectionsFor(locale).filter((section) => ['projects', 'blog', 'notes'].includes(section.id));
+const desktopSections = sectionsFor(locale).filter((section) => ['projects', 'apps', 'blog', 'notes'].includes(section.id));
 ---
 
 <nav class="desktop-icons" aria-label={useTranslations(locale).home.desktopFolders}>

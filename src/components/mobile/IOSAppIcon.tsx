@@ -13,6 +13,7 @@ const surfaces: Record<IOSIconName, [string, string]> = {
   home: ['#4bafff', '#0064e7'],
   about: ['#f5f5f7', '#dedfe3'],
   projects: ['#fff', '#f5f7fb'],
+  apps: ['#eff8ee', '#d1e5ce'],
   blog: ['#fff', '#f4f7fa'],
   notes: ['#fff', '#f6f6f5'],
   series: ['#ffa92e', '#f27406'],
@@ -63,6 +64,16 @@ export default function IOSAppIcon({ name, size, className }: Props) {
           <rect x="16" y="26" width="32" height="22" rx="2" fill="#fff" />
           <path d="M9 29a3 3 0 0 1 3-3h40a3 3 0 0 1 3 3v19a4 4 0 0 1-4 4H13a4 4 0 0 1-4-4Z" fill={paint('folder')} />
           <path d="M12 27h40" stroke="#a9e5ff" strokeWidth=".8" strokeLinecap="round" />
+        </>
+      );
+      break;
+    case 'apps':
+      artwork = (
+        <>
+          <rect x="12" y="12" width="17" height="17" rx="5" fill="#517d5a" />
+          <rect x="35" y="12" width="17" height="17" rx="5" fill="#3885b4" />
+          <rect x="12" y="35" width="17" height="17" rx="5" fill="#dfaa47" />
+          <rect x="35" y="35" width="17" height="17" rx="5" fill="#b77d72" />
         </>
       );
       break;
