@@ -2,7 +2,7 @@ export type LandingLanguage = 'tr' | 'en';
 
 export const landingCopy = {
   tr: {
-    title: 'Study With Me · Odaklanmak için küçük bir oda',
+    title: 'Tao: Cozy Focus Timer · Odaklanmak için küçük bir oda',
     description: 'iPhone, iPad ve Mac için elle çizilmiş bir odak odası. Pomodoro başlat, bir arkadaşla çalış ve pencere kenarında mola ver.',
     path: '/studywithme/',
     directory: '/uygulamalar/',
@@ -42,12 +42,12 @@ export const landingCopy = {
     deviceBody: 'Kendi odak ve mola sürelerini ayarla ya da süre tutmak için kronometreyi aç. iPad’de odanın ve defterin daha geniş bir alanı var. Mac’te sayacı menü çubuğundan da yönetebilirsin.',
     phoneAlt: 'iPhone’da odak oturumu ve masada yazan arkadaş',
     macAlt: 'Mac menü çubuğundaki Pomodoro, kronometre ve küçük oda önizlemesi',
-    status: 'İndirme bağlantısı, Study With Me App Store’da yayımlandığında burada yer alacak.',
+    status: 'İndirme bağlantısı, Tao: Cozy Focus Timer App Store’da yayımlandığında burada yer alacak.',
     localData: 'Görevlerin ve oturumların cihazında tutulur.',
     trademark: 'iPhone, iPad ve Mac, Apple Inc.’in ABD ve diğer ülkelerde ve bölgelerde tescilli ticari markalarıdır. App Store, Apple Inc.’in hizmet markasıdır.',
   },
   en: {
-    title: 'Study With Me · A little room to focus in',
+    title: 'Tao: Cozy Focus Timer · A little room to focus in',
     description: 'A hand-drawn focus room for iPhone, iPad, and Mac. Start a Pomodoro, work with a small companion, and take a break by the window.',
     path: '/studywithme/en/',
     directory: '/en/apps/',
@@ -87,7 +87,7 @@ export const landingCopy = {
     deviceBody: 'Set your own focus and break lengths, or use the stopwatch to count up. On iPad there’s more room for the scene and notebook. On Mac you can also run the timer from the menu bar.',
     phoneAlt: 'An iPhone focus session with the companion writing at the desk',
     macAlt: 'The Mac menu bar timer with Pomodoro, stopwatch, and a small room preview',
-    status: 'The download link will appear here when Study With Me is released on the App Store.',
+    status: 'The download link will appear here when Tao: Cozy Focus Timer is released on the App Store.',
     localData: 'Your tasks and sessions are stored on your device.',
     trademark: 'iPhone, iPad, and Mac are trademarks of Apple Inc., registered in the U.S. and other countries and regions. App Store is a service mark of Apple Inc.',
   },

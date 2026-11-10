@@ -11,7 +11,7 @@ interface PortfolioApp {
 /** Portfolyonun uygulama klasörü bu listedeki ürünleri gösterir. */
 export const portfolioApps = [
   {
-    name: 'Study With Me',
+    name: 'Tao: Cozy Focus Timer',
     icon: '/studywithme/images/app-icon.webp',
     platforms: ['iPhone', 'iPad', 'Mac'],
     href: {
