@@ -140,12 +140,28 @@
   min-height: 46svh;
   align-content: start;
   padding-top: 1rem;
-  /* Okunmayan adımlar solar ama okunur kalır. */
-  opacity: .55;
-  transition: opacity .45s ease;
 }
 
-.js .story-step.is-active .story-text { opacity: 1; }
+/*
+ * Okunan adım rozetiyle ve başlığıyla belli olur: rozeti kalemin sarısına boyanır, başlığı
+ * koyulaşır. Öbür adımlar soldurulmaz; yazıları her zaman tam okunur kalır.
+ */
+.js .story-number {
+  background: var(--cream);
+  transition: background-color .45s ease, transform .45s cubic-bezier(.2, 1.4, .4, 1);
+}
+
+.js .story-text h3 {
+  color: var(--ink-soft);
+  transition: color .45s ease;
+}
+
+.js .story-step.is-active .story-number {
+  background: var(--pencil);
+  transform: rotate(-4deg) scale(1.14);
+}
+
+.js .story-step.is-active .story-text h3 { color: var(--ink); }
 
 @media (min-width: 52rem) {
   .story-step {
@@ -182,5 +198,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .story-frame, .js .story-text { transition: none; }
+  .js .story-frame, .js .story-number, .js .story-text h3 { transition: none; }
 }

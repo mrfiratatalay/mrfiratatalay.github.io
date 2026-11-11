@@ -276,7 +276,7 @@ html[data-light='night'] .absent-notes li {
 
 .device-mac-bar span {
   margin-left: calc(.95 * var(--u));
-  color: #8a8c97;
+  color: #c9cad3;
   font: 700 calc(1.02 * var(--u))/1 -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   white-space: nowrap;
 }

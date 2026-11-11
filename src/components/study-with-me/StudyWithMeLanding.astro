@@ -89,7 +89,7 @@ const walls = {
           </a>
           <p>{copy.localData}</p>
         </div>
-        <nav class="footer-links" aria-label={copy.nav}>
+        <nav class="footer-links" aria-label={copy.navFooter}>
           <a href={copy.support}>{copy.supportLabel}</a>
           <a href={copy.privacy}>{copy.privacyLabel}</a>
           <a href={languageHref(copy.directory, lang)}>{copy.directoryLabel} <span aria-hidden="true">↗</span></a>
@@ -112,6 +112,16 @@ const walls = {
       } else {
         pieces.forEach((piece) => piece.classList.add('is-in'));
       }
+
+      // Yana kayan şeritler (telefonda süslenmiş odalar) klavyeyle de kaydırılabilsin diye
+      // odaklanabilir olur. Geniş ekranda şerit kaymaz; orada gereksiz bir durak eklenmez.
+      const strips = document.querySelectorAll<HTMLElement>('[data-strip]');
+      const markStrips = () => strips.forEach((strip) => {
+        if (strip.scrollWidth > strip.clientWidth + 1) strip.tabIndex = 0;
+        else strip.removeAttribute('tabindex');
+      });
+      markStrips();
+      window.addEventListener('resize', markStrips, { passive: true });
     </script>
   </body>
 </html>

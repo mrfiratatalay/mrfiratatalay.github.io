@@ -13,6 +13,11 @@ davranır: tepesi odadır, ışığı ziyaretçinin saatine göre gündüz, akş
 Yazıların hepsi `landing-copy.ts` dosyasındadır; uygulamada bir ad ya da cümle değişirse
 orada da değişmelidir.
 
+Destek ve gizlilik sayfaları (`src/views/studywithme/HelpView.astro`, on iki dil) aynı
+renkleri, yazıyı ve ışığı kullanır: uygulamadaki gibi defterin sayfalarıdır, meşe masanın
+üstünde açık dururlar ve üstlerinde defterin sekmeleri vardır. Yazıları
+`src/data/studywithme/` altındadır; görünüş değişirken o yazılara dokunulmaz.
+
 Uygulamayı gösteren her görüntü gerçek bir ekran görüntüsünden kesilir, elle çizilmez:
 
 | Ne | Nasıl üretilir |
@@ -28,6 +33,22 @@ bu renklerle uzatır, o yüzden görseller yenilenince bu dosya da onlarla birli
 
 Dükkandan kaldırılan pencereler ve eşyalar sayfada görünmemelidir. Hangi karenin
 kullanıldığı ve neden o karenin seçildiği betiğin içinde yazılıdır.
+
+Yazı tipi uygulamadaki Shantell Sans'tır (lisansı `public/studywithme/fonts/OFL.txt`).
+Ürün sayfası da destek ve gizlilik sayfaları da aynı iki küçük dosyayı kullanır; bunlar
+asıl dosyalardan (arşivde `MAC/00-kaynaklar/shantellsans-*.ttf`) yalnızca Latin harfleri
+ve sayfada geçen işaretler bırakılarak üretildi:
+
+```sh
+pyftsubset shantellsans-semibold.ttf --flavor=woff2 --layout-features='*' --no-hinting --desubroutinize \
+  --unicodes="U+0020-007E,U+00A0-00FF,U+0100-017F,U+2010-2015,U+2018-201E,U+2022,U+2026,U+2032-2033,U+2190-2193,U+2196-2199,U+2212,U+2713,U+25A0,U+25B6,U+23F8" \
+  --output-file=public/studywithme/fonts/shantellsans-semibold.woff2
+```
+
+(`regular` için aynısı.) Sayfaya bu aralıkların dışında bir harf eklenirse, örneğin Kiril
+bir dil, dosyalar o aralıkla yeniden üretilmelidir; yoksa o harfler sistem yazı tipiyle çıkar.
+Japonca, Korece, Çince ve Arapça başlıklar zaten sistem yazı tipiyle yazılır: Shantell Sans'ta
+o harfler yoktur.
 
 ## App Store Connect adresleri
 

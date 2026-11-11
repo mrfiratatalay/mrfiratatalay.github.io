@@ -28,7 +28,7 @@ const tail = 'M5 1C6 9 4 15 1 21 10 17 18 10 22 1';
     <p class="lead">{copy.roomsBody}</p>
   </div>
 
-  <div class="shelf-rooms">
+  <div class="shelf-rooms" data-strip role="group" aria-label={copy.roomsGroup}>
     {roomKeys.map((key, index) => (
       <figure class="shelf-room" data-reveal style={`--order: ${index % 2}`}>
         <img
