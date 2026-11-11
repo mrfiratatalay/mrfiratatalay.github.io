@@ -1,0 +1,105 @@
+---
+/**
+ * On altı hazır görünüm: bir sıra hâlinde dizilmiş arkadaşlar, seçilen öne çıkar.
+ *
+ * Seçim betiksiz çalışır: her görünüm bir radyo düğmesidir ve büyük görüntüyü, adı ve
+ * açıklamayı CSS `:has()` gösterir. Betik yalnızca, kimse dokunmadan önce görünümleri
+ * sırayla gezdirir. Adlar ve açıklamalar uygulamanın stüdyosundaki metinlerdir.
+ */
+import { landingCopy, lookKeys } from './landing-copy';
+import type { LandingLanguage, LookKey } from './landing-copy';
+import measures from './room-measures.json';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const images = '/studywithme/images/looks/';
+const first: LookKey = 'pilot';
+const { width, height } = measures.looks;
+const shown = lookKeys
+  .map((key) => `.looks:has(#look-${key}:checked) [data-look="${key}"]{opacity:1;visibility:visible;transform:none}`)
+  .join('');
+---
+
+<section class="looks" id="looks" aria-labelledby="looks-title">
+  <style is:inline set:html={shown}></style>
+
+  <div class="site-width looks-inner">
+    <div class="looks-copy" data-reveal>
+      <p class="label">{copy.looksLabel}</p>
+      <h2 id="looks-title">{copy.looksTitle}</h2>
+      <p class="lead">{copy.looksBody}</p>
+      <p class="looks-note">{copy.looksNote}</p>
+    </div>
+
+    <div class="looks-stage" data-reveal>
+      <p class="bubble looks-bubble">
+        {copy.looksBubble}
+        <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d="M5 1C6 9 4 15 1 21 10 17 18 10 22 1" /></svg>
+      </p>
+      <div class="looks-figure">
+        {lookKeys.map((key) => (
+          <img class="looks-big" data-look={key} src={`${images}${key}.webp`} alt="" width={width} height={height} loading="lazy" decoding="async" />
+        ))}
+      </div>
+      <div class="looks-names">
+        {lookKeys.map((key) => (
+          <p class="looks-name" data-look={key}>
+            <strong>{copy.looks[key][0]}</strong>
+            <span>{copy.looks[key][1]}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <fieldset class="looks-roster" data-looks>
+    <legend class="visually-hidden">{copy.looksPick}</legend>
+    <div class="looks-row">
+      {lookKeys.map((key) => (
+        <label class="looks-pick">
+          <input class="visually-hidden" type="radio" name="look" id={`look-${key}`} value={key} checked={key === first} />
+          <img src={`${images}${key}.webp`} alt="" width={width} height={height} loading="lazy" decoding="async" />
+          <span class="looks-tag">{copy.looks[key][0]}</span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+</section>
+
+<script>
+  // Kimse dokunmadan önce görünümler sırayla öne çıkar. İlk dokunuşta durur ve bir daha başlamaz.
+  for (const roster of document.querySelectorAll<HTMLElement>('[data-looks]')) {
+    const picks = [...roster.querySelectorAll<HTMLInputElement>('input[type="radio"]')];
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let timer = 0;
+    let touched = false;
+
+    const stop = () => {
+      window.clearInterval(timer);
+      timer = 0;
+    };
+    const start = () => {
+      if (touched || timer || still.matches) return;
+      timer = window.setInterval(() => {
+        const current = picks.findIndex((pick) => pick.checked);
+        const next = picks[(current + 1) % picks.length];
+        if (next) next.checked = true;
+      }, 2400);
+    };
+    const touch = () => {
+      touched = true;
+      stop();
+    };
+
+    roster.addEventListener('pointerdown', touch);
+    roster.addEventListener('keydown', touch);
+    roster.addEventListener('focusin', touch);
+    // Sahne dizinin üstünde durur; bölümün tamamı izlenir ki sahne görünürken de dönsün.
+    new IntersectionObserver(([entry]) => (entry?.isIntersecting ? start() : stop()), { threshold: 0.3 })
+      .observe(roster.closest('section') ?? roster);
+  }
+</script>

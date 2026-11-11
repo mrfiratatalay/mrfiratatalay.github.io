@@ -1,0 +1,186 @@
+/*
+ * Bir oturum: beş adım.
+ *
+ * Betiksiz hâli sade bir listedir: her adımın yazısı ve görüntüsü yan yana. `html.js`
+ * varsa görüntüler aynı ızgara hücresine üst üste konur ve o hücrede `sticky` durur;
+ * yazılar yanından (telefonda altından) kayar. Görüntülerin hepsi aynı kadraj olduğu
+ * için aralarındaki geçişte yalnızca arkadaş, sayaç ve ışık değişir.
+ */
+.story {
+  padding-block: clamp(4.5rem, 10vw, 8.5rem) clamp(3.5rem, 8vw, 7rem);
+  background: var(--wall);
+  border-top: 3px solid var(--line);
+}
+
+.story-head {
+  display: grid;
+  gap: .9rem;
+}
+
+.story-head h2 { max-width: 15ch; }
+
+.story-steps {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 4.5rem);
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.story-step {
+  display: grid;
+  gap: 1.4rem;
+  align-items: center;
+}
+
+.story-text {
+  display: grid;
+  gap: .55rem;
+  align-content: center;
+  justify-items: start;
+}
+
+.story-number {
+  display: inline-grid;
+  place-items: center;
+  width: 2.3em;
+  height: 2.3em;
+  margin-bottom: .35rem;
+  color: var(--outline);
+  background: var(--pencil);
+  border: 2px solid var(--outline);
+  border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
+  box-shadow: 0 2px 0 var(--outline);
+  font-weight: 600;
+  line-height: 1;
+  transform: rotate(-4deg);
+}
+
+.story-text h3 {
+  font-size: clamp(1.7rem, 1.1rem + 2.3vw, 2.75rem);
+  line-height: 1.08;
+}
+
+.story-text p {
+  max-width: 29rem;
+  color: var(--ink-soft);
+}
+
+.story-frame { margin: 0; }
+
+.story-panel {
+  position: relative;
+  overflow: hidden;
+  background: var(--raised);
+  border: 3px solid var(--ink);
+  border-radius: 1.5rem 1.9rem 1.6rem 2rem / 1.9rem 1.5rem 2rem 1.6rem;
+  box-shadow: .5rem .6rem 0 var(--line);
+}
+
+.story-panel img { width: 100%; }
+
+.story-bubble {
+  position: absolute;
+  max-width: 44%;
+  font-size: clamp(.7rem, 2.7vw, .95rem);
+}
+
+/*
+ * Başlat düğmesini gösteren ok: uygulamanın ilk açılış rehberindeki okun aynısı.
+ * Çizimin birimi düğmenin yarıçapıdır (100 birim) ve merkezi düğmenin merkezidir.
+ * Düğme karede genişliğin %55,5'inde, yüksekliğin %95,2'sindedir; yarıçapı genişliğin
+ * %4,05'idir (yükseklikle ölçülünce %3,9).
+ */
+.story-arrow {
+  position: absolute;
+  left: calc(55.5% - 2.6 * 4.05%);
+  top: calc(95.2% - 2.4 * 3.9%);
+  width: calc(4.6 * 4.05%);
+  fill: none;
+  stroke: #26221e;
+  stroke-width: 15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.story-spark {
+  stroke: #5c564f;
+  stroke-width: 11;
+}
+
+.js .story-step { display: contents; }
+
+.js .story-steps {
+  row-gap: 0;
+  margin-top: 1.5rem;
+}
+
+.js .story-frame {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  grid-column: 1;
+  grid-row: 1;
+  padding: .7rem 0 1rem;
+  background: var(--wall);
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.js .story-step:first-child .story-frame,
+.js .story-step.is-on .story-frame {
+  opacity: 1;
+}
+
+.js .story-panel {
+  width: min(100%, 44svh * 1480 / 1536);
+  margin-inline: auto;
+}
+
+.js .story-text {
+  grid-column: 1;
+  min-height: 46svh;
+  align-content: start;
+  padding-top: 1rem;
+  /* Okunmayan adımlar solar ama okunur kalır. */
+  opacity: .55;
+  transition: opacity .45s ease;
+}
+
+.js .story-step.is-active .story-text { opacity: 1; }
+
+@media (min-width: 52rem) {
+  .story-step {
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+
+  .js .story-steps {
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1fr);
+    column-gap: clamp(2rem, 6vw, 5.5rem);
+    margin-top: 0;
+  }
+
+  .js .story-text {
+    min-height: min(72vh, 36rem);
+    align-content: center;
+    padding-top: 0;
+  }
+
+  .js .story-frame {
+    top: max(1.5rem, 50vh - 20rem);
+    z-index: auto;
+    grid-column: 2;
+    grid-row: 1 / span 5;
+    align-self: start;
+    justify-self: center;
+    width: min(100%, 37rem, 72vh);
+    padding: 0;
+    background: none;
+  }
+
+  .js .story-panel { width: 100%; }
+  .story-bubble { font-size: clamp(.78rem, 1.15vw, 1rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .story-frame, .js .story-text { transition: none; }
+}

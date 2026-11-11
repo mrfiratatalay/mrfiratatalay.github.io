@@ -1,0 +1,119 @@
+---
+/**
+ * Bir oturum, beş adımda.
+ *
+ * Beş görüntü aynı kadrajla kesilmiştir. Betik çalışınca hepsi aynı yere üst üste
+ * dizilir ve sayfa kayarken o yerde sabit kalır; hangi adım okunuyorsa onun görüntüsü
+ * belirir. Oda yerinden oynamaz, yalnızca arkadaş, sayaç ve ışık değişir. Betik
+ * çalışmazsa her adım kendi görüntüsüyle alt alta durur.
+ */
+import { landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import measures from './room-measures.json';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const images = '/studywithme/images/story/';
+/** Balonların kare içindeki yeri (yüzde): arkadaşın başının sağ üstü. */
+// Oktaki ölçüler `story.css` içindedir: başlat düğmesinin karedeki yeri ve yarıçapı.
+const bubblePlace = ['left: 54%; top: 30%', '', 'left: 47%; top: 25%', '', ''];
+---
+
+<section class="story" id="story" aria-labelledby="story-title">
+  <div class="site-width story-head" data-reveal>
+    <p class="label">{copy.storyLabel}</p>
+    <h2 id="story-title">{copy.storyTitle}</h2>
+    <p class="lead">{copy.storyLead}</p>
+  </div>
+
+  <div class="site-width story-steps" data-story>
+    {copy.story.map((step, index) => (
+      <div class="story-step" data-step>
+        <div class="story-text">
+          <span class="story-number" aria-hidden="true">{index + 1}</span>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+        </div>
+        <figure class="story-frame">
+          <div class="story-panel">
+            <img
+              src={`${images}${index + 1}-740.webp`}
+              srcset={`${images}${index + 1}-740.webp 740w, ${images}${index + 1}.webp 1184w`}
+              sizes="(min-width: 52rem) 36rem, 92vw"
+              width={measures.story.width}
+              height={measures.story.height}
+              alt={step.alt}
+              loading="lazy"
+              decoding="async"
+            />
+            {step.bubble && (
+              <p class="bubble story-bubble" style={bubblePlace[index]}>
+                {step.bubble}
+                <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d="M5 1C6 9 4 15 1 21 10 17 18 10 22 1" /></svg>
+              </p>
+            )}
+            {index === 0 && (
+              <svg class="story-arrow" viewBox="-260 -240 460 300" aria-hidden="true">
+                <path d="M-221-197Q-155-118-76-97M-103-137-76-97-124-92" />
+                <path class="story-spark" d="M42-113 58-148M102-68 145-97M123 2h40" />
+              </svg>
+            )}
+          </div>
+        </figure>
+      </div>
+    ))}
+  </div>
+</section>
+
+<script>
+  // Okunan adımı bulur: yazısı ekranın "okuma çizgisine" en yakın olan adım.
+  // Geniş ekranda çizgi ekranın ortasıdır; telefonda, sabit duran görüntünün altındaki boşluğun ortası.
+  for (const story of document.querySelectorAll<HTMLElement>('[data-story]')) {
+    const steps = [...story.querySelectorAll<HTMLElement>('[data-step]')];
+    const texts = steps.map((step) => step.querySelector<HTMLElement>('.story-text'));
+    const wide = window.matchMedia('(min-width: 52rem)');
+    let active = -1;
+    let queued = false;
+
+    const update = () => {
+      queued = false;
+      const line = window.innerHeight * (wide.matches ? 0.5 : 0.76);
+      let nearest = 0;
+      let distance = Infinity;
+      texts.forEach((text, index) => {
+        if (!text) return;
+        const box = text.getBoundingClientRect();
+        const gap = Math.abs((box.top + box.bottom) / 2 - line);
+        if (gap < distance) { distance = gap; nearest = index; }
+      });
+      if (nearest === active) return;
+      active = nearest;
+      steps.forEach((step, index) => {
+        step.classList.toggle('is-active', index === active);
+        // Sonraki görüntüler üstte durur; geçilen adımlarınki altta açık kalır ki arada duvar görünmesin.
+        step.classList.toggle('is-on', index <= active);
+      });
+    };
+
+    const request = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(update);
+    };
+
+    new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) {
+        window.addEventListener('scroll', request, { passive: true });
+        request();
+      } else {
+        window.removeEventListener('scroll', request);
+      }
+    }, { rootMargin: '20% 0px' }).observe(story);
+    window.addEventListener('resize', request, { passive: true });
+    update();
+  }
+</script>

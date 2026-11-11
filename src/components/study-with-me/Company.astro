@@ -1,0 +1,77 @@
+---
+/**
+ * Odada olmayanlar ve cihazlar.
+ *
+ * Üç cihaz üç ayrı oda gösterir: uygulamada hesap ve eşitleme olmadığı için "her cihazda
+ * aynı oda" izlenimi verilmez. Mac penceresinin başlık çubuğu burada çizilir, çünkü
+ * ekran görüntüsündeki çubuk uygulamanın eski adını taşır; rengi ve boyu görüntüden ölçülür.
+ */
+import { appLanguages, landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import measures from './room-measures.json';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const images = '/studywithme/images/';
+const { mac, macBar, macBarHeight, phone, pad } = measures.devices;
+/** Yapışkan notların eğimi: her biri biraz başka yana yatar. */
+const tilts = [-3, 2, -1.5, 3.5];
+---
+
+<section class="absent" aria-labelledby="absent-title">
+  <div class="site-width absent-inner">
+    <h2 id="absent-title" data-reveal>{copy.absentTitle}</h2>
+    <ul class="absent-notes">
+      {copy.absent.map((note, index) => (
+        <li data-reveal style={`--tilt: ${tilts[index % tilts.length]}deg; --order: ${index}`}><span>{note}</span></li>
+      ))}
+    </ul>
+    <p class="lead absent-body" data-reveal>
+      {copy.absentBody}{' '}
+      <a href={copy.privacy}>{copy.privacyLabel}</a>
+    </p>
+  </div>
+</section>
+
+<section class="devices" id="devices" aria-labelledby="devices-title">
+  <div class="site-width devices-inner">
+    <div class="devices-copy" data-reveal>
+      <p class="label label-names" lang="en">{copy.platforms}</p>
+      <h2 id="devices-title">{copy.devicesTitle}</h2>
+      <p class="lead">{copy.devicesBody}</p>
+      <ul class="devices-more">
+        <li>{copy.devicesMore[0]}</li>
+        <li>
+          {copy.devicesMore[1]}
+          <span class="devices-languages">
+            {appLanguages.map(([code, name]) => <span lang={code}>{name}</span>)}
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="devices-show" data-reveal>
+      <figure class="device-mac" style={`--bar: ${macBar}; --bar-h: ${macBarHeight}; --mac-w: ${mac.width}`}>
+        <div class="device-mac-bar" aria-hidden="true">
+          <i></i><i></i><i></i>
+          <span lang="en">Tao: Cozy Focus Timer</span>
+        </div>
+        <img src={`${images}devices/mac.webp`} alt={copy.macAlt} width={mac.width} height={mac.height} loading="lazy" decoding="async" />
+      </figure>
+      <figure class="device-menu">
+        <img src={`${images}menu-bar.webp`} alt={copy.menuAlt} width="656" height="654" loading="lazy" decoding="async" />
+      </figure>
+      <figure class="device-pad">
+        <img src={`${images}devices/pad.webp`} alt={copy.padAlt} width={pad.width} height={pad.height} loading="lazy" decoding="async" />
+      </figure>
+      <figure class="device-phone">
+        <i aria-hidden="true"></i>
+        <img src={`${images}devices/phone.webp`} alt={copy.phoneAlt} width={phone.width} height={phone.height} loading="lazy" decoding="async" />
+      </figure>
+    </div>
+  </div>
+</section>

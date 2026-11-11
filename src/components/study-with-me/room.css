@@ -1,0 +1,444 @@
+/*
+ * Sayfanın tepesindeki oda.
+ *
+ * Üç yerleşim var ve üçünde de oda bir ekran görüntüsüdür:
+ * - telefon: iPhone karesi tam genişlikte, başlık duvarda, açıklama zeminde;
+ * - orta genişlik: Mac karesi tam genişlikte, başlık karenin üstünde uzatılmış duvarda;
+ * - geniş ekran: Mac karesi sağda ve odanın boyunda, başlık solda uzatılmış duvarda.
+ *
+ * `.band` parçaları görüntünün kenar renklerini taşır (`room-measures.json`): duvarı
+ * yukarı ve sola, zemini aşağı uzatırlar. Görüntünün o kenarı da hafifçe eritilir ki
+ * iki üç tonluk fark dikiş gibi görünmesin. Karelerin boyu, köşe çizgisinin ve zemin
+ * çizgisinin yeri aynı dosyadan `--wide-*` ve `--tall-*` olarak gelir (`RoomHero.astro`).
+ */
+.room {
+  --sun: clamp(5rem, 24cqw, 6.25rem);
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  overflow: clip;
+  container-type: inline-size;
+  color: var(--ink);
+  background: var(--wall);
+}
+
+.room-nav {
+  position: relative;
+  z-index: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  min-height: 4.25rem;
+  padding: .6rem calc(var(--sun) + .15rem) .6rem var(--gutter);
+}
+
+.room-nav .brand span {
+  max-width: 7.2em;
+  text-wrap: balance;
+}
+
+.room-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(.7rem, 2cqw, 1.6rem);
+  font-size: .92rem;
+  white-space: nowrap;
+}
+
+.room-links a { padding-block: .5rem; }
+.support-link { display: none; }
+
+.room-copy { display: contents; }
+
+.room-kicker, .room h1 {
+  position: relative;
+  z-index: 1;
+  max-width: calc(var(--tall-corner) * 100cqw - .5rem);
+  padding-inline-start: var(--gutter);
+}
+
+.room-kicker {
+  grid-row: 2;
+  margin-top: .8rem;
+  font-size: .68rem;
+}
+
+.room h1 {
+  grid-row: 3;
+  margin-top: .5rem;
+  font-size: clamp(2rem, 10.6cqw, 3.5rem);
+  line-height: .98;
+  letter-spacing: -.03em;
+  text-wrap: initial;
+}
+
+.room h1 .line {
+  display: block;
+  white-space: nowrap;
+}
+
+/* Son satırın altındaki çizgi, odadaki sayacın altındaki mürekkep çizgisinin aynısı. */
+.underlined {
+  position: relative;
+  display: inline-block;
+}
+
+.underlined svg {
+  position: absolute;
+  left: -2%;
+  bottom: -.12em;
+  width: 104%;
+  height: .16em;
+  overflow: visible;
+  fill: currentColor;
+}
+
+.room-frame {
+  position: relative;
+  z-index: 0;
+  grid-row: 4;
+  width: 100%;
+  aspect-ratio: var(--tall-w) / var(--tall-h);
+  margin-top: .4rem;
+}
+
+/* Gündüz hep en altta durur; akşam ve gece onun üstünde belirir. */
+.room-light {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--fade) ease;
+}
+
+.room-light[data-light='day'],
+html[data-light='evening'] .room-light[data-light='evening'],
+html[data-light='night'] .room-light[data-light='evening'],
+html[data-light='night'] .room-light[data-light='night'] {
+  opacity: 1;
+}
+
+.room-light img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 3%, #000 98%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 3%, #000 98%, transparent);
+}
+
+.band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.band-top {
+  bottom: 97%;
+  height: 160vh;
+  background: linear-gradient(to right, var(--top-tall));
+}
+
+.band-floor {
+  top: 98%;
+  height: 160vh;
+  background: var(--floor-tall);
+}
+
+.band-left { display: none; }
+
+.room-hello {
+  position: absolute;
+  left: 46%;
+  top: 20.5%;
+  max-width: 45%;
+  font-size: clamp(.72rem, 3.2cqw, .95rem);
+  animation: room-hello .55s 1s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+
+@keyframes room-hello {
+  from { opacity: 0; transform: translateY(.5em) scale(.85); }
+}
+
+.room-intro, .room-ground {
+  position: relative;
+  z-index: 1;
+  padding-inline: var(--gutter);
+}
+
+.room-intro {
+  grid-row: 5;
+  max-width: 36rem;
+  padding-top: 1.2rem;
+  font-size: 1.06em;
+}
+
+.room-ground {
+  grid-row: 6;
+  display: grid;
+  gap: 1.1rem;
+  padding-block: 1.3rem 2.4rem;
+}
+
+.room-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .7rem 1.1rem;
+}
+
+.room-platforms { font-size: .9em; }
+
+.room-clock {
+  max-width: 31rem;
+  font-size: .92em;
+  line-height: 1.45;
+}
+
+.room-clock-hint {
+  display: block;
+  opacity: .9;
+}
+
+.room-clock-reset {
+  margin-top: .3rem;
+  padding: .25rem 0;
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  cursor: pointer;
+}
+
+/* Köşedeki güneş: ikondaki pastel güneş. Akşam köşeye çekilir, gece yerini aya bırakır. */
+.room-sun {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  width: var(--sun);
+  height: var(--sun);
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transform-origin: 100% 0;
+  transition: transform .25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.room-sun:hover { transform: scale(1.06); }
+.room-sun:active { transform: scale(.97); }
+
+/* İlk dokunuşa kadar güneş arada bir kıpırdar: dokunulabildiği belli olsun. */
+.room-sun:not(.is-touched) { animation: sun-nudge 7s 3s ease-in-out infinite; }
+
+@keyframes sun-nudge {
+  0%, 86%, 100% { rotate: 0deg; }
+  89% { rotate: -7deg; }
+  92% { rotate: 5deg; }
+  95% { rotate: -3deg; }
+}
+
+.room-sun-art {
+  position: absolute;
+  inset: 0;
+  transition: transform .9s cubic-bezier(.3, .7, .2, 1), opacity .9s ease, filter .9s ease;
+}
+
+.room-sun-art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform: scaleX(-1);
+}
+
+.room-sun-night {
+  opacity: 0;
+  transform: translate(45%, -45%);
+}
+
+html[data-light='evening'] .room-sun-day {
+  transform: translate(17%, -17%);
+  filter: saturate(1.3) hue-rotate(-18deg);
+}
+
+html[data-light='night'] .room-sun-day {
+  opacity: 0;
+  transform: translate(55%, -55%);
+}
+
+html[data-light='night'] .room-sun-night {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 43.75rem) {
+  .room { --sun: clamp(6.25rem, 12cqw, 8rem); }
+  .room-nav .brand span { max-width: none; }
+  .support-link { display: inline; }
+
+  .room-copy {
+    position: relative;
+    z-index: 1;
+    grid-row: 2;
+    display: block;
+    max-width: calc(var(--wide-corner) * 100cqw - 1rem);
+    padding: clamp(1rem, 3cqw, 2.6rem) 0 clamp(1rem, 2.4cqw, 1.8rem) var(--gutter);
+  }
+
+  .room-kicker, .room h1 {
+    max-width: none;
+    padding: 0;
+  }
+
+  .room-kicker {
+    margin: 0;
+    font-size: .8rem;
+  }
+
+  .room h1 {
+    margin-top: .6rem;
+    font-size: clamp(3rem, 8.8cqw, 5.75rem);
+  }
+
+  .room h1 .line { display: inline; }
+  .room h1 .line:first-child { display: block; }
+
+  .room-intro {
+    max-width: 31rem;
+    margin-top: 1.1rem;
+    padding: 0;
+  }
+
+  .room-frame {
+    grid-row: 3;
+    aspect-ratio: var(--wide-w) / var(--wide-h);
+    margin: 0;
+  }
+
+  .room-light img {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 3%, #000 98.5%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 3%, #000 98.5%, transparent);
+  }
+
+  .band-top { background: linear-gradient(to right, var(--top-wide)); }
+  .band-floor { top: 98.5%; background: var(--floor-wide); }
+
+  .room-hello {
+    left: 59.5%;
+    top: 20.5%;
+    max-width: 16.5%;
+    font-size: clamp(.74rem, 1.5cqw, 1rem);
+  }
+
+  .room-ground {
+    grid-row: 4;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem clamp(1.5rem, 5cqw, 4rem);
+    padding-block: 1.2rem 2.4rem;
+  }
+}
+
+@media (min-width: 75rem) and (min-aspect-ratio: 3/2) {
+  .room {
+    --room-h: clamp(40rem, 100svh, 60rem);
+    --fh: calc(var(--room-h) * .9);
+    --fw: calc(var(--fh) * var(--wide-w) / var(--wide-h));
+    /* Arkadaş genişliğin %65'inde durur; çok geniş ekranda oda sağ kenara yaslanır. */
+    --fx: max(calc(65cqw - var(--fw) / 2), calc(100cqw - var(--fw)));
+    /* Zemin çizgisinin odanın altından yüksekliği. */
+    --horizon: calc(var(--fh) * (1 - var(--wide-horizon)));
+    /* Başlığın alanı: pencerenin sol kenarına kadar. */
+    --copy-w: calc(var(--fx) + var(--fw) * .218 - var(--copy-x) - 1.75rem);
+    --copy-x: max(var(--gutter), calc(var(--fx) + var(--fw) * .218 - 36rem));
+    --sun: clamp(7rem, 9cqw, 9rem);
+    display: block;
+    height: var(--room-h);
+  }
+
+  .room-nav {
+    position: absolute;
+    inset: 0 0 auto;
+  }
+
+  .room-copy {
+    position: absolute;
+    left: var(--copy-x);
+    bottom: calc(var(--horizon) + 2.2rem);
+    width: var(--copy-w);
+    max-width: none;
+    padding: 0;
+  }
+
+  /*
+   * Başlık hem genişliğe hem yüksekliğe sığar. Yükseklik payı: zemin çizgisinin üstünde
+   * kalan duvardan üst çubuk, etiket, açıklama ve boşluklar (17,4rem) düşülür; kalan,
+   * üç satırlık başlığa bölünür.
+   */
+  .room h1 {
+    font-size: clamp(2.5rem, min(calc(var(--copy-w) / 4.75), calc((var(--room-h) - var(--horizon) - 17.4rem) / 2.94)), 6rem);
+  }
+  .room h1 .line, .room h1 .line:first-child { display: block; }
+  .room-intro { max-width: min(100%, 27rem); }
+
+  .room-frame {
+    position: absolute;
+    left: var(--fx);
+    bottom: 0;
+    width: var(--fw);
+    height: var(--fh);
+    aspect-ratio: auto;
+  }
+
+  .room-light img {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 3%), linear-gradient(to bottom, transparent, #000 3%);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, #000 3%), linear-gradient(to bottom, transparent, #000 3%);
+    mask-composite: intersect;
+  }
+
+  .band-top {
+    left: -100cqw;
+    height: 40vh;
+    background: linear-gradient(to right, var(--top-wide)) no-repeat 100cqw 0 / var(--fw) 100%, var(--wall-wide);
+  }
+
+  .band-left {
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 97%;
+    width: 100cqw;
+    background: linear-gradient(to bottom, var(--left-wide));
+  }
+
+  .band-floor { display: none; }
+
+  .room-hello {
+    font-size: clamp(.8rem, calc(var(--fw) * .0105), 1.05rem);
+  }
+
+  .room-ground {
+    position: absolute;
+    left: var(--copy-x);
+    top: calc(var(--room-h) - var(--horizon) + 2.4rem);
+    width: var(--copy-w);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.1rem;
+    padding: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-hello { animation: none; }
+  .room-sun, .room-sun-art { transition: none; }
+  .room-sun:not(.is-touched) { animation: none; }
+}

@@ -1,0 +1,49 @@
+---
+/**
+ * Defter: masanın üstünde duran iki sayfa.
+ *
+ * Bölümün zemini odadaki meşe masanın rengidir. Sayfalar iPhone'daki defterin gerçek
+ * görüntüleridir; kâğıdın rengi görüntüden ölçülür ki sayfanın kenarı görüntüyle birleşsin.
+ * Kalem, uygulama ikonundaki kalemdir.
+ */
+import { landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import measures from './room-measures.json';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const images = '/studywithme/images/';
+const { tasks, record, paper } = measures.notebook;
+---
+
+<section class="desk" id="notebook" aria-labelledby="notebook-title" style={`--paper: ${paper}`}>
+  <div class="site-width desk-inner">
+    <div class="desk-copy" data-reveal>
+      <p class="label">{copy.notebookLabel}</p>
+      <h2 id="notebook-title">{copy.notebookTitle}</h2>
+      <p class="lead">{copy.notebookBody}</p>
+      <p class="desk-quote">{copy.notebookQuote}</p>
+      <div class="desk-guide">
+        <img src={`${images}looks/school.webp`} alt="" width={measures.looks.width} height={measures.looks.height} loading="lazy" decoding="async" />
+        <p class="bubble">
+          {copy.notebookBubble}
+          <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d="M5 1C6 9 4 15 1 21 10 17 18 10 22 1" /></svg>
+        </p>
+      </div>
+    </div>
+
+    <div class="desk-pages">
+      <figure class="desk-page desk-page-tasks" data-reveal>
+        <img src={`${images}notebook/tasks.webp`} alt={copy.tasksAlt} width={tasks.width} height={tasks.height} loading="lazy" decoding="async" />
+      </figure>
+      <figure class="desk-page desk-page-record" data-reveal style="--order: 1">
+        <img src={`${images}notebook/record.webp`} alt={copy.recordAlt} width={record.width} height={record.height} loading="lazy" decoding="async" />
+      </figure>
+      <img class="desk-pencil" src={`${images}icon/pencil.svg`} alt="" width="1000" height="170" loading="lazy" decoding="async" />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,104 @@
+---
+/**
+ * Oda: süslenmiş dört oda, yedi saat, altı pencere ve beş ses.
+ *
+ * Bu bölüm sayfanın ışığı ne olursa olsun akşamdır, çünkü gösterdiği her şey akşam ve
+ * gece çekilmiştir. Zemin rengi görüntülerdeki duvarın rengidir (`room-measures.json`):
+ * saatler ve pencereler çerçevesiz durur ve sayfanın duvarına asılıymış gibi görünür.
+ * Bölüm aşağı indikçe akşam duvarından gece duvarına geçer.
+ */
+import { clockKeys, landingCopy, roomKeys, windowKeys } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import measures from './room-measures.json';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const images = '/studywithme/images/';
+const tail = 'M5 1C6 9 4 15 1 21 10 17 18 10 22 1';
+---
+
+<section class="shelf" id="room" aria-labelledby="rooms-title" style={`--evening: ${measures.clocks.wall}; --night: ${measures.windows.wall}`}>
+  <div class="site-width shelf-head" data-reveal>
+    <p class="label">{copy.roomsLabel}</p>
+    <h2 id="rooms-title">{copy.roomsTitle}</h2>
+    <p class="lead">{copy.roomsBody}</p>
+  </div>
+
+  <div class="shelf-rooms">
+    {roomKeys.map((key, index) => (
+      <figure class="shelf-room" data-reveal style={`--order: ${index % 2}`}>
+        <img
+          src={`${images}rooms/${key}-900.webp`}
+          srcset={`${images}rooms/${key}-900.webp 900w, ${images}rooms/${key}.webp 1500w`}
+          sizes="(min-width: 52rem) 38rem, 86vw"
+          width={measures.rooms.width}
+          height={measures.rooms.height}
+          alt={copy.rooms[key]}
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+    ))}
+  </div>
+
+  <div class="site-width shelf-block">
+    <div class="shelf-guide" data-reveal>
+      <img src={`${images}looks/library.webp`} alt="" width={measures.looks.width} height={measures.looks.height} loading="lazy" decoding="async" />
+      <p class="bubble">
+        {copy.clocksBubble}
+        <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d={tail} /></svg>
+      </p>
+    </div>
+    <div class="shelf-copy" data-reveal>
+      <h3>{copy.clocksTitle}</h3>
+      <p class="lead">{copy.clocksBody}</p>
+    </div>
+    <ul class="shelf-wall shelf-clocks">
+      {clockKeys.map((key, index) => (
+        <li data-reveal style={`--order: ${index % 4}`}>
+          <img src={`${images}clocks/${key}.webp`} alt="" width={measures.clocks.width} height={measures.clocks.height} loading="lazy" decoding="async" />
+          <span>{copy.clocks[key]}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="shelf-night">
+    <div class="site-width shelf-block">
+      <div class="shelf-copy" data-reveal>
+        <h3>{copy.windowsTitle}</h3>
+        <p class="lead">{copy.windowsBody}</p>
+      </div>
+      <ul class="shelf-wall shelf-windows">
+        {windowKeys.map((key, index) => (
+          <li data-reveal style={`--order: ${index % 6}`}>
+            <img src={`${images}windows/${key}.webp`} alt="" width={measures.windows.width} height={measures.windows.height} loading="lazy" decoding="async" />
+            <span>{copy.windows[key]}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div class="shelf-sound" data-reveal>
+        <div class="shelf-guide">
+          <img src={`${images}looks/cat.webp`} alt="" width={measures.looks.width} height={measures.looks.height} loading="lazy" decoding="async" />
+          <p class="bubble">
+            {copy.soundBubble}
+            <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d={tail} /></svg>
+          </p>
+        </div>
+        <div>
+          <p class="lead">{copy.soundBody}</p>
+          <ul class="shelf-chips">
+            {copy.sounds.map((sound) => <li>{sound}</li>)}
+          </ul>
+        </div>
+      </div>
+
+      <p class="shelf-note">{copy.roomsNote}</p>
+    </div>
+  </div>
+</section>

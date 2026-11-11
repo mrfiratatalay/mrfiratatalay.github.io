@@ -1,9 +1,27 @@
 ---
+/**
+ * Tao: Cozy Focus Timer ürün sayfası.
+ *
+ * Sayfa uygulamanın kendisi gibi davranır: tepesi odadır, ışığı ziyaretçinin saatidir
+ * ve arkadaş, uygulamadaki kendi cümleleriyle sayfayı gezdirir. Uygulamayı gösteren her
+ * görüntü gerçek bir ekran görüntüsünden kesilir (`scripts/tasarim/tao-gorselleri.mjs`).
+ */
 import { languageHref } from '../../lib/i18n/locales';
-import RoomPreview from './RoomPreview.astro';
+import Closing from './Closing.astro';
+import Company from './Company.astro';
+import Notebook from './Notebook.astro';
+import RoomHero from './RoomHero.astro';
+import RoomShelf from './RoomShelf.astro';
+import SessionStory from './SessionStory.astro';
+import Wardrobe from './Wardrobe.astro';
 import { landingCopy } from './landing-copy';
 import type { LandingLanguage } from './landing-copy';
+import measures from './room-measures.json';
 import './landing.css';
+import './room.css';
+import './story.css';
+import './studio.css';
+import './places.css';
 
 interface Props {
   lang: LandingLanguage;
@@ -15,8 +33,12 @@ const otherLanguage = lang === 'tr' ? 'en' : 'tr';
 const imagePath = '/studywithme/images/';
 const canonical = new URL(copy.path, Astro.site ?? Astro.url);
 const alternate = new URL(copy.alternate, canonical);
-const socialImage = new URL(imagePath + 'room-day.webp', canonical);
-const outfits = ['library', 'bunny', 'strawberry'];
+const socialImage = new URL(imagePath + 'social.jpg', canonical);
+const walls = {
+  day: measures.wide.light.day.wall,
+  evening: measures.wide.light.evening.wall,
+  night: measures.wide.light.night.wall,
+};
 ---
 
 <!doctype html>
@@ -24,7 +46,19 @@ const outfits = ['library', 'bunny', 'strawberry'];
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f3e7" />
+    <meta name="theme-color" content={walls.day} />
+    <script is:inline define:vars={{ walls }}>
+      // İlk boyamadan önce: odanın ışığı ziyaretçinin saatidir (18.00'de akşam, 21.30'da gece, 06.00'da gündüz).
+      (() => {
+        const now = new Date();
+        const hour = now.getHours() + now.getMinutes() / 60;
+        const light = hour >= 6 && hour < 18 ? 'day' : hour >= 18 && hour < 21.5 ? 'evening' : 'night';
+        const root = document.documentElement;
+        root.dataset.light = light;
+        root.classList.add('js');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', walls[light]);
+      })();
+    </script>
     <title>{copy.title}</title>
     <meta name="description" content={copy.description} />
     <meta property="og:title" content={copy.title} />
@@ -32,109 +66,41 @@ const outfits = ['library', 'bunny', 'strawberry'];
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical.href} />
     <meta property="og:image" content={socialImage.href} />
-    <meta property="og:image:alt" content={copy.roomScenes[0].alt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={copy.roomAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="canonical" href={canonical.href} />
     <link rel="alternate" hreflang={lang} href={canonical.href} />
     <link rel="alternate" hreflang={otherLanguage} href={alternate.href} />
     <link rel="icon" href={imagePath + 'app-icon.webp'} type="image/webp" />
+    <link rel="preload" href="/studywithme/fonts/shantellsans-semibold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/studywithme/fonts/shantellsans-regular.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body>
     <a class="skip-link" href="#content">{copy.skip}</a>
-    <header class="site-header">
-      <div class="site-width header-inner">
-        <a class="brand" href={copy.path}>
-          <img src={imagePath + 'app-icon.webp'} alt="" width="42" height="42" />
-          <span lang="en">Tao: Cozy Focus Timer</span>
-        </a>
-        <nav aria-label={copy.nav}>
-          <a href={copy.support}>{copy.supportLabel}</a>
-          <a class="language-link" href={copy.alternate} hreflang={otherLanguage} lang={otherLanguage}>
-            {otherLanguage === 'en' ? 'English' : 'Türkçe'}
-          </a>
-        </nav>
-      </div>
-    </header>
+
+    <RoomHero lang={lang} />
 
     <main id="content">
-      <section class="site-width hero" aria-labelledby="landing-title">
-        <div class="hero-copy">
-          <p class="eyebrow">{copy.kicker}</p>
-          <h1 id="landing-title">{copy.heading[0]} <span>{copy.heading[1]}</span></h1>
-          <p class="intro">{copy.intro}</p>
-          <a class="button-link" href="#window">
-            {copy.explore}
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4c-.2 5.1.1 10.6 0 15m-5.3-5.1 5.3 5.3 5.3-5.2" /></svg>
-          </a>
-          <p class="platform-note">{copy.deviceLabel}</p>
-        </div>
-        <RoomPreview lang={lang} />
-      </section>
-
-      <section class="window-section" id="window" aria-labelledby="window-title">
-        <div class="site-width feature-split">
-          <figure class="window-print">
-            <img src={imagePath + 'window-break.webp'} alt={copy.breakAlt} width="1440" height="900" loading="lazy" decoding="async" />
-          </figure>
-          <div class="feature-copy">
-            <p class="eyebrow">{copy.breakLabel}</p>
-            <h2 id="window-title">{copy.breakTitle}</h2>
-            <p>{copy.breakBody}</p>
-          </div>
-        </div>
-      </section>
-
-      <div class="site-width paper-spread">
-        <section class="notebook-sheet" aria-labelledby="notebook-title">
-          <p class="eyebrow">{copy.notebookLabel}</p>
-          <h2 id="notebook-title">{copy.notebookTitle}</h2>
-          <p>{copy.notebookBody}</p>
-          <figure class="notebook-crop">
-            <img src={imagePath + 'notebook-ipad.webp'} alt={copy.notebookAlt} width="900" height="1200" loading="lazy" decoding="async" />
-          </figure>
-        </section>
-        <section class="studio-sheet" aria-labelledby="studio-title">
-          <p class="eyebrow">{copy.studioLabel}</p>
-          <h2 id="studio-title">{copy.studioTitle}</h2>
-          <p>{copy.studioBody}</p>
-          <div class="outfit-strip">
-            {outfits.map((outfit, index) => (
-              <img src={imagePath + 'outfit-' + outfit + '.webp'} alt={copy.outfits[index]} loading="lazy" decoding="async" />
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <section class="device-section" aria-labelledby="device-title">
-        <div class="site-width feature-split device-split">
-          <div class="feature-copy">
-            <p class="eyebrow">{copy.deviceLabel}</p>
-            <h2 id="device-title">{copy.deviceTitle}</h2>
-            <p>{copy.deviceBody}</p>
-            <p class="availability">{copy.status}</p>
-          </div>
-          <figure class="device-prints">
-            <div class="phone-print">
-              <img src={imagePath + 'focus-iphone.webp'} alt={copy.phoneAlt} width="560" height="1218" loading="lazy" decoding="async" />
-            </div>
-            <div class="menu-print">
-              <img src={imagePath + 'menu-bar.webp'} alt={copy.macAlt} loading="lazy" decoding="async" />
-            </div>
-          </figure>
-        </div>
-      </section>
+      <SessionStory lang={lang} />
+      <Wardrobe lang={lang} />
+      <RoomShelf lang={lang} />
+      <Notebook lang={lang} />
+      <Company lang={lang} />
+      <Closing lang={lang} />
     </main>
 
     <footer class="site-footer">
       <div class="site-width footer-inner">
         <div>
           <a class="brand" href={copy.path}>
-            <img src={imagePath + 'app-icon.webp'} alt="" width="36" height="36" loading="lazy" />
+            <img src={imagePath + 'app-icon.webp'} alt="" width="40" height="40" loading="lazy" />
             <span lang="en">Tao: Cozy Focus Timer</span>
           </a>
           <p>{copy.localData}</p>
         </div>
-        <nav aria-label={copy.nav}>
+        <nav class="footer-links" aria-label={copy.nav}>
           <a href={copy.support}>{copy.supportLabel}</a>
           <a href={copy.privacy}>{copy.privacyLabel}</a>
           <a href={languageHref(copy.directory, lang)}>{copy.directoryLabel} <span aria-hidden="true">↗</span></a>
@@ -142,5 +108,21 @@ const outfits = ['library', 'bunny', 'strawberry'];
         <p class="trademark">{copy.trademark}</p>
       </div>
     </footer>
+    <script>
+      // Sayfa aşağı indikçe parçalar belirir. Betik çalışmazsa hepsi baştan görünür (bkz. landing.css).
+      const pieces = document.querySelectorAll('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const watcher = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-in');
+            watcher.unobserve(entry.target);
+          }
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+        pieces.forEach((piece) => watcher.observe(piece));
+      } else {
+        pieces.forEach((piece) => piece.classList.add('is-in'));
+      }
+    </script>
   </body>
 </html>

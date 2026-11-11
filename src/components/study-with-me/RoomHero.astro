@@ -1,0 +1,187 @@
+---
+/**
+ * Sayfanın tepesi: uygulamanın odası, çerçevesiz.
+ *
+ * Oda bir ekran görüntüsüdür ama kart içinde durmaz. Duvar ve zemin, görüntünün
+ * kenarındaki renklerle ekranın kenarına kadar uzatılır (`.band`), başlık da duvarın
+ * üstüne yazılır. Üç ışık üst üste durur; hangisinin görüneceğine `html[data-light]`
+ * karar verir. Geniş ekranda Mac penceresinin, telefonda iPhone'un karesi kullanılır.
+ */
+import { landingCopy, lights } from './landing-copy';
+import type { LandingLanguage, Light } from './landing-copy';
+import measures from './room-measures.json';
+import moon from './art/moon.svg?raw';
+import sun from './art/sun.svg?raw';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const otherLanguage = lang === 'tr' ? 'en' : 'tr';
+const images = '/studywithme/images/room/';
+const icon = '/studywithme/images/app-icon.webp';
+
+/** Karelerin ölçüleri: boy, köşe çizgisinin ve zemin çizgisinin yeri. Yerleşim bunlarla hesaplanır. */
+const frame = [
+  `--wide-w: ${measures.wide.width}`,
+  `--wide-h: ${measures.wide.height}`,
+  `--wide-corner: ${measures.wide.corner}`,
+  `--wide-horizon: ${measures.wide.horizon}`,
+  `--tall-w: ${measures.tall.width}`,
+  `--tall-h: ${measures.tall.height}`,
+  `--tall-corner: ${measures.tall.corner}`,
+].join('; ');
+
+/** Tarayıcının üst çubuğu da duvarın rengini alır. */
+const walls = Object.fromEntries(lights.map((light) => [light, measures.wide.light[light].wall]));
+
+/** Kenar renklerinin ilk durağı: görüntünün köşesindeki duvar ya da zemin rengi. */
+const firstColour = (stops: string) => stops.slice(0, stops.indexOf(' '));
+
+function edges(light: Light) {
+  const wide = measures.wide.light[light];
+  const tall = measures.tall.light[light];
+  return [
+    `--top-wide: ${wide.topEdge}`,
+    `--left-wide: ${wide.leftEdge}`,
+    `--wall-wide: ${firstColour(wide.topEdge)}`,
+    `--floor-wide: ${wide.floor}`,
+    `--top-tall: ${tall.topEdge}`,
+    `--floor-tall: ${firstColour(tall.bottomEdge)}`,
+  ].join('; ');
+}
+---
+
+<section class="room" aria-labelledby="landing-title" style={frame}>
+  <header class="room-nav">
+    <a class="brand" href={copy.path}>
+      <img src={icon} alt="" width="48" height="48" />
+      <span lang="en">Tao: Cozy Focus Timer</span>
+    </a>
+    <nav class="room-links" aria-label={copy.nav}>
+      <a class="support-link" href={copy.support}>{copy.supportLabel}</a>
+      <a href={copy.alternate} hreflang={otherLanguage} lang={otherLanguage}>
+        {otherLanguage === 'en' ? 'English' : 'Türkçe'}
+      </a>
+    </nav>
+  </header>
+
+  <div class="room-copy">
+    <p class="label room-kicker">{copy.kicker}</p>
+    <h1 id="landing-title">
+      {copy.heading.map((line, index) => (
+        <span class="line">
+          {index === copy.heading.length - 1 ? (
+            <span class="underlined">
+              {line}
+              <svg viewBox="0 0 200 12" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M3 9.5C58 3.4 142 2.6 197 7.4 142 5.8 58 6.6 3 9.5Z" />
+              </svg>
+            </span>
+          ) : line}{' '}
+        </span>
+      ))}
+    </h1>
+    <p class="room-intro">{copy.intro}</p>
+  </div>
+
+  <div class="room-frame" role="img" aria-label={copy.roomAlt}>
+    {lights.map((light) => (
+      <div class="room-light" data-light={light} style={edges(light)}>
+        <span class="band band-top"></span>
+        <span class="band band-left"></span>
+        <span class="band band-floor"></span>
+        <picture>
+          <source
+            media="(max-width: 43.74rem)"
+            srcset={`${images}tall-${light}-804.webp 804w, ${images}tall-${light}.webp 1206w`}
+            sizes="100vw"
+            width={measures.tall.width}
+            height={measures.tall.height}
+          />
+          <img
+            src={`${images}wide-${light}-1304.webp`}
+            srcset={`${images}wide-${light}-1304.webp 1304w, ${images}wide-${light}.webp 2608w`}
+            sizes="(min-width: 75rem) and (min-aspect-ratio: 3/2) 150vh, 100vw"
+            width={measures.wide.width}
+            height={measures.wide.height}
+            alt=""
+            decoding="async"
+          />
+        </picture>
+      </div>
+    ))}
+    <p class="bubble room-hello" aria-hidden="true">
+      {copy.hello}
+      <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d="M5 1C6 9 4 15 1 21 10 17 18 10 22 1" /></svg>
+    </p>
+  </div>
+
+  <div class="room-ground">
+    <p class="room-status">
+      <span class="soon">{copy.soon}</span>
+      <span class="room-platforms">{copy.platforms}</span>
+    </p>
+    <p class="room-clock" data-light-note aria-live="polite">
+      <span data-light-text>{copy.light.idle}</span>
+      <span class="room-clock-hint" data-light-hint hidden></span>
+      <button class="room-clock-reset" type="button" data-light-reset hidden>{copy.light.reset}</button>
+    </p>
+  </div>
+
+  <button class="room-sun" type="button" data-sun hidden>
+    <span class="room-sun-art room-sun-day" set:html={sun} />
+    <span class="room-sun-art room-sun-night" set:html={moon} />
+    <span class="visually-hidden" data-sun-label></span>
+  </button>
+</section>
+
+<script define:vars={{ light: copy.light, locale: lang === 'tr' ? 'tr-TR' : 'en-US', walls }}>
+  // Odanın ışığı: ziyaretçinin saati. Güneşe dokunmak ışığı sırayla ilerletir.
+  (() => {
+    const order = ['day', 'evening', 'night'];
+    const root = document.documentElement;
+    const sun = document.querySelector('[data-sun]');
+    const text = document.querySelector('[data-light-text]');
+    const hint = document.querySelector('[data-light-hint]');
+    const reset = document.querySelector('[data-light-reset]');
+    const label = document.querySelector('[data-sun-label]');
+    const theme = document.querySelector('meta[name="theme-color"]');
+    if (!sun || !text || !hint || !reset || !label) return;
+
+    const fromClock = () => {
+      const now = new Date();
+      const hour = now.getHours() + now.getMinutes() / 60;
+      return hour >= 6 && hour < 18 ? 'day' : hour < 21.5 && hour >= 18 ? 'evening' : 'night';
+    };
+
+    const show = (current, own) => {
+      root.dataset.light = current;
+      const time = new Date().toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+      text.textContent = (own ? light.now[current] : light.tried[current]).replace('{time}', time);
+      hint.textContent = light.hint[current];
+      hint.hidden = false;
+      reset.hidden = own;
+      label.textContent = light.button[current];
+      if (theme) theme.setAttribute('content', walls[current]);
+    };
+
+    sun.addEventListener('click', () => {
+      const next = order[(order.indexOf(root.dataset.light || 'day') + 1) % order.length];
+      // Dönüp dolaşıp kendi saatinin ışığına gelindiyse yine saat söylenir.
+      show(next, next === fromClock());
+      sun.classList.add('is-touched');
+    });
+    reset.addEventListener('click', () => {
+      show(fromClock(), true);
+      sun.focus();
+    });
+
+    sun.hidden = false;
+    show(root.dataset.light || fromClock(), true);
+    // Sayfa açık kalırsa ışık saatle birlikte ilerler; elle değiştirildiyse dokunulmaz.
+    setInterval(() => { if (reset.hidden) show(fromClock(), true); }, 60000);
+  })();
+</script>

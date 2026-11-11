@@ -5,6 +5,30 @@ Portfolyonun **Uygulamalarım / My Apps** klasörü iki dilde aynı uygulama lis
 kullanır. Yeni bir uygulama eklemek için `src/lib/site/apps.ts` dosyasına bir kayıt,
 uygulamanın sayfasını da kendi adresine ekle.
 
+## Ürün sayfası nasıl kurulu
+
+Sayfanın kodu `src/components/study-with-me/` içindedir. Sayfa uygulamanın kendisi gibi
+davranır: tepesi odadır, ışığı ziyaretçinin saatine göre gündüz, akşam ya da gecedir
+(köşedeki güneşe dokununca değişir) ve arkadaş, uygulamadaki kendi cümleleriyle konuşur.
+Yazıların hepsi `landing-copy.ts` dosyasındadır; uygulamada bir ad ya da cümle değişirse
+orada da değişmelidir.
+
+Uygulamayı gösteren her görüntü gerçek bir ekran görüntüsünden kesilir, elle çizilmez:
+
+| Ne | Nasıl üretilir |
+| --- | --- |
+| Oda, oturum adımları, görünümler, saatler, pencereler, defter, cihazlar, paylaşım görseli | `node scripts/tasarim/tao-gorselleri.mjs` |
+| Köşedeki güneş ve ay, kalem, sayfanın sonundaki arkadaş ve gözleri | `python3 scripts/tasarim/tao-ikon-parcalari.py` (kullanımı dosyanın başında) |
+
+İkisi de uygulamanın ekran görüntüsü arşivini okur (`~/Desktop/Developer/My-Apps/01/screenshot`;
+başka yerdeyse `--kaynak`). Arşiv bu depoda olmadığı için üretilen görseller
+`public/studywithme/images/` altında depoya eklenir. İlk betik ayrıca duvar ve zemin
+renklerini ölçüp `room-measures.json` dosyasına yazar; sayfa odayı ekranın kenarına kadar
+bu renklerle uzatır, o yüzden görseller yenilenince bu dosya da onlarla birlikte yenilenir.
+
+Dükkandan kaldırılan pencereler ve eşyalar sayfada görünmemelidir. Hangi karenin
+kullanıldığı ve neden o karenin seçildiği betiğin içinde yazılıdır.
+
 ## App Store Connect adresleri
 
 | Alan | Türkçe | İngilizce |

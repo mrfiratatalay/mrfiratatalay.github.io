@@ -1,0 +1,73 @@
+---
+/**
+ * Kapanış: uygulama ikonunun büyük hâli.
+ *
+ * Bölüm, ikondaki yeşil çizgili defter sayfasıdır: köşede pastel güneş (gece ay),
+ * altta sayfadan doğrulup patilerini kaleme koymuş arkadaş. Çizimler ikonun kendi
+ * çizim kodundan çıkarıldı (`scripts/tasarim/tao-ikon-parcalari.py`); ikon değişirse
+ * bunlar da yeniden çıkarılmalı.
+ *
+ * Gözler ayrı bir katmandır (`art/eyes.svg`, gövdeyle aynı ölçüde): arada bir kırpılır
+ * ve imleci izler. Gövde görsellerinde göz yoktur; biri değişirse öbürü de değişmeli.
+ */
+import { landingCopy } from './landing-copy';
+import type { LandingLanguage } from './landing-copy';
+import eyes from './art/eyes.svg?raw';
+
+interface Props {
+  lang: LandingLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const icon = '/studywithme/images/icon/';
+---
+
+<section class="closing" id="download" aria-labelledby="closing-title">
+  <img class="closing-sun closing-sun-day" src={`${icon}sun.svg`} alt="" width="300" height="300" loading="lazy" decoding="async" />
+  <img class="closing-sun closing-sun-night" src={`${icon}moon.svg`} alt="" width="300" height="300" loading="lazy" decoding="async" />
+
+  <div class="site-width closing-inner">
+    <h2 id="closing-title" data-reveal>{copy.closingTitle}</h2>
+    <p class="closing-status" data-reveal>{copy.status}</p>
+    <p class="closing-links" data-reveal>
+      <a href={copy.support}>{copy.supportLabel}</a>
+      <a href={copy.privacy}>{copy.privacyLabel}</a>
+    </p>
+  </div>
+
+  <div class="closing-friend">
+    <p class="bubble closing-bubble" data-reveal>
+      {copy.goodbye}
+      <svg class="bubble-tail" viewBox="0 0 26 22" aria-hidden="true"><path d="M5 1C6 9 4 15 1 21 10 17 18 10 22 1" /></svg>
+    </p>
+    <img class="closing-friend-day" src={`${icon}friend-day.svg`} alt={copy.friendAlt} width="1024" height="928" loading="lazy" decoding="async" />
+    <img class="closing-friend-night" src={`${icon}friend-night.svg`} alt="" width="1024" height="928" loading="lazy" decoding="async" />
+    <span class="closing-eyes" data-eyes aria-hidden="true" set:html={eyes} />
+  </div>
+</section>
+
+<script>
+  // Arkadaşın gözleri imleci izler. Dokunmatik ekranda imleç yoktur; orada yalnızca göz kırpar.
+  const eyes = document.querySelector<HTMLElement>('[data-eyes]');
+  if (eyes && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let queued = 0;
+    window.addEventListener('pointermove', (event) => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        const box = eyes.getBoundingClientRect();
+        if (box.bottom < 0 || box.top > window.innerHeight) return;
+        // İki gözün ortası, çizimin içinde: genişliğin yarısı, yüksekliğin %43'ü.
+        const x = event.clientX - (box.left + box.width * 0.5);
+        const y = event.clientY - (box.top + box.height * 0.43);
+        const far = Math.hypot(x, y) || 1;
+        const reach = Math.min(1, far / (box.width * 0.6));
+        // Çizimin kendi birimiyle: uygulamadaki bakışın oynama payı kadar.
+        eyes.style.setProperty('--look-x', ((x / far) * reach * 26).toFixed(1));
+        eyes.style.setProperty('--look-y', ((y / far) * reach * 18).toFixed(1));
+      });
+    }, { passive: true });
+  }
+</script>
