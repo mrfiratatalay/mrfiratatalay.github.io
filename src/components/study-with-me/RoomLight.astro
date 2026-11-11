@@ -1,0 +1,37 @@
+---
+/**
+ * Odanın ışığı: ziyaretçinin saati.
+ *
+ * Tao sayfalarının karanlık modu yoktur; uygulamadaki gibi bir saatleri vardır. Bu parça
+ * sayfa boyanmadan önce `html[data-light]` değerini yazar (day, evening, night) ve bütün
+ * renkler ona göre seçilir (`landing.css`). Saat sınırları yalnızca burada tanımlıdır;
+ * ürün sayfasındaki güneş de aynı işlevi (`window.taoLightNow`) kullanır.
+ *
+ * `colours`, tarayıcının üst çubuğunun her ışıkta alacağı renktir: sayfanın en üstündeki
+ * yüzeyin rengi (ürün sayfasında duvar, destek ve gizlilik sayfalarında meşe masa).
+ */
+import type { Light } from './landing-copy';
+
+interface Props {
+  colours: Record<Light, string>;
+}
+
+const { colours } = Astro.props;
+---
+
+<meta name="theme-color" content={colours.day} />
+<script is:inline define:vars={{ colours }}>
+  // 06.00'da gündüz, 18.00'de akşam, 21.30'da gece.
+  window.taoLightNow = () => {
+    const now = new Date();
+    const hour = now.getHours() + now.getMinutes() / 60;
+    return hour >= 6 && hour < 18 ? 'day' : hour >= 18 && hour < 21.5 ? 'evening' : 'night';
+  };
+  (() => {
+    const light = window.taoLightNow();
+    const root = document.documentElement;
+    root.dataset.light = light;
+    root.classList.add('js');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colours[light]);
+  })();
+</script>

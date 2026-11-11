@@ -1,4 +1,20 @@
 ---
+/**
+ * Destek ve gizlilik sayfaları: arkadaşın defteri, meşe masanın üstünde açık.
+ *
+ * Uygulamada ayarlar, hakkında ve gizlilik defterin içindedir; bu iki sayfa da o defterin
+ * sayfaları gibi görünür: üstte defterin sekmeleri (açık sayfanın sekmesi kalkıktır),
+ * altında kâğıt, yanında ikondaki kalem. Renkler, yazı ve ışık ürün sayfasınınkilerdir
+ * (`landing.css`, `RoomLight.astro`): akşam ve gece masa kararır, lambanın ışığı düşer.
+ * Kâğıt her ışıkta açık renk kalır ki uzun yazı her saatte aynı rahatlıkla okunsun.
+ *
+ * Buradaki bütün yazılar `src/data/studywithme/` altındaki on iki dilli metinlerdir;
+ * görünüş için yeni bir cümle eklenmedi. Destek sayfasındaki sarı not, o metinlerdeki
+ * "bir not bırak" başlığıdır.
+ */
+import RoomLight from '../../components/study-with-me/RoomLight.astro';
+import measures from '../../components/study-with-me/room-measures.json';
+import '../../components/study-with-me/landing.css';
 import { privacy } from '../../data/studywithme/privacy';
 import { support } from '../../data/studywithme/support';
 import { profile } from '../../lib/content/site-data';
@@ -15,8 +31,7 @@ const { locale, page } = Astro.props;
 const supportCopy = support[locale];
 const privacyCopy = privacy[locale];
 const { title, intro } = page === 'privacy' ? privacyCopy : supportCopy;
-const otherPage = page === 'privacy' ? 'support' : 'privacy';
-const otherTitle = otherPage === 'support' ? supportCopy.title : privacyCopy.title;
+const tabs: [HelpPage, string][] = [['support', supportCopy.title], ['privacy', privacyCopy.title]];
 const mail = `mailto:${profile.email}`;
 const canonical = (language: HelpLocale) => new URL(helpPath(language, page), Astro.site ?? Astro.url);
 const languagesLabel = {
@@ -24,6 +39,15 @@ const languagesLabel = {
   es: 'Idioma de la página', it: 'Lingua della pagina', 'pt-BR': 'Idioma da página',
   ja: 'ページの言語', ko: '페이지 언어', 'zh-Hans': '页面语言', 'zh-Hant': '頁面語言', ar: 'لغة الصفحة',
 }[locale];
+
+/** Masanın her ışıktaki rengi; `landing.css` içindeki `--oak` ile aynı olmalı. */
+const desk = { day: '#d9b785', evening: '#c2a176', night: '#b3936a' };
+
+/**
+ * El yazısı yazı tipinde yalnızca Latin harfleri var. Öbür dillerde yazının tamamı sistem
+ * yazı tipiyle yazılır; yoksa cümlenin içindeki Latin sözcükler ayrı bir elden çıkmış gibi durur.
+ */
+const handwritten = !['ja', 'ko', 'zh-Hans', 'zh-Hant', 'ar'].includes(locale);
 ---
 
 <!doctype html>
@@ -31,7 +55,7 @@ const languagesLabel = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f8f3e7" />
+    <RoomLight colours={desk} />
     <meta name="description" content={intro} />
     <link rel="canonical" href={canonical(locale)} />
     {helpLocales.map((language) => (
@@ -39,70 +63,82 @@ const languagesLabel = {
     ))}
     <link rel="alternate" hreflang="x-default" href={canonical('tr')} />
     <link rel="icon" type="image/webp" href="/studywithme/images/app-icon.webp" />
+    <link rel="preload" href="/studywithme/fonts/shantellsans-semibold.woff2" as="font" type="font/woff2" crossorigin />
     <title>{title} · Tao: Cozy Focus Timer</title>
   </head>
-  <body class="study-help">
-    <div class="help-frame">
-      <nav class="help-top" aria-label="Tao: Cozy Focus Timer">
+  <body class:list={['study-help', { 'is-plain': !handwritten }]} style={`--paper: ${measures.notebook.paper}`}>
+    <div class="help-desk">
+      <header class="help-top">
         <a class="brand" href={productPath(locale)}>
-          <img src="/studywithme/images/app-icon.webp" width="39" height="39" alt="" />
-          <span>Tao: Cozy Focus Timer</span>
+          <img src="/studywithme/images/app-icon.webp" width="44" height="44" alt="" />
+          <span lang="en">Tao: Cozy Focus Timer</span>
         </a>
-        <a class="section-link" href={helpPath(locale, otherPage)}>{otherTitle}</a>
-      </nav>
+      </header>
 
-      <main class="help-sheet">
-        <header class="sheet-heading">
-          <h1>{title}</h1>
-          <p class="intro">{intro}</p>
-        </header>
-
-        {page === 'support' ? (
-          <>
-            <section class="contact-note" aria-labelledby="contact-title">
-              <h2 id="contact-title">{supportCopy.contactTitle}</h2>
-              <p><a class="email" href={mail} dir="ltr">{profile.email}</a></p>
-              <p>{supportCopy.contactDetails}</p>
-            </section>
-            {supportCopy.guides.map(([heading, explanation], index) => (
-              <section class="help-entry" aria-labelledby={`guide-${index}`}>
-                <h2 id={`guide-${index}`}>{heading}</h2>
-                <p>{explanation}</p>
-              </section>
+      <div class="help-notebook">
+        <div class="help-sheet">
+          <nav class="help-tabs" aria-label="Tao: Cozy Focus Timer">
+            {tabs.map(([name, label]) => (
+              <a class="help-tab" href={helpPath(locale, name)} aria-current={name === page ? 'page' : undefined}>{label}</a>
             ))}
-            <p class="reference"><a href="https://support.apple.com/108096">{supportCopy.appleHelp} <span aria-hidden="true">↗</span></a></p>
-          </>
-        ) : (
-          <>
-            <section class="help-entry" aria-labelledby="local-title">
-              <h2 id="local-title">{privacyCopy.device[0]}</h2>
-              <p>{privacyCopy.device[1]}</p>
-            </section>
-            <section class="help-entry" aria-labelledby="purchase-title">
-              <h2 id="purchase-title">{privacyCopy.purchases[0]}</h2>
-              <p>{privacyCopy.purchases[1]}</p>
-              <p class="reference"><a href="https://www.apple.com/legal/privacy/data/en/appstore/">Apple App Store <span aria-hidden="true">↗</span></a></p>
-            </section>
-            <section class="help-entry" aria-labelledby="retention-title">
-              <h2 id="retention-title">{privacyCopy.removal[0]}</h2>
-              <p>{privacyCopy.removal[1]}</p>
-            </section>
-            <section class="help-entry" aria-labelledby="privacy-contact-title">
-              <h2 id="privacy-contact-title">{privacyCopy.email[0]}</h2>
-              <p>{privacyCopy.email[1]}</p>
-              <p class="reference privacy-contacts">
-                <a class="email" href={mail} dir="ltr">{profile.email}</a>
-                <a href="https://policies.google.com/privacy">Google (Gmail) <span aria-hidden="true">↗</span></a>
-              </p>
-            </section>
-            <section class="help-entry" aria-labelledby="site-title">
-              <h2 id="site-title">{privacyCopy.website[0]}</h2>
-              <p>{privacyCopy.website[1]}</p>
-              <p class="reference"><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub <span aria-hidden="true">↗</span></a></p>
-            </section>
-          </>
-        )}
-      </main>
+          </nav>
+
+          <main class="help-page">
+            <header class="help-heading">
+              <h1>{title}</h1>
+              <p class="help-intro">{intro}</p>
+            </header>
+
+            {page === 'support' ? (
+              <>
+                <section class="help-note" aria-labelledby="contact-title">
+                  <img class="help-friend" src="/studywithme/images/looks/library.webp" alt="" width={measures.looks.width} height={measures.looks.height} decoding="async" />
+                  <h2 id="contact-title">{supportCopy.contactTitle}</h2>
+                  <p><a class="email" href={mail} dir="ltr">{profile.email}</a></p>
+                  <p>{supportCopy.contactDetails}</p>
+                </section>
+                {supportCopy.guides.map(([heading, explanation], index) => (
+                  <section class="help-entry" aria-labelledby={`guide-${index}`}>
+                    <h2 id={`guide-${index}`}>{heading}</h2>
+                    <p>{explanation}</p>
+                  </section>
+                ))}
+                <p class="reference help-last"><a href="https://support.apple.com/108096">{supportCopy.appleHelp} <span aria-hidden="true">↗</span></a></p>
+              </>
+            ) : (
+              <>
+                <section class="help-entry" aria-labelledby="local-title">
+                  <h2 id="local-title">{privacyCopy.device[0]}</h2>
+                  <p>{privacyCopy.device[1]}</p>
+                </section>
+                <section class="help-entry" aria-labelledby="purchase-title">
+                  <h2 id="purchase-title">{privacyCopy.purchases[0]}</h2>
+                  <p>{privacyCopy.purchases[1]}</p>
+                  <p class="reference"><a href="https://www.apple.com/legal/privacy/data/en/appstore/">Apple App Store <span aria-hidden="true">↗</span></a></p>
+                </section>
+                <section class="help-entry" aria-labelledby="retention-title">
+                  <h2 id="retention-title">{privacyCopy.removal[0]}</h2>
+                  <p>{privacyCopy.removal[1]}</p>
+                </section>
+                <section class="help-entry" aria-labelledby="privacy-contact-title">
+                  <h2 id="privacy-contact-title">{privacyCopy.email[0]}</h2>
+                  <p>{privacyCopy.email[1]}</p>
+                  <p class="reference privacy-contacts">
+                    <a class="email" href={mail} dir="ltr">{profile.email}</a>
+                    <a href="https://policies.google.com/privacy">Google (Gmail) <span aria-hidden="true">↗</span></a>
+                  </p>
+                </section>
+                <section class="help-entry" aria-labelledby="site-title">
+                  <h2 id="site-title">{privacyCopy.website[0]}</h2>
+                  <p>{privacyCopy.website[1]}</p>
+                  <p class="reference"><a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub <span aria-hidden="true">↗</span></a></p>
+                </section>
+              </>
+            )}
+          </main>
+        </div>
+        <img class="help-pencil" src="/studywithme/images/icon/pencil.svg" alt="" width="1000" height="170" decoding="async" />
+      </div>
 
       <footer class="help-footer">
         <nav aria-label={languagesLabel}>
@@ -120,109 +156,253 @@ const languagesLabel = {
             ))}
           </ul>
         </nav>
-        <p>Tao: Cozy Focus Timer <span aria-hidden="true">·</span> Fırat Atalay</p>
+        <p><span lang="en">Tao: Cozy Focus Timer</span> <span aria-hidden="true">·</span> Fırat Atalay</p>
       </footer>
     </div>
   </body>
 </html>
 
 <style is:global>
-  @font-face {
-    font-family: 'Study Help Hand';
-    src: url('/studywithme/fonts/shantellsans-semibold.ttf') format('truetype');
-    font-weight: 600;
-    font-display: swap;
-  }
+  /* Sayfanın zemini odadaki meşe masadır; damarları ürün sayfasındaki defter bölümüyle aynıdır. */
+  html:has(body.study-help) { background: var(--oak); }
 
   body.study-help {
-    --help-paper: #f8f3e7;
-    --help-ink: #2b2a22;
-    --help-accent: #3d5a46;
-    --help-line: #ddd0b8;
-    --help-hand: 'Study Help Hand', ui-rounded, system-ui, sans-serif;
-    margin: 0;
+    --paper-ink: #26221e;
+    --paper-soft: #564e44;
+    --paper-rule: #d2c9b8;
+    --tab-line: #4a443c;
+    --help-font: var(--hand);
     min-height: 100vh;
-    color: var(--help-ink);
-    background: #eae3d4;
-    background-image: radial-gradient(ellipse at 20% 0%, #f6ead4, transparent 36rem);
-    font: 400 1rem/1.65 system-ui, sans-serif;
+    min-height: 100svh;
+    /* Arkadaki sayfanın yan duran köşesi ekranın dışına taşabilir; sayfa yana kaymaz. */
+    overflow-x: hidden;
+    overflow-x: clip;
+    color: var(--oak-ink);
+    background-color: var(--oak);
+    background-image:
+      repeating-linear-gradient(91deg, transparent 0 7.2rem, #6e46140f 7.2rem 7.34rem),
+      repeating-linear-gradient(89deg, transparent 0 11.5rem, #6e46140d 11.5rem 11.62rem);
+    font-family: var(--help-font);
+    line-height: 1.6;
+  }
+
+  body.study-help.is-plain { --help-font: system-ui, sans-serif; }
+
+  /* Akşam ve gece masaya lambanın ışığı düşer. */
+  body.study-help::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(62rem 44rem at 68% 24%, #ffe2b08c, transparent 72%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--fade) ease;
+  }
+
+  html[data-light='evening'] body.study-help::before,
+  html[data-light='night'] body.study-help::before {
+    opacity: 1;
   }
 </style>
 
 <style>
-  .help-frame {
-    box-sizing: border-box;
-    max-width: 53rem;
+  .help-desk {
+    position: relative;
+    max-width: 47rem;
     margin-inline: auto;
-    padding: 1.25rem clamp(1rem, 4vw, 2.5rem) 2.5rem;
+    padding: 1rem clamp(.7rem, 4vw, 2.5rem) 2.6rem;
   }
 
   .help-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: .8rem 1.25rem;
-    flex-wrap: wrap;
-    margin-block-end: 1.1rem;
+    min-height: 3.6rem;
+    margin-block-end: .9rem;
   }
 
-  a { color: var(--help-accent); text-underline-offset: .22em; }
-  a:focus-visible { outline: .15rem solid var(--help-accent); outline-offset: .25rem; }
+  .help-top .brand { color: var(--oak-ink); }
 
-  .brand {
-    display: inline-flex;
-    gap: .65rem;
-    align-items: center;
-    color: var(--help-ink);
-    font: 600 1.18rem/1.25 var(--help-hand);
-    text-decoration: none;
-  }
+  /* Defter: önde okunan sayfa, arkasında hafif yan duran bir sayfa daha. */
+  .help-notebook { position: relative; }
 
-  .brand img { border-radius: 22%; box-shadow: 0 .12rem .3rem #38332529; }
-
-  .section-link {
-    padding: .32rem .8rem;
-    border: 1px solid #b8c6ab;
-    border-radius: .5rem .6rem .55rem .65rem;
-    background: #e4ead8;
-    font-weight: 600;
+  .help-notebook::before {
+    content: '';
+    position: absolute;
+    inset: .2rem -.15rem -.25rem;
+    background: color-mix(in srgb, var(--paper) 90%, #7c6a48);
+    border-radius: .5rem .8rem .6rem .9rem;
+    box-shadow: 0 0 0 1px #5a3f1a2e, 0 1rem 1.6rem -1rem #3c230599;
+    rotate: .5deg;
   }
 
   .help-sheet {
-    padding: clamp(1.4rem, 6vw, 3.6rem);
-    border: 1px solid var(--help-line);
-    border-radius: .5rem .36rem .75rem .45rem;
-    background: var(--help-paper);
-    box-shadow: .2rem .3rem 0 #dfd3bf, 0 .65rem 1.4rem #53473512;
+    position: relative;
+    color: var(--paper-ink);
+    background: var(--paper);
+    border-radius: .5rem .8rem .6rem .9rem;
+    box-shadow: 0 0 0 1px #5a3f1a2e, 0 1.4rem 2.2rem -1.1rem #3c2305b3;
   }
 
-  .sheet-heading {
-    border-block-end: 1px solid var(--help-line);
-    padding-block-end: 1.35rem;
+  /* Defterin sekmeleri: çizgi sayfayı boydan boya geçer, açık sayfanın sekmesi çizginin üstüne çıkar. */
+  .help-tabs {
+    display: flex;
+    align-items: flex-end;
+    gap: .2rem;
+    padding: 1.15rem clamp(.8rem, 4.5vw, 2.6rem) 0;
+    border-bottom: 2px solid var(--tab-line);
   }
 
-  h1, h2 { color: var(--help-ink); font-family: var(--help-hand); font-weight: 600; }
-  h1 { margin: 0 0 .6rem; font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1.14; }
-  h2 { margin: 0 0 .4rem; font-size: clamp(1.18rem, 2.6vw, 1.38rem); line-height: 1.35; }
-  p { margin: 0; }
-  .intro { color: #504c3e; font-size: clamp(1.03rem, 2.5vw, 1.15rem); }
-
-  .help-entry { margin-block-start: 1.6rem; }
-  .reference { margin-block-start: .65rem; font-size: .94rem; }
-  .email { display: inline-block; overflow-wrap: anywhere; font-weight: 650; }
-  .privacy-contacts { display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
-  .contact-note {
-    margin-block: 1.5rem 1.75rem;
-    padding: 1.05rem 1.2rem;
-    border: 1px solid #c4cdb4;
-    border-radius: .3rem .5rem .42rem .55rem;
-    background: #e9eddd;
+  .help-tab {
+    max-width: 62%;
+    margin-bottom: -2px;
+    padding: .42rem clamp(.55rem, 2.6vw, 1rem) .5rem;
+    color: var(--paper-soft);
+    border: 2px solid transparent;
+    border-bottom: 0;
+    border-radius: .55rem .7rem 0 0 / .65rem .55rem 0 0;
+    font-size: clamp(.9rem, 3.7vw, 1.08rem);
+    line-height: 1.2;
+    text-decoration: none;
+    text-wrap: balance;
   }
-  .contact-note p + p { margin-block-start: .4rem; }
 
-  .help-footer { padding: 1.3rem .1rem 0; font-size: .9rem; }
-  .help-footer ul { display: flex; flex-wrap: wrap; gap: .15rem .85rem; margin: 0 0 .75rem; padding: 0; list-style: none; }
-  .help-footer a { display: inline-block; padding-block: .15rem; }
-  .help-footer a[aria-current='page'] { color: var(--help-ink); text-decoration: none; font-weight: 700; }
-  .help-footer p { color: #514b3d; }
+  .help-tab:hover { color: var(--paper-ink); }
+
+  .help-tab[aria-current='page'] {
+    padding-bottom: calc(.5rem + 2px);
+    color: var(--paper-ink);
+    background: var(--paper);
+    border-color: var(--tab-line);
+    font-weight: 600;
+  }
+
+  .help-page { padding: clamp(1.5rem, 5vw, 2.7rem) clamp(1.1rem, 5.5vw, 3.2rem) clamp(2.4rem, 7vw, 3.6rem); }
+
+  /* Japonca başlıklar sözcüğün ortasından değil, sözcük aralarından bölünür. */
+  h1, h2 {
+    font-family: var(--help-font);
+    font-weight: 600;
+    word-break: auto-phrase;
+  }
+
+  h1 {
+    font-size: clamp(2.1rem, 1.3rem + 4vw, 3.4rem);
+    line-height: 1.08;
+    letter-spacing: -.02em;
+  }
+
+  h2 {
+    font-size: clamp(1.22rem, 1.08rem + .8vw, 1.5rem);
+    line-height: 1.25;
+    letter-spacing: -.01em;
+  }
+
+  .help-intro {
+    max-width: 33rem;
+    margin-top: .7rem;
+    color: var(--paper-soft);
+    font-size: 1.08em;
+  }
+
+  /* Her başlık defterin bir satır çizgisiyle ayrılır. */
+  .help-entry {
+    margin-top: 1.7rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px solid var(--paper-rule);
+  }
+
+  /* Satırlar rahat okunacak uzunlukta kalır. */
+  .help-entry p, .help-note p {
+    max-width: 35rem;
+    margin-top: .45rem;
+  }
+
+  .reference { font-size: .95em; }
+  .help-last { margin-top: 1.4rem; }
+
+  .email {
+    display: inline-block;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .privacy-contacts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem 1.2rem;
+  }
+
+  /*
+   * "Bir not bırak": sayfaya yapıştırılmış sarı not. Arkadaş notun üst kenarında durur;
+   * üstteki boşluk onun boyu kadardır.
+   */
+  .help-note {
+    position: relative;
+    max-width: 36rem;
+    margin-top: 5.4rem;
+    padding: 1.15rem 1.3rem 1.35rem;
+    color: #33290f;
+    background: linear-gradient(160deg, #f8dc83, #f0c95f);
+    border-radius: 2px 2px 2px 1.1rem / 2px 2px 2px 2.8rem;
+    box-shadow: 0 1px 0 #0000001a, .35rem .8rem 1rem -.55rem #3c2a0a99;
+    rotate: -.8deg;
+  }
+
+  .help-note .email { font-size: 1.12em; }
+
+  .help-friend {
+    position: absolute;
+    inset-inline-end: 1.1rem;
+    bottom: calc(100% - .42rem);
+    width: 5.2rem;
+    height: auto;
+    rotate: .8deg;
+    pointer-events: none;
+  }
+
+  /* İkondaki kalem: sayfanın alt köşesinde, yarısı masada. */
+  .help-pencil {
+    position: relative;
+    display: block;
+    width: min(58%, 21rem);
+    height: auto;
+    margin-top: -1.5rem;
+    margin-inline-start: -.7rem;
+    rotate: -5deg;
+    pointer-events: none;
+  }
+
+  .help-footer {
+    position: relative;
+    margin-top: 1.1rem;
+    padding-inline: .15rem;
+    color: var(--oak-ink);
+    font-size: .92rem;
+  }
+
+  .help-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .1rem .95rem;
+  }
+
+  .help-footer a {
+    display: inline-block;
+    padding-block: .3rem;
+  }
+
+  /* Açık olan dil, kalemin sarısıyla işaretlenmiştir. */
+  .help-footer a[aria-current='page'] {
+    background: linear-gradient(transparent 58%, var(--pencil) 58% 90%, transparent 90%);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .help-footer p { margin-top: .7rem; }
+
+  @media (min-width: 40rem) {
+    .help-notebook::before { rotate: 1.1deg; }
+    .help-friend { width: 6rem; }
+    .help-note { margin-top: 6.1rem; }
+  }
 </style>

@@ -11,6 +11,7 @@ import Closing from './Closing.astro';
 import Company from './Company.astro';
 import Notebook from './Notebook.astro';
 import RoomHero from './RoomHero.astro';
+import RoomLight from './RoomLight.astro';
 import RoomShelf from './RoomShelf.astro';
 import SessionStory from './SessionStory.astro';
 import Wardrobe from './Wardrobe.astro';
@@ -46,19 +47,7 @@ const walls = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content={walls.day} />
-    <script is:inline define:vars={{ walls }}>
-      // İlk boyamadan önce: odanın ışığı ziyaretçinin saatidir (18.00'de akşam, 21.30'da gece, 06.00'da gündüz).
-      (() => {
-        const now = new Date();
-        const hour = now.getHours() + now.getMinutes() / 60;
-        const light = hour >= 6 && hour < 18 ? 'day' : hour >= 18 && hour < 21.5 ? 'evening' : 'night';
-        const root = document.documentElement;
-        root.dataset.light = light;
-        root.classList.add('js');
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', walls[light]);
-      })();
-    </script>
+    <RoomLight colours={walls} />
     <title>{copy.title}</title>
     <meta name="description" content={copy.description} />
     <meta property="og:title" content={copy.title} />

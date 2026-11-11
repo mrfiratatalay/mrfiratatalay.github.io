@@ -151,11 +151,8 @@ function edges(light: Light) {
     const theme = document.querySelector('meta[name="theme-color"]');
     if (!sun || !text || !hint || !reset || !label) return;
 
-    const fromClock = () => {
-      const now = new Date();
-      const hour = now.getHours() + now.getMinutes() / 60;
-      return hour >= 6 && hour < 18 ? 'day' : hour < 21.5 && hour >= 18 ? 'evening' : 'night';
-    };
+    // Saat sınırları tek yerde tanımlıdır: `RoomLight.astro`.
+    const fromClock = () => window.taoLightNow();
 
     const show = (current, own) => {
       root.dataset.light = current;
