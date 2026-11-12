@@ -1,0 +1,420 @@
+/*
+ * Rushline sayfaları: oyunun menüsündeki kırmızı, siyah ve altın sarısı; Avenir Next'in
+ * kalın eğik kesimi (oyunun yazı tipi). Apple dışı cihazlarda sistemin en kalın eğik yazısı.
+ * Sayfa her temada koyudur, çünkü oyunun kendisi öyledir.
+ */
+.rushline {
+  --rl-red: #e3171b;
+  --rl-red-deep: #8d070b;
+  --rl-ink: #120709;
+  --rl-ink-2: #1d0b0e;
+  --rl-gold: #ffd23a;
+  --rl-text: #fff;
+  --rl-text-2: rgb(255 255 255 / .78);
+  --rl-line: rgb(255 255 255 / .14);
+  --rl-display: 'Avenir Next', 'Avenir', 'Segoe UI', system-ui, sans-serif;
+  margin: 0;
+  background: var(--rl-ink);
+  color: var(--rl-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+}
+
+.rushline *,
+.rushline *::before,
+.rushline *::after { box-sizing: border-box; }
+
+.rushline img,
+.rushline video { display: block; max-width: 100%; height: auto; }
+
+.rushline a { color: inherit; }
+
+.rushline :focus-visible { outline: 3px solid var(--rl-gold); outline-offset: 3px; }
+
+.rl-skip {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 10;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--rl-gold);
+  color: var(--rl-ink) !important;
+  font-weight: 700;
+}
+
+.rl-skip:focus { top: 12px; }
+
+/* Üst şerit */
+.rl-top {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 18px 24px;
+}
+
+.rl-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--rl-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .02em;
+  text-decoration: none;
+}
+
+.rl-brand img { border-radius: 10px; box-shadow: 0 2px 10px rgb(0 0 0 / .35); }
+
+.rl-top__links { display: flex; gap: 6px; }
+
+.rl-top__links a {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / .28);
+  font-size: .85rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.rl-top__links a:hover { background: rgb(0 0 0 / .45); }
+
+/* Giriş: kırmızı zemin ve hız çizgileri */
+.rl-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+  align-items: center;
+  gap: 24px;
+  min-height: min(860px, 100svh);
+  padding: 96px max(24px, calc((100vw - 1180px) / 2 + 24px)) 56px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(-62deg, transparent 0 46px, rgb(255 110 96 / .16) 46px 50px),
+    radial-gradient(120% 90% at 78% 40%, #ff3b2f 0%, var(--rl-red) 38%, var(--rl-red-deep) 100%);
+}
+
+.rl-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 90px;
+  background: linear-gradient(transparent, var(--rl-ink));
+  pointer-events: none;
+}
+
+.rl-hero__copy { position: relative; z-index: 2; }
+
+.rl-logo {
+  margin: 0;
+  font-family: var(--rl-display);
+  font-size: clamp(3.4rem, 10vw, 7.6rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.01em;
+  color: #fff;
+  -webkit-text-stroke: .06em var(--rl-ink);
+  paint-order: stroke fill;
+  text-shadow: .05em .06em 0 var(--rl-ink);
+}
+
+.rl-logo--small { font-size: clamp(2.2rem, 6vw, 3.6rem); }
+
+.rl-tagline {
+  margin: 18px 0 0;
+  font-family: var(--rl-display);
+  font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+  font-style: italic;
+  font-weight: 800;
+  color: var(--rl-gold);
+  text-shadow: 0 2px 0 rgb(0 0 0 / .35);
+}
+
+.rl-lead { max-width: 34em; margin: 14px 0 26px; font-size: 1.06rem; color: rgb(255 255 255 / .92); }
+
+.rl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 20px 12px 16px;
+  border: 2px solid #fff;
+  border-radius: 14px;
+  background: var(--rl-ink);
+  font-weight: 750;
+  box-shadow: 4px 5px 0 rgb(0 0 0 / .45);
+}
+
+.rl-note { margin: 12px 0 0; font-size: .85rem; font-weight: 600; color: rgb(255 255 255 / .8); }
+
+.rl-hero__stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  min-height: 560px;
+}
+
+.rl-hero__art {
+  position: absolute;
+  right: -12%;
+  top: 50%;
+  width: 118%;
+  max-width: none;
+  translate: 0 -50%;
+  opacity: .5;
+  mask-image: radial-gradient(70% 60% at 50% 45%, #000 40%, transparent 78%);
+}
+
+.rl-phone {
+  margin: 0;
+  overflow: hidden;
+  border: 6px solid #0c0c0e;
+  border-radius: 34px;
+  background: #0c0c0e;
+  box-shadow: 0 0 0 1.5px rgb(255 255 255 / .2), 0 22px 50px rgb(0 0 0 / .5);
+}
+
+.rl-phone img,
+.rl-phone video { width: 100%; border-radius: 28px; }
+
+.rl-hero__phone { position: relative; width: min(290px, 70vw); rotate: 3deg; }
+
+/* Bölümler */
+.rl-section { max-width: 1180px; margin: 0 auto; padding: 64px 24px 8px; }
+
+.rl-heading {
+  margin: 0;
+  font-family: var(--rl-display);
+  font-size: clamp(1.9rem, 4.4vw, 2.8rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.rl-heading::after {
+  content: '';
+  display: block;
+  width: 72px;
+  height: 6px;
+  margin-top: 12px;
+  background: var(--rl-red);
+  transform: skewX(-24deg);
+}
+
+.rl-section__lead { margin: 14px 0 0; color: var(--rl-text-2); }
+
+.rl-section h3 {
+  margin: 0;
+  font-family: var(--rl-display);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .01em;
+}
+
+.rl-section p { margin: 6px 0 0; }
+
+.rl-how,
+.rl-modes,
+.rl-maps,
+.rl-screens,
+.rl-bikes,
+.rl-extras { margin: 28px 0 0; padding: 0; list-style: none; }
+
+.rl-how { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+.rl-how li,
+.rl-extras li {
+  padding: 22px;
+  border: 1px solid var(--rl-line);
+  border-radius: 18px;
+  background: var(--rl-ink-2);
+}
+
+.rl-how h3 { font-size: 1.6rem; text-transform: uppercase; color: var(--rl-gold); }
+
+.rl-how p,
+.rl-extras p { color: var(--rl-text-2); }
+
+.rl-how__step {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  background: var(--rl-red);
+  font-family: var(--rl-display);
+  font-style: italic;
+  font-weight: 900;
+  transform: skewX(-10deg);
+}
+
+/* Modlar: çizgi roman kareleri */
+.rl-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.rl-panel {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  border: 3px solid #fff;
+  border-radius: 18px;
+  background: var(--rl-ink-2);
+}
+
+.rl-panel img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.rl-panel__text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 260px;
+  padding: 20px;
+  background: linear-gradient(transparent 30%, rgb(10 3 5 / .92));
+}
+
+.rl-panel h3,
+.rl-map h3 {
+  font-size: 1.7rem;
+  text-transform: uppercase;
+  -webkit-text-stroke: .05em var(--rl-ink);
+  paint-order: stroke fill;
+}
+
+.rl-panel p { max-width: 30em; color: rgb(255 255 255 / .9); font-weight: 600; }
+
+/* Haritalar */
+.rl-maps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+.rl-map {
+  overflow: hidden;
+  border: 1px solid var(--rl-line);
+  border-radius: 18px;
+  background: var(--rl-ink-2);
+}
+
+.rl-map img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: center 35%; }
+
+.rl-map__text { padding: 16px 18px 20px; }
+
+.rl-map p { color: var(--rl-text-2); font-size: .95rem; }
+
+/* Ekran görüntüleri: yatay kaydırılan şerit */
+.rl-screens {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 210px;
+  gap: 18px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: var(--rl-red) transparent;
+}
+
+.rl-screens li { scroll-snap-align: start; }
+
+.rl-screens figure { margin: 0; }
+
+.rl-screens .rl-phone { border-width: 5px; border-radius: 28px; }
+
+.rl-screens .rl-phone img { border-radius: 23px; }
+
+.rl-screens figcaption { margin-top: 10px; font-size: .85rem; font-weight: 600; color: var(--rl-text-2); text-align: center; }
+
+/* Garaj */
+.rl-bikes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+
+.rl-bike {
+  padding: 18px 20px 22px;
+  border: 1px solid var(--rl-line);
+  border-radius: 18px;
+  background: radial-gradient(90% 70% at 50% 30%, #f4f1ee 0%, #cfcac6 100%);
+  color: var(--rl-ink);
+}
+
+.rl-bike img { width: 100%; aspect-ratio: 520 / 421; object-fit: contain; }
+
+.rl-bike h3 { margin-top: 8px; font-size: 1.5rem; color: var(--rl-red); }
+
+.rl-bike__meta { font-size: .8rem; font-weight: 750; text-transform: uppercase; letter-spacing: .04em; }
+
+.rl-bike p:last-child { color: #3b2a2c; font-size: .93rem; }
+
+.rl-extras { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+
+.rl-extras h3 { font-size: 1.15rem; }
+
+/* Kapanış */
+.rl-closing {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin-top: 72px;
+  padding: 72px 24px 56px;
+  text-align: center;
+  background:
+    repeating-linear-gradient(-62deg, transparent 0 46px, rgb(255 110 96 / .14) 46px 50px),
+    linear-gradient(var(--rl-red), var(--rl-red-deep));
+}
+
+.rl-closing > p { max-width: 34em; margin: 0; }
+
+.rl-closing__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+
+.rl-closing__links a {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgb(0 0 0 / .3);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.rl-closing__links a:hover { background: rgb(0 0 0 / .5); }
+
+.rl-closing__by { font-size: .85rem; color: rgb(255 255 255 / .8); }
+
+@media (max-width: 900px) {
+  .rl-hero { grid-template-columns: 1fr; min-height: 0; padding-top: 88px; }
+  .rl-hero__stage { min-height: 0; }
+  .rl-hero__art { right: auto; width: 100%; opacity: .35; }
+  .rl-how,
+  .rl-modes { grid-template-columns: 1fr; }
+  .rl-maps,
+  .rl-bikes,
+  .rl-extras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .rl-top { padding: 14px 16px; }
+  .rl-brand span { display: none; }
+  .rl-hero { padding-inline: 16px; }
+  .rl-section { padding-inline: 16px; }
+  .rl-maps,
+  .rl-bikes,
+  .rl-extras { grid-template-columns: 1fr; }
+  .rl-screens { grid-auto-columns: 62vw; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rl-top__links a,
+  .rl-closing__links a { transition: background-color .15s ease; }
+}

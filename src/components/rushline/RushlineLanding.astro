@@ -1,0 +1,208 @@
+---
+/**
+ * Rushline ürün sayfası.
+ *
+ * Sayfa oyunun menüsü gibi görünür: kırmızı zemin, hız çizgileri, kalın eğik yazı.
+ * Harita, mod ve motor görselleri oyunun kendi çizimleridir; ekran görüntüleri ve video
+ * oyunun simülatörde çekilmiş hâlidir (`public/rushline/images/`).
+ */
+import AppStoreBadge from './AppStoreBadge.astro';
+import { bikeIds, landingCopy, mapIds, modeIds, topSpeeds, type RushlineLanguage } from './landing-copy';
+import { helpPath } from '../../lib/rushline/help-links';
+import './landing.css';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const other: RushlineLanguage = lang === 'tr' ? 'en' : 'tr';
+const img = '/rushline/images/';
+const canonical = new URL(copy.path, Astro.site ?? Astro.url);
+const alternate = new URL(copy.alternate, canonical);
+const socialImage = new URL(img + 'social.jpg', canonical);
+const portfolio = lang === 'tr' ? '/oyunlar/' : '/en/games/';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#b10d12" />
+    <title>{copy.title}</title>
+    <meta name="description" content={copy.description} />
+    <meta property="og:title" content={copy.title} />
+    <meta property="og:description" content={copy.description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={socialImage.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={copy.heroAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang={lang} href={canonical.href} />
+    <link rel="alternate" hreflang={other} href={alternate.href} />
+    <link rel="icon" href={img + 'app-icon.webp'} type="image/webp" />
+    <link rel="apple-touch-icon" href={img + 'apple-touch-icon.png'} />
+    <link rel="preload" href={img + 'hero.webp'} as="image" type="image/webp" />
+  </head>
+  <body class="rushline">
+    <a class="rl-skip" href="#content">{copy.skip}</a>
+
+    <header class="rl-top">
+      <a class="rl-brand" href={copy.path}>
+        <img src={img + 'app-icon.webp'} width="40" height="40" alt="" />
+        <span>RUSHLINE</span>
+      </a>
+      <nav class="rl-top__links" aria-label="Rushline">
+        <a href={portfolio}>{copy.portfolio}</a>
+        <a href={copy.alternate} hreflang={other} lang={other}>{copy.languageName}</a>
+      </nav>
+    </header>
+
+    <section class="rl-hero" aria-labelledby="rl-title">
+      <div class="rl-hero__copy">
+        <h1 id="rl-title" class="rl-logo">RUSHLINE</h1>
+        <p class="rl-tagline">{copy.tagline}</p>
+        <p class="rl-lead">{copy.lead}</p>
+        <AppStoreBadge label={copy.soon} />
+        <p class="rl-note">{copy.soonNote}</p>
+      </div>
+      <div class="rl-hero__stage">
+        <img class="rl-hero__art" src={img + 'hero.webp'} width="1024" height="1536" alt={copy.heroAlt} fetchpriority="high" />
+        <figure class="rl-phone rl-hero__phone">
+          <video
+            src={img + 'ride.mp4'}
+            poster={img + 'ride-poster.webp'}
+            width="480"
+            height="1044"
+            muted
+            loop
+            playsinline
+            autoplay
+            preload="metadata"
+            aria-label={copy.videoLabel}
+            data-rl-video
+          ></video>
+        </figure>
+      </div>
+    </section>
+
+    <main id="content">
+      <section class="rl-section" aria-labelledby="rl-how">
+        <h2 id="rl-how" class="rl-heading">{copy.howTitle}</h2>
+        <ol class="rl-how">
+          {copy.how.map(([title, text], index) => (
+            <li>
+              <span class="rl-how__step" aria-hidden="true">{index + 1}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="rl-section" aria-labelledby="rl-modes">
+        <h2 id="rl-modes" class="rl-heading">{copy.modesTitle}</h2>
+        <p class="rl-section__lead">{copy.modesLead}</p>
+        <ul class="rl-modes">
+          {modeIds.map((id) => (
+            <li class="rl-panel">
+              <img src={`${img}modes/${id}.webp`} width="720" height="1080" alt="" loading="lazy" />
+              <div class="rl-panel__text">
+                <h3>{copy.modes[id][0]}</h3>
+                <p>{copy.modes[id][1]}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="rl-section" aria-labelledby="rl-maps">
+        <h2 id="rl-maps" class="rl-heading">{copy.mapsTitle}</h2>
+        <p class="rl-section__lead">{copy.mapsLead}</p>
+        <ul class="rl-maps">
+          {mapIds.map((id) => (
+            <li class="rl-map">
+              <img src={`${img}maps/${id}.webp`} width="640" height="960" alt="" loading="lazy" />
+              <div class="rl-map__text">
+                <h3>{copy.maps[id][0]}</h3>
+                <p>{copy.maps[id][1]}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="rl-section" aria-labelledby="rl-screens">
+        <h2 id="rl-screens" class="rl-heading">{copy.screensTitle}</h2>
+        <p class="rl-section__lead">{copy.screensLead}</p>
+        <ul class="rl-screens" tabindex="0" aria-labelledby="rl-screens">
+          {copy.screens.map(([file, caption]) => (
+            <li>
+              <figure>
+                <div class="rl-phone">
+                  <img src={`${img}screens/${file}.webp`} width="540" height="1174" alt={caption} loading="lazy" />
+                </div>
+                <figcaption>{caption}</figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="rl-section" aria-labelledby="rl-garage">
+        <h2 id="rl-garage" class="rl-heading">{copy.garageTitle}</h2>
+        <p class="rl-section__lead">{copy.garageLead}</p>
+        <ul class="rl-bikes">
+          {bikeIds.map((id) => (
+            <li class="rl-bike">
+              <img src={`${img}bikes/${id}.webp`} width="520" height="421" alt="" loading="lazy" />
+              <h3 lang="en">{id.toUpperCase()}</h3>
+              <p class="rl-bike__meta">{copy.bikes[id][0]} · {topSpeeds[id]} {copy.kmh}</p>
+              <p>{copy.bikes[id][1]}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="rl-section" aria-labelledby="rl-extras">
+        <h2 id="rl-extras" class="rl-heading">{copy.extrasTitle}</h2>
+        <ul class="rl-extras">
+          {copy.extras.map(([title, text]) => (
+            <li>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+
+    <footer class="rl-closing">
+      <h2 class="rl-logo rl-logo--small">{copy.closingTitle}</h2>
+      <p>{copy.closingText}</p>
+      <AppStoreBadge label={copy.soon} />
+      <nav class="rl-closing__links" aria-label={copy.support}>
+        <a href={helpPath(lang, 'support')}>{copy.support}</a>
+        <a href={helpPath(lang, 'privacy')}>{copy.privacy}</a>
+        <a href={portfolio}>{copy.portfolio}</a>
+      </nav>
+      <p class="rl-closing__by">{copy.madeBy}</p>
+    </footer>
+
+    <script>
+      // Hareketi azaltmak isteyenlerde video kendi kendine oynamaz; poster görünür kalır.
+      const video = document.querySelector<HTMLVideoElement>('[data-rl-video]');
+      if (video && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        video.removeAttribute('autoplay');
+        video.pause();
+        video.controls = true;
+      }
+    </script>
+  </body>
+</html>

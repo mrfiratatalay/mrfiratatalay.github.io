@@ -1,0 +1,170 @@
+/**
+ * Rushline ürün sayfasının metinleri. Mod, harita ve motor adları oyundaki adlardır;
+ * motorların tanımları oyunun garajındaki cümlelerdir (`BikeDisplay.swift`).
+ */
+export type RushlineLanguage = 'tr' | 'en';
+
+type Item = [title: string, text: string];
+
+export const mapIds = ['karadeniz', 'istanbul', 'ege', 'neon', 'kapadokya', 'dogu'] as const;
+export const modeIds = ['career', 'endless', 'police', 'courier'] as const;
+export const bikeIds = ['zephyr', 'tempest', 'kurye', 'vortex', 'volt', 'goliath'] as const;
+
+/** Garajdaki en yüksek hızlar (km/sa). */
+export const topSpeeds: Record<(typeof bikeIds)[number], number> = {
+  zephyr: 238, tempest: 262, kurye: 178, vortex: 325, volt: 305, goliath: 300,
+};
+
+const tr = {
+  path: '/rushline/',
+  alternate: '/rushline/en/',
+  languageName: 'English',
+  title: 'Rushline · iPhone için motor trafik yarışı',
+  description: 'Telefonu eğerek trafiğin arasından süzül, gazı aç, BOOST’u x5’e çıkar. Türkiye’nin altı yolunda, tamamen çevrimdışı bir motor yarışı. Yakında App Store’da.',
+  skip: 'İçeriğe geç',
+  portfolio: 'Portfolyo',
+  tagline: 'Telefonu eğ. Gazı aç. Trafiği yar.',
+  lead: 'Çocukluğumuzun motor trafik yarışlarından ilham alan, dikey ekranlı bir iPhone oyunu. Karadeniz’in sahil yolundan Kapadokya’nın peri bacalarına, Türkiye’nin altı yolunda araçların arasından son anda sıyrıl.',
+  soon: 'Yakında App Store’da',
+  soonNote: 'iPhone için · Çevrimdışı · Reklamsız',
+  videoLabel: 'Ege Kıyısı’nda bir sürüşten kısa bir görüntü',
+  heroAlt: 'Kırmızı ceketli, güneş gözlüklü sürücü kırmızı motoruyla öne doğru yatıyor',
+  howTitle: 'Üç hareket, bütün oyun',
+  how: [
+    ['Eğ', 'Telefonu sağa sola eğ; motor da o yana yatar ve şerit değiştirir. Dilersen ekranda parmağını kaydırarak da sürersin.'],
+    ['Bas', 'Ekrana basılı tutunca gaz açılır. Düz ve temiz sürdükçe BOOST çarpanı x5’e kadar büyür; ikinci parmak frendir.'],
+    ['Sıyır', 'Araçların yanından ne kadar yakın geçersen o kadar puan. Tünelde yakın geçiş, rüzgâr tüneli ve slipstream ekstra puan getirir.'],
+  ] as Item[],
+  modesTitle: 'Dört mod, her harita',
+  modesLead: 'Her mod altı haritanın hepsinde oynanır.',
+  modes: {
+    career: ['Kariyer', 'Her haritada 12 kısa görev: “15 yakın geçiş yap”, “x5 BOOST’u 20 sn koru”. Yıldız topla, sıradakini aç.'],
+    endless: ['Sonsuz', 'Süre yok, hedef yok. Gidebildiğin kadar git, rekorunu kır.'],
+    police: ['Polis Kovalamacası', 'Aranıyorsun. Her kaçış bir yıldız ekler; yıldızlar arttıkça daha çok polis ve barikat gelir.'],
+    courier: ['Kurye', 'Saate karşı teslimat. Paketi kapılardan geçir, gecikme.'],
+  } as Record<(typeof modeIds)[number], Item>,
+  mapsTitle: 'Altı harita, tek ülke',
+  mapsLead: 'Her haritanın kendi bölümleri var; tünellerden ya da çatallardan geçerek yol değiştirirsin.',
+  maps: {
+    karadeniz: ['Karadeniz', 'Tetrapodlu sahil yolu, çay bahçeli yayla ve Uzungöl. Sürüş boyunca sis çöker, sağanak bastırır, ardından gökkuşağı çıkar.'],
+    istanbul: ['İstanbul', 'Altın saatte Beyoğlu’nun Arnavut kaldırımı, Boğaz Köprüsü ve yalılı Boğaz kıyısı.'],
+    ege: ['Ege Kıyısı', 'Şemsiyeli plaj yolu, begonvilli beyaz köy ve zeytinlikler arasından turkuaz koylar.'],
+    neon: ['Neon Şehir', 'Hep gece: dev ekranlı bulvar, konteyner limanı ve fenerli gece pazarı.'],
+    kapadokya: ['Kapadokya', 'Gün doğumunda peri bacaları, Kızılırmak kıyısında bağlar ve balon vadisi.'],
+    dogu: ['Doğu Anadolu', 'Karlı Erzurum yolları, Kars, Van Gölü ve Mardin.'],
+  } as Record<(typeof mapIds)[number], Item>,
+  screensTitle: 'Yoldan kareler',
+  screensLead: 'Hepsi oyunun kendisinden, simülatörde çekildi.',
+  screens: [
+    ['ride-karadeniz', 'Karadeniz sahil yolu'],
+    ['ride-rainbow', 'Sağanaktan sonra gökkuşağı'],
+    ['ride-police', 'Polis Kovalamacası, Ege'],
+    ['ride-neon', 'Neon Şehir'],
+    ['ride-kapadokya', 'Kapadokya'],
+    ['ride-dogu', 'Doğu Anadolu’da kar'],
+    ['menu-tr', 'Ana menü'],
+    ['modes-tr', 'Mod seçimi'],
+  ] as [string, string][],
+  garageTitle: 'Garaj',
+  garageLead: 'Altı motor, her birinin kendi sesi, vites hissi ve çekişi.',
+  bikes: {
+    zephyr: ['Çevik', 'Tüy kadar hafif supersport. Şeritler arasında sinek kuşu gibi süzülür.'],
+    tempest: ['Dengeli', 'Uluyan dört silindirli büyük motorlu sport-tourer. Hızlı, dengeli, affedici.'],
+    kurye: ['Atik', 'Kuryenin 125’liği. Hızlı değil ama başka hiçbir şeyin sığmadığı boşluklardan geçer.'],
+    vortex: ['Süper motor', '325 km/sa’e çığlık atarak çıkan V4. İki teker üstündeki en hızlı şey.'],
+    volt: ['Hiper motor', 'Elektrikli hiper motor: anında tork, üç hızlı vites ve yükselen bir uğultu.'],
+    goliath: ['Güçlü', 'Gürleyen V-twin kas cruiser. Acımasız çekiş, ağır direksiyon.'],
+  } as Record<(typeof bikeIds)[number], Item>,
+  kmh: 'km/sa',
+  extrasTitle: 'Ve dahası',
+  extras: [
+    ['Günlük görevler', 'Her gün herkese aynı üç yeni görev: kolay, orta, zor. Üçünü bitir, bonus jetonu al.'],
+    ['Tamamen çevrimdışı', 'İnternet gerekmez. Uçakta, metroda, dağ başında oyna.'],
+    ['Reklamsız', 'Sürüşün ortasında hiçbir reklam çıkmaz.'],
+    ['Hesap yok', 'Kayıt olmadan aç ve sür; ilerlemen telefonunda kalır.'],
+  ] as Item[],
+  closingTitle: 'Yakında yolda.',
+  closingText: 'Rushline App Store’a çıkmak üzere. Bu sayfa çıktığı gün indirme bağlantısıyla güncellenecek.',
+  support: 'Destek',
+  privacy: 'Gizlilik',
+  madeBy: 'Fırat Atalay’ın geliştirdiği bir oyun.',
+};
+
+type LandingCopy = typeof tr;
+
+const en: LandingCopy = {
+  path: '/rushline/en/',
+  alternate: '/rushline/',
+  languageName: 'Türkçe',
+  title: 'Rushline · Motorcycle traffic racer for iPhone',
+  description: 'Tilt to weave through traffic, hold to throttle and push your BOOST to x5. An offline motorcycle racer on six roads across Türkiye. Coming soon to the App Store.',
+  skip: 'Skip to content',
+  portfolio: 'Portfolio',
+  tagline: 'Tilt. Throttle. Split the traffic.',
+  lead: 'A portrait-mode iPhone game inspired by the motorcycle traffic racers we grew up with. From the Black Sea coast road to the fairy chimneys of Cappadocia, slip past cars at the last second on six roads across Türkiye.',
+  soon: 'Coming soon to the App Store',
+  soonNote: 'For iPhone · Offline · No ads',
+  videoLabel: 'A short clip from a ride on the Aegean coast',
+  heroAlt: 'A rider in a red jacket and sunglasses leaning forward on a red motorcycle',
+  howTitle: 'Three moves, the whole game',
+  how: [
+    ['Tilt', 'Tilt your phone and the bike leans with it and changes lanes. You can also steer by sliding a finger on the screen.'],
+    ['Hold', 'Hold the screen to open the throttle. Ride clean and the BOOST multiplier climbs to x5; a second finger brakes.'],
+    ['Slip by', 'The closer you pass, the more you score. Tunnel near misses, wind tunnels and slipstreams pay extra.'],
+  ],
+  modesTitle: 'Four modes, every map',
+  modesLead: 'Every mode is played on all six maps.',
+  modes: {
+    career: ['Career', '12 short missions on every map: “Pull off 15 near misses”, “Hold x5 BOOST for 20 s”. Earn stars to open the next.'],
+    endless: ['Endless', 'No timer, no target. Ride as far as you can and beat your record.'],
+    police: ['Police Chase', 'You are wanted. Every escape adds a star, and more stars bring more police and roadblocks.'],
+    courier: ['Courier', 'Deliveries against the clock. Carry the parcel through the gates and don’t be late.'],
+  },
+  mapsTitle: 'Six maps, one country',
+  mapsLead: 'Every map has its own stretches; you switch between them through tunnels or at forks.',
+  maps: {
+    karadeniz: ['Black Sea', 'A coast road lined with tetrapods, tea-terraced highlands and Lake Uzungöl. Fog rolls in, a shower passes, then a rainbow.'],
+    istanbul: ['Istanbul', 'Beyoğlu’s cobblestones, the Bosphorus Bridge and the waterfront mansions, all at golden hour.'],
+    ege: ['Aegean Coast', 'A beach road with parasols, a whitewashed village with bougainvillea and turquoise coves past the olive groves.'],
+    neon: ['Neon City', 'Always night: a boulevard of giant screens, a container port and a lantern-lit night market.'],
+    kapadokya: ['Cappadocia', 'Fairy chimneys at sunrise, vineyards along the Red River and the balloon valley.'],
+    dogu: ['Eastern Anatolia', 'Snowy Erzurum roads, Kars, Lake Van and Mardin.'],
+  },
+  screensTitle: 'From the road',
+  screensLead: 'All taken from the game itself, in the simulator.',
+  screens: [
+    ['ride-karadeniz', 'Black Sea coast road'],
+    ['ride-rainbow', 'A rainbow after the shower'],
+    ['ride-police', 'Police Chase on the Aegean coast'],
+    ['ride-neon', 'Neon City'],
+    ['ride-kapadokya', 'Cappadocia'],
+    ['ride-dogu', 'Snow in Eastern Anatolia'],
+    ['menu-en', 'Main menu'],
+    ['modes-en', 'Choosing a mode'],
+  ],
+  garageTitle: 'Garage',
+  garageLead: 'Six bikes, each with its own sound, gears and pull.',
+  bikes: {
+    zephyr: ['Agile', 'Featherweight supersport. Darts between lanes like a hummingbird.'],
+    tempest: ['Balanced', 'Big-bore sport-tourer with a howling four. Fast, planted, forgiving.'],
+    kurye: ['Nimble', 'The courier’s 125. Not fast, but it slips through gaps nothing else can.'],
+    vortex: ['Superbike', 'V4 superbike that screams to 325 km/h. The fastest thing on two wheels.'],
+    volt: ['Hyperbike', 'Electric hyperbike: instant torque, three quick gears and a rising whine.'],
+    goliath: ['Powerful', 'Muscle cruiser with a thundering twin. Brutal pull, heavy steering.'],
+  },
+  kmh: 'km/h',
+  extrasTitle: 'And more',
+  extras: [
+    ['Daily tasks', 'Three new tasks every day, the same for everyone: easy, medium and hard. Finish all three for a bonus.'],
+    ['Fully offline', 'No internet needed. Play on a plane, on the metro or up a mountain.'],
+    ['No ads', 'Nothing ever pops up in the middle of a ride.'],
+    ['No account', 'Open it and ride, no sign-up; your progress stays on your phone.'],
+  ],
+  closingTitle: 'On the road soon.',
+  closingText: 'Rushline is about to land on the App Store. This page will get the download link on launch day.',
+  support: 'Support',
+  privacy: 'Privacy',
+  madeBy: 'A game by Fırat Atalay.',
+};
+
+export const landingCopy: Record<RushlineLanguage, LandingCopy> = { tr, en };

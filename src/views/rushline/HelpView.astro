@@ -1,0 +1,101 @@
+---
+/**
+ * Rushline'ın destek ve gizlilik sayfaları: ürün sayfasının kırmızı şeridi altında,
+ * uzun yazının rahat okunduğu tek sütun. App Store Connect bu iki adresi ister.
+ */
+import '../../components/rushline/landing.css';
+import '../../components/rushline/help.css';
+import { help } from '../../data/rushline/help';
+import { profile } from '../../lib/content/site-data';
+import { helpPath, productPath, type RushlineHelpPage, type RushlineLocale } from '../../lib/rushline/help-links';
+
+interface Props {
+  locale: RushlineLocale;
+  page: RushlineHelpPage;
+}
+
+const { locale, page } = Astro.props;
+const copy = help[locale];
+const other: RushlineLocale = locale === 'tr' ? 'en' : 'tr';
+const { title, intro } = copy[page];
+const tabs: [RushlineHelpPage, string][] = [['support', copy.support.title], ['privacy', copy.privacy.title]];
+const mail = `mailto:${profile.email}`;
+const canonical = (language: RushlineLocale) => new URL(helpPath(language, page), Astro.site ?? Astro.url);
+const img = '/rushline/images/';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#b10d12" />
+    <title>{title} · Rushline</title>
+    <meta name="description" content={intro} />
+    <link rel="canonical" href={canonical(locale)} />
+    <link rel="alternate" hreflang={locale} href={canonical(locale)} />
+    <link rel="alternate" hreflang={other} href={canonical(other)} />
+    <link rel="alternate" hreflang="x-default" href={canonical('tr')} />
+    <link rel="icon" href={img + 'app-icon.webp'} type="image/webp" />
+    <link rel="apple-touch-icon" href={img + 'apple-touch-icon.png'} />
+  </head>
+  <body class="rushline rl-help">
+    <a class="rl-skip" href="#content">{locale === 'tr' ? 'İçeriğe geç' : 'Skip to content'}</a>
+    <header class="rl-help__band">
+      <div class="rl-help__bar">
+        <a class="rl-brand" href={productPath(locale)}>
+          <img src={img + 'app-icon.webp'} width="40" height="40" alt="" />
+          <span>RUSHLINE</span>
+        </a>
+        <nav class="rl-top__links" aria-label="Rushline">
+          <a href={helpPath(other, page)} hreflang={other} lang={other}>{copy.other}</a>
+        </nav>
+      </div>
+      <nav class="rl-help__tabs" aria-label={`Rushline · ${title}`}>
+        {tabs.map(([id, label]) => (
+          <a href={helpPath(locale, id)} aria-current={id === page ? 'page' : undefined}>{label}</a>
+        ))}
+      </nav>
+    </header>
+
+    <main id="content" class="rl-help__page">
+      <h1 class="rl-heading">{title}</h1>
+      <p class="rl-help__intro">{intro}</p>
+
+      {page === 'support' ? (
+        <>
+          <section class="rl-help__contact" aria-labelledby="rl-contact">
+            <h2 id="rl-contact">{copy.support.contactTitle}</h2>
+            <p><a class="rl-help__email" href={mail} dir="ltr">{profile.email}</a></p>
+            <p>{copy.support.contactDetails}</p>
+          </section>
+          {copy.support.guides.map(([heading, text]) => (
+            <section class="rl-help__item">
+              <h2>{heading}</h2>
+              <p>{text}</p>
+            </section>
+          ))}
+          <p class="rl-help__ref"><a href="https://support.apple.com/108096">{copy.appleHelp} <span aria-hidden="true">↗</span></a></p>
+        </>
+      ) : (
+        <>
+          {copy.privacy.sections.map(([heading, text]) => (
+            <section class="rl-help__item">
+              <h2>{heading}</h2>
+              <p>{text}</p>
+            </section>
+          ))}
+          <section class="rl-help__item">
+            <h2>{copy.support.contactTitle}</h2>
+            <p><a class="rl-help__email" href={mail} dir="ltr">{profile.email}</a></p>
+          </section>
+          <p class="rl-help__ref"><a href="https://www.apple.com/legal/privacy/data/en/appstore/">Apple App Store <span aria-hidden="true">↗</span></a></p>
+          <p class="rl-help__date">{locale === 'tr' ? 'Son güncelleme: 12 Kasım 2026' : 'Last updated: November 12, 2026'}</p>
+        </>
+      )}
+
+      <p class="rl-help__back"><a href={productPath(locale)}>← {copy.back}</a></p>
+    </main>
+  </body>
+</html>
