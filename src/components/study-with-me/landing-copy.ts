@@ -176,7 +176,7 @@ export const landingCopy = {
     },
     soundBubble: 'çalışırken biraz yağmur sesi?',
     soundBody: 'Oda için beş ses var. İstersen hiçbiri: sessizlik de bir seçim.',
-    sounds: ['pencere', 'kütüphane', 'yağmur', 'dışarısı, geç saat', 'şömine'],
+    sounds: ['yağmur', 'gece', 'şömine', 'dalga', 'kafe'],
     roomsNote: 'Saatlerin, manzaraların ve oda eşyalarının bir kısmı stüdyoda tek seferlik satın alınır.',
 
     notebookLabel: 'Defter',
@@ -348,7 +348,7 @@ export const landingCopy = {
     },
     soundBubble: 'a little rain while we work?',
     soundBody: 'There are five sounds for the room. Or none at all: silence is a choice too.',
-    sounds: ['the window', 'library', 'rain', 'outside, late', 'fireplace'],
+    sounds: ['rain', 'night', 'fireplace', 'waves', 'café'],
     roomsNote: 'Some clocks, views and room items are one-time purchases in the studio.',
 
     notebookLabel: 'The notebook',
