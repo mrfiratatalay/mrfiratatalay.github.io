@@ -8,6 +8,7 @@ export type SectionId =
   | 'about'
   | 'projects'
   | 'apps'
+  | 'games'
   | 'blog'
   | 'notes'
   | 'series'
@@ -20,6 +21,7 @@ export type IconName =
   | 'about'
   | 'projects'
   | 'apps'
+  | 'games'
   | 'blog'
   | 'notes'
   | 'series'
@@ -36,7 +38,7 @@ export interface Section {
   icon: IconName;
 }
 
-const ORDER = ['about', 'projects', 'apps', 'blog', 'notes', 'series', 'contact'] as const;
+const ORDER = ['about', 'projects', 'apps', 'games', 'blog', 'notes', 'series', 'contact'] as const;
 
 /** Bölümler, istenen dildeki adları ve adresleriyle. */
 export function sectionsFor(locale: Locale): Section[] {

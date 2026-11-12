@@ -34,6 +34,7 @@ function IconArtwork({ name, id }: { name: IconName; id: string }) {
     about: ['#fbfaf6', '#e6e3dc'],
     projects: ['#faf4e9', '#e8dcc9'],
     apps: ['#eff8ee', '#d3e4d0'],
+    games: ['#fdf1ef', '#efd3cf'],
     blog: ['#fafbfc', '#dce3e9'],
     notes: ['#fffef9', '#f3efdc'],
     series: ['#eef5ef', '#d8e6dc'],
@@ -90,6 +91,19 @@ function IconArtwork({ name, id }: { name: IconName; id: string }) {
           <rect x="35" y="16" width="12" height="12" rx="3.5" fill={paint('blue')} />
           <rect x="17" y="34" width="12" height="12" rx="3.5" fill={paint('yellow')} />
           <rect x="35" y="34" width="12" height="12" rx="3.5" fill={paint('leather')} />
+        </>
+      );
+      break;
+    case 'games':
+      artwork = (
+        <>
+          <path d="M19 25h26c6 0 9 4 10 10l2 11c.8 5-4.2 7.8-8 4.6L43 45H21l-6 5.6c-3.8 3.2-8.8.4-8-4.6l2-11c1-6 4-10 10-10Z" fill="#6b2a26" opacity=".2" />
+          <path d="M19 22h26c6 0 9 4 10 10l2 11c.8 5-4.2 7.8-8 4.6L43 42H21l-6 5.6c-3.8 3.2-8.8.4-8-4.6l2-11c1-6 4-10 10-10Z" fill={paint('paper')} stroke="#c2a8a4" strokeWidth=".7" />
+          <path d="M17.5 28.5h3v4h4v3h-4v4h-3v-4h-4v-3h4Z" fill="#3f4650" />
+          <circle cx="44" cy="29.5" r="2.4" fill="#e2493f" />
+          <circle cx="49" cy="34" r="2.4" fill={paint('yellow')} />
+          <circle cx="39" cy="34" r="2.4" fill={paint('blue')} />
+          <circle cx="44" cy="38.5" r="2.4" fill={paint('green')} />
         </>
       );
       break;

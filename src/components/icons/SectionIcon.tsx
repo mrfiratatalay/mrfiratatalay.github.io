@@ -1,6 +1,7 @@
 import {
   BriefcaseBusiness,
   House,
+  Gamepad2,
   LayoutGrid,
   Library,
   Mail,
@@ -17,6 +18,7 @@ const ICONS = {
   about: UserRound,
   projects: BriefcaseBusiness,
   apps: LayoutGrid,
+  games: Gamepad2,
   blog: Newspaper,
   notes: NotebookPen,
   series: Library,

@@ -16,6 +16,7 @@ const tr = {
     about: { label: 'Hakkımda', short: 'Hakkımda' },
     projects: { label: 'Projelerim', short: 'Projeler' },
     apps: { label: 'Uygulamalarım', short: 'Uygulamalar' },
+    games: { label: 'Oyunlarım', short: 'Oyunlar' },
     blog: { label: 'Blog', short: 'Blog' },
     notes: { label: 'Öğrenme Notları', short: 'Notlar' },
     series: { label: 'Çalışmalarım', short: 'Çalışmalar' },
@@ -115,6 +116,11 @@ const tr = {
   apps: {
     description: 'Geliştirdiğim uygulamaları keşfet.',
     open: 'Uygulama sayfasını aç',
+  },
+  games: {
+    description: 'Geliştirdiğim oyunları keşfet.',
+    open: 'Oyunun sayfasını aç',
+    soon: 'Yakında',
   },
   projects: {
     title: 'Projelerim',
@@ -267,6 +273,7 @@ const en: Dictionary = {
     about: { label: 'About Me', short: 'About' },
     projects: { label: 'My Projects', short: 'Projects' },
     apps: { label: 'My Apps', short: 'Apps' },
+    games: { label: 'My Games', short: 'Games' },
     blog: { label: 'Blog', short: 'Blog' },
     notes: { label: 'Learning Notes', short: 'Notes' },
     series: { label: 'Study Series', short: 'Series' },
@@ -366,6 +373,11 @@ const en: Dictionary = {
   apps: {
     description: 'Explore the apps I build.',
     open: 'Open app page',
+  },
+  games: {
+    description: 'Explore the games I build.',
+    open: 'Open game page',
+    soon: 'Coming soon',
   },
   projects: {
     title: 'My Projects',

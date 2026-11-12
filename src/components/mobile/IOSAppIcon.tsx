@@ -14,6 +14,7 @@ const surfaces: Record<IOSIconName, [string, string]> = {
   about: ['#f5f5f7', '#dedfe3'],
   projects: ['#fff', '#f5f7fb'],
   apps: ['#eff8ee', '#d1e5ce'],
+  games: ['#ff5a4a', '#d4141c'],
   blog: ['#fff', '#f4f7fa'],
   notes: ['#fff', '#f6f6f5'],
   series: ['#ffa92e', '#f27406'],
@@ -74,6 +75,18 @@ export default function IOSAppIcon({ name, size, className }: Props) {
           <rect x="35" y="12" width="17" height="17" rx="5" fill="#3885b4" />
           <rect x="12" y="35" width="17" height="17" rx="5" fill="#dfaa47" />
           <rect x="35" y="35" width="17" height="17" rx="5" fill="#b77d72" />
+        </>
+      );
+      break;
+    case 'games':
+      artwork = (
+        <>
+          <path d="M19 21h26c6 0 9 4 10 10l2 11c.8 5-4.2 7.8-8 4.6L43 41H21l-6 5.6c-3.8 3.2-8.8.4-8-4.6l2-11c1-6 4-10 10-10Z" fill="#fff" />
+          <path d="M17.5 27.5h3v4h4v3h-4v4h-3v-4h-4v-3h4Z" fill="#2b2f36" />
+          <circle cx="44" cy="28.5" r="2.4" fill="#e2493f" />
+          <circle cx="49" cy="33" r="2.4" fill="#f2b51d" />
+          <circle cx="39" cy="33" r="2.4" fill="#2f8ad6" />
+          <circle cx="44" cy="37.5" r="2.4" fill="#3a9b5c" />
         </>
       );
       break;
