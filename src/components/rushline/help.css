@@ -70,3 +70,6 @@
   .rl-help__page { padding-inline: 16px; }
   .rl-help__tabs a { padding: 10px 14px; }
 }
+
+/* Yardım sayfalarında başlık ürün sayfasındaki kadar büyük olmaz. */
+.rl-help .rl-heading { font-size: clamp(2rem, 6vw, 3rem); }

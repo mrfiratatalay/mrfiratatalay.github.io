@@ -1,0 +1,43 @@
+---
+/** Dört mod, dört afiş. Her afişin gölge rengi modun kendi rengidir. */
+import { landingCopy, modeIds, type RushlineLanguage } from './landing-copy';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const img = '/rushline/images/';
+const look: Record<(typeof modeIds)[number], [accent: string, deep: string, tilt: string]> = {
+  career: ['#ffd23a', '#8a5a00', '-2deg'],
+  endless: ['#ff2d2d', '#7d0409', '1.4deg'],
+  police: ['#3d8bff', '#0b2c7a', '-1.2deg'],
+  courier: ['#3fe07c', '#0b5c2c', '2deg'],
+};
+---
+
+<section class="rl-section rl-modes-section" aria-labelledby="rl-modes">
+  <div class="rl-wrap">
+    <p class="rl-kicker" data-reveal>{copy.modesKicker}</p>
+    <h2 id="rl-modes" class="rl-heading" data-reveal>{copy.modesTitle}</h2>
+    <p class="rl-lede" data-reveal>{copy.modesLead}</p>
+
+    <ul class="rl-modes" data-strip>
+      {modeIds.map((id, index) => (
+        <li
+          class="rl-mode"
+          data-reveal
+          style={`--d:${index};--accent:${look[id][0]};--accent-deep:${look[id][1]};--tilt:${look[id][2]}`}
+        >
+          <img src={`${img}modes/${id}.webp`} width="720" height="1080" alt="" loading="lazy" />
+          <span class="rl-mode__no" aria-hidden="true">0{index + 1}</span>
+          <div class="rl-mode__text">
+            <h3>{copy.modes[id][0]}</h3>
+            <p>{copy.modes[id][1]}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

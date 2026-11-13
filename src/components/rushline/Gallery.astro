@@ -1,0 +1,59 @@
+---
+/** Oyundan ekran görüntüleri ve "sadece sen ve yol" özellikleri. */
+import { landingCopy, type RushlineLanguage } from './landing-copy';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const img = '/rushline/images/';
+/* Sırayla: günlük görevler, çevrimdışı, reklamsız, hesap yok. */
+const icons = [
+  'M10 8h28a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4zM6 18h36M15 4v8M33 4v8M16 29l6 6 11-12',
+  'M24 37h.01M6 18c5-5 11-7.500 18-7.500 3 0 5.800.5 8.400 1.400M42 18a26 26 0 0 0-3.500-3M13 25c3-3 7-4.500 11-4.500M35 25a16 16 0 0 0-4.400-3M18.500 31.500a8 8 0 0 1 11 0M7 5l34 38',
+  'M24 5a19 19 0 1 0 0 38 19 19 0 0 0 0-38zM10.600 10.600l26.800 26.800M19 20v8M19 20h10M19 24h7',
+  'M24 24a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM8 42c1.600-8 8-12 16-12 3 0 5.800.6 8.200 1.700M32 38l4 4 8-9',
+];
+---
+
+<section class="rl-section" aria-labelledby="rl-screens">
+  <div class="rl-wrap">
+    <p class="rl-kicker" data-reveal>{copy.screensKicker}</p>
+    <h2 id="rl-screens" class="rl-heading" data-reveal>{copy.screensTitle}</h2>
+    <p class="rl-lede" data-reveal>{copy.screensLead}</p>
+
+    <ul class="rl-screens" data-strip aria-labelledby="rl-screens">
+      {copy.screens.map(([file, caption], index) => (
+        <li data-reveal style={`--d:${index}`}>
+          <figure>
+            <div class="rl-phone">
+              <img src={`${img}screens/${file}.webp`} width="540" height="1174" alt={caption} loading="lazy" />
+            </div>
+            <figcaption>{caption}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="rl-section" aria-labelledby="rl-extras" style="padding-top:0">
+  <div class="rl-wrap">
+    <p class="rl-kicker" data-reveal>{copy.extrasKicker}</p>
+    <h2 id="rl-extras" class="rl-heading" data-reveal>{copy.extrasTitle}</h2>
+
+    <ul class="rl-extras">
+      {copy.extras.map(([title, text], index) => (
+        <li class="rl-extra" data-reveal style={`--d:${index}`}>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <path d={icons[index]} />
+          </svg>
+          <h3>{title}</h3>
+          <p>{text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

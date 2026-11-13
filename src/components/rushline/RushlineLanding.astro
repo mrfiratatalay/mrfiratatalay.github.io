@@ -2,14 +2,28 @@
 /**
  * Rushline ürün sayfası.
  *
- * Sayfa oyunun menüsü gibi görünür: kırmızı zemin, hız çizgileri, kalın eğik yazı.
- * Harita, mod ve motor görselleri oyunun kendi çizimleridir; ekran görüntüleri ve video
- * oyunun simülatörde çekilmiş hâlidir (`public/rushline/images/`).
+ * Sayfa oyunun kendisi gibi görünür: kapağın kırmızısıyla başlar, asfalt siyahında devam
+ * eder, yine kırmızıda biter. Yazılar oyunun kalın eğik yazısıdır. Harita, mod ve motor
+ * görselleri oyunun kendi çizimleridir; ekran görüntüleri ve video oyunun simülatörde
+ * çekilmiş hâlidir (`public/rushline/images/`). Etkileşimli bölümler (haritalar, garaj)
+ * radyo düğmeleriyle çalışır; betik yalnızca süsler içindir.
  */
 import AppStoreBadge from './AppStoreBadge.astro';
-import { bikeIds, landingCopy, mapIds, modeIds, topSpeeds, type RushlineLanguage } from './landing-copy';
+import Gallery from './Gallery.astro';
+import Garage from './Garage.astro';
+import Hero from './Hero.astro';
+import Maps from './Maps.astro';
+import Modes from './Modes.astro';
+import Moves from './Moves.astro';
+import Speedo from './Speedo.astro';
+import Streaks from './Streaks.astro';
+import { landingCopy, type RushlineLanguage } from './landing-copy';
 import { helpPath } from '../../lib/rushline/help-links';
 import './landing.css';
+import './hero.css';
+import './maps.css';
+import './garage.css';
+import './sections.css';
 
 interface Props {
   lang: RushlineLanguage;
@@ -31,7 +45,7 @@ const portfolio = lang === 'tr' ? '/oyunlar/' : '/en/games/';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
-    <meta name="theme-color" content="#b10d12" />
+    <meta name="theme-color" content="#e30212" />
     <title>{copy.title}</title>
     <meta name="description" content={copy.description} />
     <meta property="og:title" content={copy.title} />
@@ -49,6 +63,7 @@ const portfolio = lang === 'tr' ? '/oyunlar/' : '/en/games/';
     <link rel="icon" href={img + 'app-icon.webp'} type="image/webp" />
     <link rel="apple-touch-icon" href={img + 'apple-touch-icon.png'} />
     <link rel="preload" href={img + 'hero.webp'} as="image" type="image/webp" />
+    <script is:inline>document.documentElement.classList.add('rl-js');</script>
   </head>
   <body class="rushline">
     <a class="rl-skip" href="#content">{copy.skip}</a>
@@ -64,144 +79,138 @@ const portfolio = lang === 'tr' ? '/oyunlar/' : '/en/games/';
       </nav>
     </header>
 
-    <section class="rl-hero" aria-labelledby="rl-title">
-      <div class="rl-hero__copy">
-        <h1 id="rl-title" class="rl-logo">RUSHLINE</h1>
-        <p class="rl-tagline">{copy.tagline}</p>
-        <p class="rl-lead">{copy.lead}</p>
+    <Hero lang={lang} />
+
+    <main id="content">
+      <Moves lang={lang} />
+      <Maps lang={lang} />
+      <Modes lang={lang} />
+      <Garage lang={lang} />
+      <Gallery lang={lang} />
+    </main>
+
+    <footer>
+      <div class="rl-closing">
+        <Streaks />
+        <img class="rl-closing__icon" src={img + 'app-icon.webp'} width="132" height="132" alt="" loading="lazy" />
+        <p class="rl-kicker">{copy.closingKicker}</p>
+        <h2 class="rl-logo">{copy.closingTitle}</h2>
+        <p class="rl-closing__text">{copy.closingText}</p>
         <AppStoreBadge label={copy.soon} />
         <p class="rl-note">{copy.soonNote}</p>
       </div>
-      <div class="rl-hero__stage">
-        <img class="rl-hero__art" src={img + 'hero.webp'} width="1024" height="1536" alt={copy.heroAlt} fetchpriority="high" />
-        <figure class="rl-phone rl-hero__phone">
-          <video
-            src={img + 'ride.mp4'}
-            poster={img + 'ride-poster.webp'}
-            width="480"
-            height="1044"
-            muted
-            loop
-            playsinline
-            autoplay
-            preload="metadata"
-            aria-label={copy.videoLabel}
-            data-rl-video
-          ></video>
-        </figure>
+      <div class="rl-foot">
+        <p>{copy.madeBy}</p>
+        <nav aria-label={copy.support}>
+          <a href={helpPath(lang, 'support')}>{copy.support}</a>
+          <a href={helpPath(lang, 'privacy')}>{copy.privacy}</a>
+          <a href={portfolio}>{copy.portfolio}</a>
+        </nav>
       </div>
-    </section>
-
-    <main id="content">
-      <section class="rl-section" aria-labelledby="rl-how">
-        <h2 id="rl-how" class="rl-heading">{copy.howTitle}</h2>
-        <ol class="rl-how">
-          {copy.how.map(([title, text], index) => (
-            <li>
-              <span class="rl-how__step" aria-hidden="true">{index + 1}</span>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section class="rl-section" aria-labelledby="rl-modes">
-        <h2 id="rl-modes" class="rl-heading">{copy.modesTitle}</h2>
-        <p class="rl-section__lead">{copy.modesLead}</p>
-        <ul class="rl-modes">
-          {modeIds.map((id) => (
-            <li class="rl-panel">
-              <img src={`${img}modes/${id}.webp`} width="720" height="1080" alt="" loading="lazy" />
-              <div class="rl-panel__text">
-                <h3>{copy.modes[id][0]}</h3>
-                <p>{copy.modes[id][1]}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="rl-section" aria-labelledby="rl-maps">
-        <h2 id="rl-maps" class="rl-heading">{copy.mapsTitle}</h2>
-        <p class="rl-section__lead">{copy.mapsLead}</p>
-        <ul class="rl-maps">
-          {mapIds.map((id) => (
-            <li class="rl-map">
-              <img src={`${img}maps/${id}.webp`} width="640" height="960" alt="" loading="lazy" />
-              <div class="rl-map__text">
-                <h3>{copy.maps[id][0]}</h3>
-                <p>{copy.maps[id][1]}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="rl-section" aria-labelledby="rl-screens">
-        <h2 id="rl-screens" class="rl-heading">{copy.screensTitle}</h2>
-        <p class="rl-section__lead">{copy.screensLead}</p>
-        <ul class="rl-screens" tabindex="0" aria-labelledby="rl-screens">
-          {copy.screens.map(([file, caption]) => (
-            <li>
-              <figure>
-                <div class="rl-phone">
-                  <img src={`${img}screens/${file}.webp`} width="540" height="1174" alt={caption} loading="lazy" />
-                </div>
-                <figcaption>{caption}</figcaption>
-              </figure>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="rl-section" aria-labelledby="rl-garage">
-        <h2 id="rl-garage" class="rl-heading">{copy.garageTitle}</h2>
-        <p class="rl-section__lead">{copy.garageLead}</p>
-        <ul class="rl-bikes">
-          {bikeIds.map((id) => (
-            <li class="rl-bike">
-              <img src={`${img}bikes/${id}.webp`} width="520" height="421" alt="" loading="lazy" />
-              <h3 lang="en">{id.toUpperCase()}</h3>
-              <p class="rl-bike__meta">{copy.bikes[id][0]} · {topSpeeds[id]} {copy.kmh}</p>
-              <p>{copy.bikes[id][1]}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section class="rl-section" aria-labelledby="rl-extras">
-        <h2 id="rl-extras" class="rl-heading">{copy.extrasTitle}</h2>
-        <ul class="rl-extras">
-          {copy.extras.map(([title, text]) => (
-            <li>
-              <h3>{title}</h3>
-              <p>{text}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
-
-    <footer class="rl-closing">
-      <h2 class="rl-logo rl-logo--small">{copy.closingTitle}</h2>
-      <p>{copy.closingText}</p>
-      <AppStoreBadge label={copy.soon} />
-      <nav class="rl-closing__links" aria-label={copy.support}>
-        <a href={helpPath(lang, 'support')}>{copy.support}</a>
-        <a href={helpPath(lang, 'privacy')}>{copy.privacy}</a>
-        <a href={portfolio}>{copy.portfolio}</a>
-      </nav>
-      <p class="rl-closing__by">{copy.madeBy}</p>
     </footer>
 
+    <Speedo />
+
     <script>
+      const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       // Hareketi azaltmak isteyenlerde video kendi kendine oynamaz; poster görünür kalır.
       const video = document.querySelector<HTMLVideoElement>('[data-rl-video]');
-      if (video && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (video && calm) {
         video.removeAttribute('autoplay');
         video.pause();
         video.controls = true;
+      }
+
+      // Sayfa aşağı indikçe parçalar belirir (betik çalışmazsa hepsi baştan görünür).
+      const pieces = document.querySelectorAll('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const watcher = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add('is-in');
+            watcher.unobserve(entry.target);
+          }
+        }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+        pieces.forEach((piece) => watcher.observe(piece));
+      } else {
+        pieces.forEach((piece) => piece.classList.add('is-in'));
+      }
+
+      // Fareyle gezen için harita dilimi üstüne gelince açılır; dokunmada ve klavyede seçimle.
+      if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        document.querySelectorAll<HTMLLabelElement>('[data-rl-maps] .rl-map').forEach((slice) => {
+          slice.addEventListener('mouseenter', () => {
+            const choice = slice.querySelector('input');
+            if (choice) choice.checked = true;
+          });
+        });
+      }
+
+      // Yana kayan şeritler klavyeyle de kaydırılabilsin diye odaklanabilir olur.
+      const strips = document.querySelectorAll<HTMLElement>('[data-strip]');
+      const markStrips = () => strips.forEach((strip) => {
+        if (strip.scrollWidth > strip.clientWidth + 1) strip.tabIndex = 0;
+        else strip.removeAttribute('tabindex');
+      });
+      markStrips();
+      addEventListener('resize', markStrips, { passive: true });
+
+      // Hız göstergesi: kaydırma hızı ibreyi kaldırır, durunca ibre yavaşça iner.
+      const speedo = document.querySelector<HTMLElement>('[data-rl-speedo]');
+      if (speedo && !calm) {
+        const needle = speedo.querySelector<SVGElement>('[data-needle]')!;
+        const speedText = speedo.querySelector('[data-speed]')!;
+        const gearText = speedo.querySelector('[data-gear]')!;
+        const ticks = [...speedo.querySelectorAll('[data-tick]')];
+        const top = 325;
+        let lastY = scrollY;
+        let lastTime = 0;
+        let speed = 0;
+        let idle = 0;
+        let running = false;
+
+        const draw = () => {
+          const share = speed / top;
+          needle.style.transform = `rotate(${-90 + share * 180}deg)`;
+          speedText.textContent = String(Math.round(speed));
+          gearText.textContent = String(Math.min(6, 1 + Math.floor(share * 6)));
+          ticks.forEach((tick, index) => tick.classList.toggle('is-on', index / (ticks.length - 1) <= share && speed > 1));
+        };
+
+        const frame = (time: number) => {
+          const elapsed = Math.max(8, time - lastTime);
+          const target = Math.min(top, (Math.abs(scrollY - lastY) / elapsed) * 105);
+          lastY = scrollY;
+          lastTime = time;
+          speed += (target - speed) * (target > speed ? 0.16 : 0.035);
+          idle = speed < 2 && target < 1 ? idle + 1 : 0;
+          if (idle > 36) {
+            speed = 0;
+            running = false;
+            speedo.classList.remove('is-live');
+            draw();
+            return;
+          }
+          draw();
+          requestAnimationFrame(frame);
+        };
+
+        // Alt bilgi görünürken gösterge çekilir; bağlantıların üstünü kapatmaz.
+        const foot = document.querySelector('.rl-foot');
+        if (foot && 'IntersectionObserver' in window) {
+          new IntersectionObserver(([entry]) => speedo.classList.toggle('is-parked', entry.isIntersecting)).observe(foot);
+        }
+
+        addEventListener('scroll', () => {
+          if (running) return;
+          running = true;
+          idle = 0;
+          lastY = scrollY;
+          lastTime = performance.now();
+          speedo.classList.add('is-live');
+          requestAnimationFrame(frame);
+        }, { passive: true });
       }
     </script>
   </body>

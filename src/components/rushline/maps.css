@@ -1,0 +1,191 @@
+/*
+ * Haritalar: altı eğik dilim. Seçilen dilim açılır, haritanın çizimi ve o yoldan alınmış
+ * gerçek ekran görüntüsü görünür. Dilimler radyo düğmeleridir; ok tuşlarıyla da gezilir.
+ */
+.rl-maps-section {
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgb(227 2 18 / .16), transparent 70%),
+    var(--rl-ink);
+}
+
+.rl-maps {
+  --skew: 7deg;
+  display: flex;
+  gap: 10px;
+  height: clamp(520px, 74vh, 700px);
+  margin: clamp(34px, 5vw, 56px) 0 0;
+  padding: 0 46px;
+}
+
+.rl-map {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #000;
+  cursor: pointer;
+  transform: skewX(calc(var(--skew) * -1));
+  transition: flex-grow .7s var(--rl-ease), box-shadow .3s;
+  box-shadow: 0 24px 50px -26px #000;
+}
+
+.rl-map::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgb(255 255 255 / .18);
+  border-radius: inherit;
+  pointer-events: none;
+  transition: border-color .3s;
+}
+
+.rl-map:has(input:checked) { flex-grow: 7.6; cursor: default; }
+.rl-map:has(input:checked)::after { border-color: #fff; }
+.rl-map:has(input:focus-visible) { outline: 3px solid var(--rl-gold); outline-offset: 4px; }
+.rl-map:hover::after { border-color: rgb(255 255 255 / .6); }
+
+.rl-map__art {
+  position: absolute;
+  inset: 0 -70px;
+  width: calc(100% + 140px);
+  max-width: none !important;
+  height: 100% !important;
+  object-fit: cover;
+  transform: skewX(var(--skew));
+  filter: saturate(.7) brightness(.5);
+  transition: filter .6s;
+}
+
+.rl-map:hover .rl-map__art { filter: saturate(.9) brightness(.72); }
+.rl-map input:checked ~ .rl-map__art { filter: none; }
+
+.rl-map__ui {
+  position: absolute;
+  inset: 0;
+  transform: skewX(var(--skew));
+}
+
+/* Kapalı dilimde dikey ad */
+.rl-map__tab {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  writing-mode: vertical-rl;
+  transform: translateX(-50%) rotate(180deg);
+  font-family: var(--rl-display);
+  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px #000;
+  transition: opacity .3s;
+}
+
+.rl-map__tab b { color: var(--rl-gold); font-size: .8em; }
+
+.rl-map input:checked ~ .rl-map__ui .rl-map__tab { opacity: 0; }
+
+/* Açık dilimin yazısı ve ekran görüntüsü */
+.rl-map__body {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 8px;
+  padding: 120px 240px 36px 62px;
+  background: linear-gradient(transparent, rgb(8 4 5 / .88) 62%);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .3s, transform .5s var(--rl-ease);
+  pointer-events: none;
+}
+
+.rl-map input:checked ~ .rl-map__ui .rl-map__body {
+  opacity: 1;
+  transform: none;
+  transition-delay: .28s;
+}
+
+.rl-map__index {
+  font-family: var(--rl-display);
+  font-size: .95rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .16em;
+  color: var(--rl-gold);
+}
+
+.rl-map__name {
+  font-family: var(--rl-display);
+  font-size: clamp(1.8rem, 2.9vw, 2.55rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: .05em .06em 0 var(--rl-red);
+}
+
+.rl-map__text { max-width: 36ch; font-size: .98rem; line-height: 1.45; color: rgb(255 255 255 / .9); }
+
+.rl-map__shot {
+  position: absolute;
+  right: 58px;
+  bottom: 30px;
+  width: auto;
+  height: 62%;
+  aspect-ratio: 540 / 1174;
+  opacity: 0;
+  transform: translateY(40px) rotate(9deg);
+  transition: opacity .3s, transform .6s var(--rl-ease);
+}
+
+.rl-map__shot > img { height: 100% !important; object-fit: cover; }
+
+.rl-map input:checked ~ .rl-map__ui .rl-map__shot {
+  opacity: 1;
+  transform: rotate(4deg);
+  transition-delay: .34s;
+}
+
+@media (max-width: 1100px) {
+  .rl-map__body { padding-right: 214px; padding-left: 56px; }
+  .rl-map__shot { height: 54%; right: 50px; }
+}
+
+/* Dar ekranda dilimler alt alta dizilir, eğim kalkar */
+@media (max-width: 899px) {
+  .rl-maps { flex-direction: column; gap: 8px; height: auto; padding: 0; }
+
+  .rl-map {
+    flex: none;
+    height: 70px;
+    border-radius: 16px;
+    transform: none;
+    transition: height .6s var(--rl-ease);
+  }
+
+  .rl-map:has(input:checked) { height: min(132vw, 600px); }
+
+  .rl-map__art { inset: 0; width: 100%; transform: none; object-position: 50% 42%; }
+  .rl-map__ui { transform: none; }
+
+  .rl-map__tab {
+    left: 20px;
+    top: 0;
+    bottom: auto;
+    height: 70px;
+    writing-mode: horizontal-tb;
+    transform: none;
+    font-size: 1.15rem;
+  }
+
+  .rl-map__body { padding: 110px 42% 22px 20px; }
+  .rl-map__name { font-size: clamp(1.7rem, 8vw, 2.6rem); }
+  .rl-map__text { font-size: .94rem; }
+  .rl-map__shot { right: 16px; bottom: 20px; height: auto; width: 33%; }
+}

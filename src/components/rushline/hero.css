@@ -1,0 +1,217 @@
+/*
+ * Giriş: oyunun kapağı. Kırmızı zemin kapak çiziminin kendi kırmızısıdır (#e30212),
+ * böylece çizimin kenarları zemine karışır. Telefonda oyunun gerçek görüntüsü oynar.
+ */
+.rl-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: min(100svh, 960px);
+  overflow: hidden;
+  background: radial-gradient(95% 85% at 66% 34%, #ff2a2e 0%, var(--rl-red) 40%, #a3050c 100%);
+}
+
+/* Hız çizgileri: kendi doğrultularında akar */
+.rl-hero__streaks {
+  position: absolute;
+  inset: -30% -20%;
+  z-index: 0;
+  transform: rotate(-17deg);
+  pointer-events: none;
+}
+
+.rl-hero__streaks i {
+  position: absolute;
+  left: 0;
+  top: calc(var(--y) * 1%);
+  width: calc(var(--w) * 1vw);
+  height: calc(var(--h) * 1px);
+  border-radius: 99px;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / var(--a)) 40%, rgb(255 255 255 / var(--a)) 60%, transparent);
+  animation: rl-streak calc(var(--t) * 1s) linear infinite;
+  animation-delay: calc(var(--t) * var(--o) * -1s);
+}
+
+@keyframes rl-streak {
+  from { transform: translateX(150vw); }
+  to { transform: translateX(-60vw); }
+}
+
+.rl-hero__art {
+  position: absolute;
+  z-index: 1;
+  right: clamp(-30px, 10vw, 230px);
+  bottom: -5%;
+  width: auto;
+  height: 106%;
+  max-width: none !important;
+  aspect-ratio: 2 / 3;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0, #000 22%, #000 80%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 12%, #000 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0, #000 22%, #000 80%, transparent 100%),
+    linear-gradient(180deg, transparent 0, #000 12%, #000 82%, transparent 100%);
+  mask-composite: intersect;
+  animation: rl-ride 5s ease-in-out infinite;
+}
+
+@keyframes rl-ride {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0); }
+  50% { transform: translate3d(-6px, 5px, 0) rotate(-.6deg); }
+}
+
+.rl-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  height: 34%;
+  background: linear-gradient(transparent, rgb(12 7 8 / .82));
+  pointer-events: none;
+}
+
+.rl-hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 580px) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: calc(1200px + 2 * var(--rl-gutter));
+  margin: 0 auto;
+  padding: 118px var(--rl-gutter) 44px;
+}
+
+.rl-hero .rl-kicker { color: #fff; }
+.rl-hero .rl-kicker::before { background: repeating-linear-gradient(-58deg, #fff 0 5px, transparent 5px 10px); }
+
+.rl-hero .rl-logo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 .1em;
+  font-size: clamp(3.5rem, 9.4vw, 7.6rem);
+}
+
+.rl-logo__moto {
+  font-size: .3em;
+  letter-spacing: .01em;
+  color: var(--rl-red-hot);
+  -webkit-text-stroke: .16em #fff;
+  text-shadow: .08em .1em 0 #1a0306;
+}
+
+.rl-tagline {
+  margin: 22px 0 0;
+  font-family: var(--rl-display);
+  font-size: clamp(1.3rem, 2.7vw, 2.05rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1.12;
+  color: var(--rl-gold);
+  text-shadow: .06em .07em 0 #1a0306;
+}
+
+.rl-hero .rl-lead {
+  max-width: 44ch;
+  margin: 16px 0 28px;
+  font-size: clamp(1.02rem, .96rem + .3vw, 1.16rem);
+  font-weight: 500;
+  text-shadow: 0 1px 12px rgb(120 0 6 / .6);
+}
+
+.rl-note {
+  margin: 16px 0 0;
+  font-size: .84rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / .88);
+}
+
+.rl-hero__phone {
+  justify-self: end;
+  align-self: end;
+  width: clamp(172px, 17.5vw, 244px);
+  margin-right: clamp(0px, 1.5vw, 24px);
+  transform: rotate(5deg);
+  animation: rl-float 6s ease-in-out infinite;
+}
+
+@keyframes rl-float {
+  0%, 100% { transform: rotate(5deg) translateY(0); }
+  50% { transform: rotate(3.6deg) translateY(-12px); }
+}
+
+/* Rakam şeridi */
+.rl-stats {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 5.6vw, 84px);
+  margin: 0;
+  padding: clamp(40px, 5vw, 58px) var(--rl-gutter) clamp(18px, 2.4vw, 30px);
+  list-style: none;
+  background: var(--rl-ink);
+  clip-path: polygon(0 clamp(18px, 3vw, 44px), 100% 0, 100% 100%, 0 100%);
+}
+
+.rl-stats li { display: grid; justify-items: center; gap: 2px; }
+
+.rl-stats strong {
+  font-family: var(--rl-display);
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--rl-gold);
+  text-shadow: .05em .06em 0 var(--rl-red-deep);
+}
+
+.rl-stats span {
+  font-size: clamp(.64rem, 1.2vw, .84rem);
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--rl-text-2);
+}
+
+@media (max-width: 899px) {
+  .rl-hero { min-height: 0; }
+
+  .rl-hero__art {
+    top: 34px;
+    right: auto;
+    bottom: auto;
+    left: 50%;
+    width: min(116vw, 600px);
+    height: auto;
+    margin-left: calc(min(116vw, 600px) / -2);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 46%, transparent 74%);
+    -webkit-mask-composite: source-over;
+    mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 46%, transparent 74%);
+    mask-composite: add;
+  }
+
+  .rl-hero::after { height: 55%; background: linear-gradient(transparent, rgb(12 7 8 / .9) 70%); }
+
+  .rl-hero__inner {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: min(92vw, 480px);
+    padding-bottom: 28px;
+  }
+
+  .rl-hero .rl-kicker { display: none; }
+  .rl-hero .rl-logo { font-size: clamp(3.3rem, 16.5vw, 6.4rem); }
+
+  .rl-hero__phone {
+    justify-self: center;
+    width: min(64vw, 270px);
+    margin: 30px 0 0;
+  }
+}

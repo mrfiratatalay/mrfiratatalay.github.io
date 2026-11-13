@@ -1,0 +1,44 @@
+---
+/**
+ * Altı harita, altı eğik dilim. Her dilim bir radyo düğmesidir: seçilen açılır ve o
+ * yoldan alınmış gerçek ekran görüntüsünü gösterir. Betik olmadan da çalışır.
+ */
+import { landingCopy, mapIds, type RushlineLanguage } from './landing-copy';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const img = '/rushline/images/';
+const no = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="rl-section rl-maps-section" aria-labelledby="rl-maps">
+  <div class="rl-wrap">
+    <p class="rl-kicker" data-reveal>{copy.mapsKicker}</p>
+    <h2 id="rl-maps" class="rl-heading" data-reveal>{copy.mapsTitle}</h2>
+    <p class="rl-lede" data-reveal>{copy.mapsLead}</p>
+
+    <div class="rl-maps" role="radiogroup" aria-label={copy.mapsPick} data-reveal data-rl-maps>
+      {mapIds.map((id, index) => (
+        <label class="rl-map">
+          <input class="rl-sr" type="radio" name="rl-map" value={id} checked={index === 0} aria-label={copy.maps[id][0]} />
+          <img class="rl-map__art" src={`${img}maps/${id}.webp`} width="640" height="960" alt="" loading="lazy" />
+          <span class="rl-map__ui">
+            <span class="rl-map__tab" aria-hidden="true"><b>{no(index)}</b>{copy.maps[id][0]}</span>
+            <span class="rl-map__body">
+              <span class="rl-map__index">{no(index)} / {no(mapIds.length - 1)}</span>
+              <strong class="rl-map__name">{copy.maps[id][0]}</strong>
+              <span class="rl-map__text">{copy.maps[id][1]}</span>
+            </span>
+            <span class="rl-phone rl-map__shot">
+              <img src={`${img}screens/ride-${id}.webp`} width="540" height="1174" alt={`${copy.maps[id][0]}: ${copy.shotAlt}`} loading="lazy" />
+            </span>
+          </span>
+        </label>
+      ))}
+    </div>
+  </div>
+</section>

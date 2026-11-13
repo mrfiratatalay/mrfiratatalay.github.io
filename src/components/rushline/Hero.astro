@@ -1,0 +1,58 @@
+---
+/** Giriş: oyunun kapağı, adı ve telefonda oynayan gerçek sürüş görüntüsü. */
+import AppStoreBadge from './AppStoreBadge.astro';
+import Streaks from './Streaks.astro';
+import { landingCopy, type RushlineLanguage } from './landing-copy';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const img = '/rushline/images/';
+---
+
+<section class="rl-hero" aria-labelledby="rl-title">
+  <Streaks />
+  <img class="rl-hero__art" src={img + 'hero.webp'} width="1024" height="1536" alt={copy.heroAlt} fetchpriority="high" />
+
+  <div class="rl-hero__inner">
+    <div class="rl-hero__copy">
+      <p class="rl-kicker">{copy.heroKicker}</p>
+      <h1 id="rl-title" class="rl-logo" lang="en">
+        <span>RUSHLINE</span>
+        <span class="rl-logo__moto">MOTO</span>
+      </h1>
+      <p class="rl-tagline">{copy.tagline}</p>
+      <p class="rl-lead">{copy.lead}</p>
+      <AppStoreBadge label={copy.soon} />
+      <p class="rl-note">{copy.soonNote}</p>
+    </div>
+
+    <figure class="rl-phone rl-hero__phone">
+      <video
+        src={img + 'ride.mp4'}
+        poster={img + 'ride-poster.webp'}
+        width="480"
+        height="1044"
+        muted
+        loop
+        playsinline
+        autoplay
+        preload="metadata"
+        aria-label={copy.videoLabel}
+        data-rl-video
+      ></video>
+    </figure>
+  </div>
+
+  <ul class="rl-stats">
+    {copy.stats.map(([value, label]) => (
+      <li>
+        <strong>{value}</strong>
+        <span>{label}</span>
+      </li>
+    ))}
+  </ul>
+</section>

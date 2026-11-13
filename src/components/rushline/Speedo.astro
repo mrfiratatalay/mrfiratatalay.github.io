@@ -1,0 +1,26 @@
+---
+/**
+ * Köşedeki hız göstergesi, oyundaki göstergenin küçüğü. Sayfa kaydırıldıkça ibre kalkar,
+ * durunca iner; ibreyi RushlineLanding'deki betik çevirir. Yalnızca süstür.
+ */
+const count = 21;
+const colour = (step: number) => (step < 0.45 ? '#35d6ff' : step < 0.75 ? '#ffe14a' : '#ff2d2d');
+const ticks = Array.from({ length: count }, (_, index) => {
+  const step = index / (count - 1);
+  const angle = Math.PI * (1 - step);
+  const point = (radius: number) => `${(100 + Math.cos(angle) * radius).toFixed(1)} ${(104 - Math.sin(angle) * radius).toFixed(1)}`;
+  return { d: `M${point(74)}L${point(88)}`, colour: colour(step) };
+});
+---
+
+<div class="rl-speedo" aria-hidden="true" data-rl-speedo>
+  <svg viewBox="0 0 200 124">
+    <path d="M4 108a96 96 0 0 1 192 0v6a6 6 0 0 1-6 6H10a6 6 0 0 1-6-6z" fill="#0c0708" stroke="rgb(255 255 255 / .22)" stroke-width="2" />
+    {ticks.map((tick) => <path d={tick.d} stroke={tick.colour} stroke-width="5" stroke-linecap="round" data-tick />)}
+    <text x="100" y="74" font-size="40" text-anchor="middle" data-speed>0</text>
+    <text x="100" y="90" font-size="11" text-anchor="middle" opacity=".7">km/h</text>
+    <path d="M100 104V30" stroke="#ff2d2d" stroke-width="4" stroke-linecap="round" data-needle />
+    <circle cx="100" cy="104" r="15" fill="#0c0708" stroke="#ff2d2d" stroke-width="3" />
+    <text x="99" y="111" font-size="19" text-anchor="middle" data-gear>1</text>
+  </svg>
+</div>

@@ -1,0 +1,66 @@
+---
+/**
+ * Garaj: sahnede tek motor, altta altı motorun seçicisi. Seçici radyo düğmeleridir;
+ * hangi kartın görüneceğini aşağıda üretilen kural listesi belirler (betik gerekmez).
+ * Kart `display` ile açıldığı için motor her seçimde sahneye yeniden girer.
+ */
+import { bikeIds, landingCopy, topSpeeds, type RushlineLanguage } from './landing-copy';
+
+interface Props {
+  lang: RushlineLanguage;
+}
+
+const { lang } = Astro.props;
+const copy = landingCopy[lang];
+const img = '/rushline/images/';
+const fastest = Math.max(...Object.values(topSpeeds));
+const sizes: Record<(typeof bikeIds)[number], number> = {
+  zephyr: 365, tempest: 421, kurye: 428, vortex: 352, volt: 341, goliath: 341,
+};
+const showSelected = bikeIds
+  .map((id) => `.rl-garage:has(#rl-bike-${id}:checked) [data-bike="${id}"]`)
+  .join(',') + '{display:grid}';
+---
+
+<section class="rl-section rl-garage-section" aria-labelledby="rl-garage">
+  <div class="rl-wrap">
+    <p class="rl-kicker" data-reveal>{copy.garageKicker}</p>
+    <h2 id="rl-garage" class="rl-heading" data-reveal>{copy.garageTitle}</h2>
+    <p class="rl-lede" data-reveal>{copy.garageLead}</p>
+
+    <style set:html={showSelected}></style>
+    <div class="rl-garage" data-reveal>
+      <div aria-live="polite">
+        {bikeIds.map((id) => (
+          <article class="rl-bikecard" data-bike={id} data-name={id.toUpperCase()}>
+            <div class="rl-bikecard__info">
+              <p class="rl-bikecard__class"><span>{copy.bikes[id][0]}</span></p>
+              <h3 lang="en">{id.toUpperCase()}</h3>
+              <p class="rl-bikecard__text">{copy.bikes[id][1]}</p>
+              <div class="rl-speed">
+                <p class="rl-speed__label">
+                  <span>{copy.topSpeed}</span>
+                  <span><strong>{topSpeeds[id]}</strong><small>{copy.kmh}</small></span>
+                </p>
+                <div class="rl-speed__bar" aria-hidden="true"><i style={`--v:${(topSpeeds[id] / fastest).toFixed(3)}`}></i></div>
+              </div>
+            </div>
+            <div class="rl-bikecard__stage">
+              <img src={`${img}bikes/${id}.webp`} width="520" height={sizes[id]} alt="" loading="lazy" />
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div class="rl-picker" role="radiogroup" aria-label={copy.garagePick}>
+        {bikeIds.map((id, index) => (
+          <label class="rl-pick">
+            <input class="rl-sr" type="radio" name="rl-bike" id={`rl-bike-${id}`} checked={index === 0} />
+            <img src={`${img}bikes/${id}.webp`} width="520" height={sizes[id]} alt="" loading="lazy" />
+            <span lang="en">{id.toUpperCase()}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

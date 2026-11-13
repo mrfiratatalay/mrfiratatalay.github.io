@@ -1,0 +1,223 @@
+/*
+ * Garaj: tek motorun sahnede durduğu bir galeri. Altta altı motorun küçükleri radyo
+ * düğmesidir; seçilen motorun kartı görünür (kural listesi Garage.astro'da üretilir).
+ */
+.rl-garage-section {
+  background:
+    radial-gradient(70% 55% at 70% 46%, rgb(255 255 255 / .09), transparent 70%),
+    linear-gradient(var(--rl-ink), var(--rl-ink-2) 30%, var(--rl-ink-2) 70%, var(--rl-ink));
+  overflow: hidden;
+}
+
+.rl-garage { margin-top: clamp(28px, 4vw, 48px); }
+
+.rl-bikecard {
+  position: relative;
+  display: none;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+  min-height: clamp(380px, 40vw, 470px);
+}
+
+/* Motorun adı arkada dev bir kontur olarak durur */
+.rl-bikecard::before {
+  content: attr(data-name);
+  position: absolute;
+  right: -3%;
+  top: 50%;
+  z-index: 0;
+  font-family: var(--rl-display);
+  font-size: clamp(5rem, 17vw, 14.5rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgb(255 255 255 / .1);
+  transform: translateY(-58%);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: rl-ghost-in .9s var(--rl-ease) both;
+}
+
+@keyframes rl-ghost-in {
+  from { opacity: 0; transform: translate(8%, -58%); }
+}
+
+.rl-bikecard__info { position: relative; z-index: 2; animation: rl-info-in .55s var(--rl-ease) both; }
+
+@keyframes rl-info-in {
+  from { opacity: 0; transform: translateX(-22px); }
+}
+
+.rl-bikecard__class {
+  display: inline-block;
+  margin: 0 0 14px;
+  padding: 5px 14px;
+  background: var(--rl-red);
+  font-family: var(--rl-display);
+  font-size: .82rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transform: skewX(-12deg);
+}
+
+.rl-bikecard__class span { display: inline-block; transform: skewX(12deg); }
+
+.rl-bikecard h3 {
+  margin: 0;
+  font-family: var(--rl-display);
+  font-size: clamp(2.8rem, 6.6vw, 5.2rem);
+  font-style: italic;
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.01em;
+  text-shadow: .045em .055em 0 var(--rl-red);
+}
+
+.rl-bikecard__text { max-width: 40ch; margin: 16px 0 0; font-size: 1.08rem; color: var(--rl-text-2); }
+
+.rl-speed { max-width: 380px; margin-top: 26px; }
+
+.rl-speed__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--rl-text-2);
+}
+
+.rl-speed__label strong {
+  font-family: var(--rl-display);
+  font-size: 2.3rem;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  color: var(--rl-gold);
+}
+
+.rl-speed__label small { margin-left: 4px; font-size: .8rem; font-weight: 800; color: var(--rl-text-2); }
+
+/* Hız çubuğu: oyundaki göstergenin renkleriyle, eğik dilimler hâlinde */
+.rl-speed__bar {
+  position: relative;
+  height: 14px;
+  margin-top: 10px;
+  background: rgb(255 255 255 / .1);
+  transform: skewX(-22deg);
+  overflow: hidden;
+}
+
+.rl-speed__bar i {
+  position: absolute;
+  inset: 0;
+  width: calc(var(--v) * 100%);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 9px, var(--rl-ink-2) 9px 12px),
+    linear-gradient(90deg, #35d6ff, #ffe14a 55%, #ff2d2d);
+  background-size: auto, calc(100% / var(--v)) 100%;
+  transform-origin: left;
+  animation: rl-bar-in .9s .15s var(--rl-ease) both;
+}
+
+@keyframes rl-bar-in {
+  from { transform: scaleX(0); }
+}
+
+.rl-bikecard__stage { position: relative; z-index: 1; display: grid; place-items: center; }
+
+/* Zemindeki ışık ve gölge */
+.rl-bikecard__stage::before {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 2%;
+  height: 16%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / .75), transparent);
+  filter: blur(6px);
+}
+
+.rl-bikecard__stage img {
+  position: relative;
+  width: min(100%, 580px);
+  aspect-ratio: 520 / 430;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 18px 22px rgb(0 0 0 / .45));
+  animation: rl-bike-in .7s var(--rl-ease) both;
+}
+
+@keyframes rl-bike-in {
+  from { opacity: 0; transform: translateX(22%) skewX(-10deg); filter: blur(6px); }
+}
+
+/* Seçici */
+.rl-picker {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(8px, 1.2vw, 14px);
+  margin-top: clamp(26px, 4vw, 44px);
+}
+
+.rl-pick {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 12px 8px 10px;
+  border: 2px solid var(--rl-line);
+  border-radius: 16px;
+  background: rgb(255 255 255 / .04);
+  cursor: pointer;
+  transition: border-color .2s, background .2s, transform .25s var(--rl-ease);
+}
+
+.rl-pick img {
+  width: 100%;
+  max-width: 120px;
+  aspect-ratio: 520 / 430;
+  object-fit: contain;
+  transition: transform .3s var(--rl-ease);
+}
+
+.rl-pick span {
+  font-family: var(--rl-display);
+  font-size: clamp(.68rem, 1.1vw, .86rem);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: .08em;
+  color: var(--rl-text-2);
+}
+
+.rl-pick:hover { border-color: rgb(255 255 255 / .5); transform: translateY(-3px); }
+.rl-pick:hover img { transform: scale(1.08); }
+
+.rl-pick:has(input:checked) {
+  border-color: var(--rl-gold);
+  background: rgb(255 210 58 / .1);
+  box-shadow: 0 10px 30px -14px rgb(255 210 58 / .6);
+}
+
+.rl-pick:has(input:checked) span { color: var(--rl-gold); }
+.rl-pick:has(input:focus-visible) { outline: 3px solid var(--rl-gold); outline-offset: 3px; }
+
+@media (max-width: 899px) {
+  .rl-bikecard { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .rl-bikecard__stage { order: -1; }
+  .rl-bikecard__stage img { width: min(100%, 460px); }
+  .rl-bikecard::before { top: 18%; right: -6%; font-size: 26vw; }
+  .rl-bikecard__info { min-height: 290px; }
+  .rl-picker { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

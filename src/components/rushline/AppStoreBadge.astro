@@ -1,7 +1,8 @@
 ---
 /**
  * "Yakında App Store'da" rozeti. Apple'ın resmî indirme rozeti ancak oyun yayındayken
- * kullanılabilir; o gün bu rozet gerçek bağlantıyla değiştirilecek.
+ * kullanılabilir; o gün bu rozet gerçek bağlantıyla değiştirilecek. Tıklanmadığı için
+ * düğme değil, yanıp sönen ışıklı bir damga gibi durur (ışık landing.css'tedir).
  */
 interface Props {
   label: string;
@@ -10,11 +11,4 @@ interface Props {
 const { label } = Astro.props;
 ---
 
-<p class="rl-badge">
-  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
-    <rect x="6" y="1.5" width="12" height="21" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" />
-    <path d="M10 4.5h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-    <path d="M12 9v4.2l2.6 1.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
-  <span>{label}</span>
-</p>
+<p class="rl-badge"><span>{label}</span></p>
