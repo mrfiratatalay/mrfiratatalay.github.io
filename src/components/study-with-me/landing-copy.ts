@@ -12,6 +12,8 @@
  */
 export type LandingLanguage = 'tr' | 'en';
 
+export const appStoreURL = 'https://apps.apple.com/us/app/tao-cozy-focus-timer/id6817869077';
+
 /** Odanın üç ışığı. Sıra, güneşe her dokunuşta ilerleyen sıradır. */
 export const lights = ['day', 'evening', 'night'] as const;
 export type Light = (typeof lights)[number];
@@ -50,7 +52,7 @@ export const landingCopy = {
     privacyLabel: 'Gizlilik politikası',
     directoryLabel: 'Uygulamalarım',
     platforms: 'iPhone · iPad · Mac',
-    soon: 'Yakında App Store’da',
+    download: 'App Store’dan İndir',
 
     kicker: 'Elle çizilmiş bir odak odası',
     heading: ['Odak için', 'küçük bir', 'oda.'],
@@ -200,8 +202,7 @@ export const landingCopy = {
     menuAlt: 'Mac menü çubuğundaki panel: sayaç, duraklat ve bitir düğmeleri, küçük oda önizlemesi',
 
     goodbye: 'oda artık senin. molada pencere başında görüşürüz!',
-    closingTitle: 'Yakında App Store’da.',
-    status: 'İndirme bağlantısı, Tao: Cozy Focus Timer App Store’da yayımlandığında burada yer alacak.',
+    closingTitle: 'Tao şimdi yayında.',
     friendAlt: 'Defter sayfasından doğrulmuş, iki patisini kaleme koymuş arkadaş',
     localData: 'Görevlerin ve oturumların cihazında tutulur.',
     trademark: 'iPhone, iPad ve Mac, Apple Inc.’in ABD ve diğer ülkelerde ve bölgelerde tescilli ticari markalarıdır. App Store, Apple Inc.’in hizmet markasıdır.',
@@ -222,7 +223,7 @@ export const landingCopy = {
     privacyLabel: 'Privacy policy',
     directoryLabel: 'My Apps',
     platforms: 'iPhone · iPad · Mac',
-    soon: 'Coming soon to the App Store',
+    download: 'Download on the App Store',
 
     kicker: 'A hand-drawn focus room',
     heading: ['A little', 'room to', 'focus in.'],
@@ -372,8 +373,7 @@ export const landingCopy = {
     menuAlt: 'The Mac menu bar panel: the timer, pause and stop buttons, and a small preview of the room',
 
     goodbye: 'the room is yours now. see you at the window on your break!',
-    closingTitle: 'Coming soon to the App Store.',
-    status: 'The download link will appear here when Tao: Cozy Focus Timer is released on the App Store.',
+    closingTitle: 'Tao is now available.',
     friendAlt: 'The friend risen from a notebook page, with both paws resting on a pencil',
     localData: 'Your tasks and sessions are stored on your device.',
     trademark: 'iPhone, iPad, and Mac are trademarks of Apple Inc., registered in the U.S. and other countries and regions. App Store is a service mark of Apple Inc.',

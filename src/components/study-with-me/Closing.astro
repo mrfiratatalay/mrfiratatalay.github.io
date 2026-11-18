@@ -10,7 +10,7 @@
  * Gözler ayrı bir katmandır (`art/eyes.svg`, gövdeyle aynı ölçüde): arada bir kırpılır
  * ve imleci izler. Gövde görsellerinde göz yoktur; biri değişirse öbürü de değişmeli.
  */
-import { landingCopy } from './landing-copy';
+import { appStoreURL, landingCopy } from './landing-copy';
 import type { LandingLanguage } from './landing-copy';
 import eyes from './art/eyes.svg?raw';
 
@@ -29,7 +29,7 @@ const icon = '/studywithme/images/icon/';
 
   <div class="site-width closing-inner">
     <h2 id="closing-title" data-reveal>{copy.closingTitle}</h2>
-    <p class="closing-status" data-reveal>{copy.status}</p>
+    <a class="download-link" href={appStoreURL}>{copy.download}</a>
     <p class="closing-links" data-reveal>
       <a href={copy.support}>{copy.supportLabel}</a>
       <a href={copy.privacy}>{copy.privacyLabel}</a>

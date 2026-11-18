@@ -7,7 +7,7 @@
  * üstüne yazılır. Üç ışık üst üste durur; hangisinin görüneceğine `html[data-light]`
  * karar verir. Geniş ekranda Mac penceresinin, telefonda iPhone'un karesi kullanılır.
  */
-import { landingCopy, lights } from './landing-copy';
+import { appStoreURL, landingCopy, lights } from './landing-copy';
 import type { LandingLanguage, Light } from './landing-copy';
 import measures from './room-measures.json';
 import moon from './art/moon.svg?raw';
@@ -121,7 +121,7 @@ function edges(light: Light) {
 
   <div class="room-ground">
     <p class="room-status">
-      <span class="soon">{copy.soon}</span>
+      <a class="download-link" href={appStoreURL}>{copy.download}</a>
       <span class="room-platforms">{copy.platforms}</span>
     </p>
     <p class="room-clock" data-light-note aria-live="polite">

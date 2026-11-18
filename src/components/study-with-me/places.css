@@ -393,7 +393,6 @@ html[data-light='night'] .closing-sun-night { opacity: 1; }
 }
 
 .closing h2 { font-size: clamp(2.5rem, 1.4rem + 5vw, 5.2rem); }
-.closing-status { max-width: 33rem; }
 
 .closing-links {
   display: flex;

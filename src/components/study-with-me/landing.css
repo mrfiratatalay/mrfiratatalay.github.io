@@ -227,8 +227,8 @@ button { font: inherit; color: inherit; }
   transform: scaleX(-1);
 }
 
-/* "Yakında" etiketi: ikondaki kalemin sarısı. */
-.soon {
+/* İndirme düğmesinin rengi ikondaki kalemden gelir. */
+.download-link {
   display: inline-block;
   padding: .5em 1em .58em;
   color: var(--outline);
@@ -238,8 +238,11 @@ button { font: inherit; color: inherit; }
   box-shadow: 0 3px 0 var(--outline);
   font-weight: 600;
   line-height: 1.1;
+  text-decoration: none;
   transform: rotate(-1.5deg);
 }
+
+.download-link:hover { text-decoration: underline; }
 
 /* Sayfa aşağı indikçe beliren parçalar. Betik çalışmazsa hepsi görünür kalır. */
 .js [data-reveal] {
