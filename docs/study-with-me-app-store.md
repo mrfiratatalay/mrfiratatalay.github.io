@@ -54,7 +54,7 @@ o harfler yoktur.
 
 | Alan | Türkçe | İngilizce |
 | --- | --- | --- |
-| Marketing URL | [Ürün sayfası](https://mrfiratatalay.github.io/studywithme/) | [Product page](https://mrfiratatalay.github.io/studywithme/en/) |
+| Marketing URL | [Ürün sayfası](https://mrfiratatalay.github.io/studywithme/tr/) | [Product page](https://mrfiratatalay.github.io/studywithme/) |
 | Support URL | [Destek](https://mrfiratatalay.github.io/studywithme/support/) | [Support](https://mrfiratatalay.github.io/studywithme/en/support/) |
 | Privacy Policy URL | [Gizlilik politikası](https://mrfiratatalay.github.io/studywithme/privacy/) | [Privacy policy](https://mrfiratatalay.github.io/studywithme/en/privacy/) |
 

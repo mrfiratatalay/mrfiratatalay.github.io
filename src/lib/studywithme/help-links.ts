@@ -23,5 +23,5 @@ export function helpPath(locale: HelpLocale, page: HelpPage): string {
 }
 
 export function productPath(locale: HelpLocale): string {
-  return locale === 'tr' ? '/studywithme/' : '/studywithme/en/';
+  return locale === 'tr' ? '/studywithme/tr/' : '/studywithme/';
 }

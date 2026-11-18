@@ -39,9 +39,9 @@ export const landingCopy = {
   tr: {
     title: 'Tao: Cozy Focus Timer · Odak için küçük bir oda',
     description: 'iPhone, iPad ve Mac için elle çizilmiş bir odak odası. Sayacı başlat, masadaki küçük arkadaşınla birlikte çalış, molada pencere kenarında nefes al.',
-    path: '/studywithme/',
+    path: '/studywithme/tr/',
     directory: '/uygulamalar/',
-    alternate: '/studywithme/en/',
+    alternate: '/studywithme/',
     support: '/studywithme/support/',
     privacy: '/studywithme/privacy/',
     skip: 'İçeriğe geç',
@@ -210,9 +210,9 @@ export const landingCopy = {
   en: {
     title: 'Tao: Cozy Focus Timer · A little room to focus in',
     description: 'A hand-drawn focus room for iPhone, iPad, and Mac. Start the timer, work alongside the little friend at the desk, and take your break by the window.',
-    path: '/studywithme/en/',
+    path: '/studywithme/',
     directory: '/en/apps/',
-    alternate: '/studywithme/',
+    alternate: '/studywithme/tr/',
     support: '/studywithme/en/support/',
     privacy: '/studywithme/en/privacy/',
     skip: 'Skip to content',

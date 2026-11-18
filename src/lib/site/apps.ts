@@ -17,8 +17,8 @@ export const portfolioApps = [
     icon: '/studywithme/images/app-icon.webp',
     platforms: ['iPhone', 'iPad', 'Mac'],
     href: {
-      tr: '/studywithme/',
-      en: '/studywithme/en/',
+      tr: '/studywithme/tr/',
+      en: '/studywithme/',
     },
     description: {
       tr: 'Elle çizilmiş bir odada, küçük bir çalışma arkadaşıyla Pomodoro.',

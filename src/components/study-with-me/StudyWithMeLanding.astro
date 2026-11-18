@@ -62,6 +62,7 @@ const walls = {
     <link rel="canonical" href={canonical.href} />
     <link rel="alternate" hreflang={lang} href={canonical.href} />
     <link rel="alternate" hreflang={otherLanguage} href={alternate.href} />
+    <link rel="alternate" hreflang="x-default" href={lang === 'en' ? canonical.href : alternate.href} />
     <link rel="icon" href={imagePath + 'app-icon.webp'} type="image/webp" />
     <link rel="preload" href="/studywithme/fonts/shantellsans-semibold.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/studywithme/fonts/shantellsans-regular.woff2" as="font" type="font/woff2" crossorigin />
